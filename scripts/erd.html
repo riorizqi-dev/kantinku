@@ -1,0 +1,234 @@
+<!DOCTYPE html>
+<html lang="id">
+<head>
+  <meta charset="UTF-8" />
+  <title>ERD KantinKu</title>
+  <style>
+    * { box-sizing: border-box; margin: 0; padding: 0; }
+    body {
+      width: 1600px;
+      height: 900px;
+      background: #0b1220;
+      font-family: "Segoe UI", system-ui, sans-serif;
+      color: #e2e8f0;
+      padding: 28px 36px;
+    }
+    h1 {
+      font-size: 28px;
+      font-weight: 700;
+      letter-spacing: -0.02em;
+      margin-bottom: 4px;
+    }
+    .sub {
+      color: #94a3b8;
+      font-size: 14px;
+      margin-bottom: 22px;
+    }
+    .grid {
+      display: grid;
+      grid-template-columns: 1fr 1fr 1fr 1fr;
+      grid-template-rows: auto auto auto;
+      gap: 18px 20px;
+      position: relative;
+    }
+    .entity {
+      background: #111827;
+      border: 1.5px solid #1e293b;
+      border-radius: 14px;
+      overflow: hidden;
+      box-shadow: 0 8px 24px rgba(0,0,0,0.35);
+    }
+    .entity.head-emerald .eh { background: linear-gradient(90deg, #059669, #10b981); }
+    .entity.head-blue .eh { background: linear-gradient(90deg, #2563eb, #3b82f6); }
+    .entity.head-amber .eh { background: linear-gradient(90deg, #d97706, #f59e0b); }
+    .entity.head-violet .eh { background: linear-gradient(90deg, #7c3aed, #8b5cf6); }
+    .entity.head-rose .eh { background: linear-gradient(90deg, #e11d48, #f43f5e); }
+    .entity.head-cyan .eh { background: linear-gradient(90deg, #0891b2, #06b6d4); }
+    .entity.head-slate .eh { background: linear-gradient(90deg, #475569, #64748b); }
+    .eh {
+      padding: 10px 14px;
+      font-weight: 700;
+      font-size: 15px;
+      color: #fff;
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+    }
+    .eh span {
+      font-size: 11px;
+      font-weight: 600;
+      opacity: 0.9;
+      background: rgba(255,255,255,0.18);
+      padding: 2px 8px;
+      border-radius: 999px;
+    }
+    .eb { padding: 8px 0; }
+    .f {
+      display: grid;
+      grid-template-columns: 1fr auto;
+      gap: 6px;
+      padding: 4px 14px;
+      font-size: 12px;
+      line-height: 1.35;
+    }
+    .f .n { color: #f1f5f9; font-weight: 600; }
+    .f .t { color: #94a3b8; font-family: ui-monospace, Consolas, monospace; font-size: 11px; }
+    .f.pk .n { color: #fbbf24; }
+    .f.fk .n { color: #34d399; }
+    .legend {
+      margin-top: 16px;
+      display: flex;
+      gap: 20px;
+      flex-wrap: wrap;
+      font-size: 12px;
+      color: #94a3b8;
+    }
+    .legend b { color: #e2e8f0; }
+    .dot { display: inline-block; width: 10px; height: 10px; border-radius: 2px; margin-right: 6px; vertical-align: middle; }
+    .rel {
+      margin-top: 14px;
+      background: #0f172a;
+      border: 1px solid #1e293b;
+      border-radius: 12px;
+      padding: 12px 16px;
+      font-size: 13px;
+      color: #cbd5e1;
+      line-height: 1.55;
+    }
+    .rel strong { color: #6ee7b7; }
+    .c1 { grid-column: 1; grid-row: 1; }
+    .c2 { grid-column: 2; grid-row: 1; }
+    .c3 { grid-column: 3; grid-row: 1; }
+    .c4 { grid-column: 4; grid-row: 1 / span 2; }
+    .c5 { grid-column: 1; grid-row: 2; }
+    .c6 { grid-column: 2; grid-row: 2; }
+    .c7 { grid-column: 3; grid-row: 2; }
+    .c8 { grid-column: 1 / span 2; grid-row: 3; }
+  </style>
+</head>
+<body>
+  <h1>ERD KantinKu — Entity Relationship Diagram</h1>
+  <p class="sub">Sesuai schema Supabase (schema.sql) + model domain aplikasi multi-lapak</p>
+
+  <div class="grid">
+    <div class="entity head-emerald c1">
+      <div class="eh">sellers <span>lapak</span></div>
+      <div class="eb">
+        <div class="f pk"><span class="n">id</span><span class="t">PK text</span></div>
+        <div class="f"><span class="n">name</span><span class="t">text</span></div>
+        <div class="f"><span class="n">owner_user_id</span><span class="t">text</span></div>
+        <div class="f"><span class="n">phone, booth</span><span class="t">text</span></div>
+        <div class="f"><span class="n">is_active</span><span class="t">boolean</span></div>
+        <div class="f"><span class="n">rating, review_count</span><span class="t">num</span></div>
+        <div class="f"><span class="n">created_at</span><span class="t">timestamptz</span></div>
+      </div>
+    </div>
+
+    <div class="entity head-blue c2">
+      <div class="eh">users <span>akun</span></div>
+      <div class="eb">
+        <div class="f pk"><span class="n">id</span><span class="t">PK text</span></div>
+        <div class="f"><span class="n">username</span><span class="t">unique</span></div>
+        <div class="f"><span class="n">password</span><span class="t">text</span></div>
+        <div class="f"><span class="n">name</span><span class="t">text</span></div>
+        <div class="f"><span class="n">role</span><span class="t">enum</span></div>
+        <div class="f fk"><span class="n">seller_id</span><span class="t">FK → sellers</span></div>
+        <div class="f"><span class="n">kelas, phone, avatar</span><span class="t">text</span></div>
+      </div>
+    </div>
+
+    <div class="entity head-amber c3">
+      <div class="eh">products <span>menu</span></div>
+      <div class="eb">
+        <div class="f pk"><span class="n">id</span><span class="t">PK text</span></div>
+        <div class="f fk"><span class="n">seller_id</span><span class="t">FK → sellers</span></div>
+        <div class="f"><span class="n">name</span><span class="t">text</span></div>
+        <div class="f"><span class="n">category</span><span class="t">enum</span></div>
+        <div class="f"><span class="n">description, image</span><span class="t">text</span></div>
+        <div class="f"><span class="n">is_active</span><span class="t">boolean</span></div>
+        <div class="f"><span class="n">created_at</span><span class="t">timestamptz</span></div>
+      </div>
+    </div>
+
+    <div class="entity head-violet c4">
+      <div class="eh">orders <span>pesanan</span></div>
+      <div class="eb">
+        <div class="f pk"><span class="n">id</span><span class="t">PK text</span></div>
+        <div class="f"><span class="n">order_number</span><span class="t">unique</span></div>
+        <div class="f fk"><span class="n">seller_id</span><span class="t">FK → sellers</span></div>
+        <div class="f fk"><span class="n">buyer_id</span><span class="t">FK → users</span></div>
+        <div class="f"><span class="n">buyer_name / class / phone</span><span class="t">snapshot</span></div>
+        <div class="f"><span class="n">subtotal, total</span><span class="t">integer</span></div>
+        <div class="f"><span class="n">commission_rate / amount</span><span class="t">num</span></div>
+        <div class="f"><span class="n">seller_amount</span><span class="t">integer</span></div>
+        <div class="f"><span class="n">status</span><span class="t">order_status</span></div>
+        <div class="f"><span class="n">payment_status</span><span class="t">enum</span></div>
+        <div class="f"><span class="n">payment_method</span><span class="t">online|canteen</span></div>
+        <div class="f"><span class="n">bayar_invoice_id</span><span class="t">text</span></div>
+        <div class="f"><span class="n">rating (1–5)</span><span class="t">integer</span></div>
+      </div>
+    </div>
+
+    <div class="entity head-cyan c5">
+      <div class="eh">product_variants <span>harga+stok</span></div>
+      <div class="eb">
+        <div class="f pk"><span class="n">id</span><span class="t">PK text</span></div>
+        <div class="f fk"><span class="n">product_id</span><span class="t">FK → products</span></div>
+        <div class="f"><span class="n">name</span><span class="t">text</span></div>
+        <div class="f"><span class="n">price</span><span class="t">integer ≥ 0</span></div>
+        <div class="f"><span class="n">stock</span><span class="t">integer ≥ 0</span></div>
+        <div class="f"><span class="n">image, is_active</span><span class="t">opt</span></div>
+      </div>
+    </div>
+
+    <div class="entity head-rose c6">
+      <div class="eh">order_items <span>baris item</span></div>
+      <div class="eb">
+        <div class="f pk"><span class="n">id</span><span class="t">PK bigserial</span></div>
+        <div class="f fk"><span class="n">order_id</span><span class="t">FK → orders</span></div>
+        <div class="f"><span class="n">product_id</span><span class="t">text</span></div>
+        <div class="f"><span class="n">variant_id</span><span class="t">text</span></div>
+        <div class="f"><span class="n">name, price, qty</span><span class="t">snapshot</span></div>
+        <div class="f"><span class="n">image</span><span class="t">text</span></div>
+      </div>
+    </div>
+
+    <div class="entity head-slate c7">
+      <div class="eh">platform_settings <span>1 baris</span></div>
+      <div class="eb">
+        <div class="f pk"><span class="n">id = 1</span><span class="t">PK</span></div>
+        <div class="f"><span class="n">school_name</span><span class="t">text</span></div>
+        <div class="f"><span class="n">commission_rate</span><span class="t">default 7%</span></div>
+        <div class="f"><span class="n">platform_whatsapp</span><span class="t">text</span></div>
+        <div class="f"><span class="n">order_seq</span><span class="t">integer</span></div>
+      </div>
+    </div>
+
+    <div class="entity head-emerald c8" style="border-style: dashed;">
+      <div class="eh">Relasi utama (kardinalitas) <span>ringkas</span></div>
+      <div class="eb" style="padding: 12px 16px; font-size: 13px; line-height: 1.7; color: #cbd5e1;">
+        <strong style="color:#6ee7b7">sellers</strong> 1 — N <strong style="color:#fbbf24">products</strong>
+        &nbsp;·&nbsp;
+        <strong style="color:#fbbf24">products</strong> 1 — N <strong style="color:#22d3ee">product_variants</strong>
+        &nbsp;·&nbsp;
+        <strong style="color:#6ee7b7">sellers</strong> 1 — N <strong style="color:#c084fc">orders</strong>
+        &nbsp;·&nbsp;
+        <strong style="color:#60a5fa">users</strong> (buyer) 1 — N <strong style="color:#c084fc">orders</strong>
+        &nbsp;·&nbsp;
+        <strong style="color:#c084fc">orders</strong> 1 — N <strong style="color:#fb7185">order_items</strong>
+        &nbsp;·&nbsp;
+        <strong style="color:#60a5fa">users</strong> (seller) N — 1 <strong style="color:#6ee7b7">sellers</strong> via seller_id
+        <br/>
+        <span style="color:#94a3b8">Enum: user_role · product_category · order_status · payment_status · payment_method</span>
+      </div>
+    </div>
+  </div>
+
+  <div class="legend">
+    <span><span class="dot" style="background:#fbbf24"></span><b>PK</b> Primary Key</span>
+    <span><span class="dot" style="background:#34d399"></span><b>FK</b> Foreign Key</span>
+    <span><span class="dot" style="background:#64748b"></span>Isolasi data per <b>seller_id</b> (produk & pesanan)</span>
+    <span>Harga & stok hidup di <b>product_variants</b>, bukan products</span>
+  </div>
+</body>
+</html>

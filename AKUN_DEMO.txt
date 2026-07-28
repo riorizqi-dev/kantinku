@@ -1,0 +1,45 @@
+========================================
+  KantinKu — Akun Demo (lokal / testing)
+  Jangan pakai di production
+========================================
+
+--- GERAI PENJUAL (5 lapak) ---
+
+GERAI RPL
+  username : gerai.rpl
+  password : rpl123
+
+GERAI BR
+  username : gerai.br
+  password : br123
+
+GERAI MP
+  username : gerai.mp
+  password : mp123
+
+GERAI AK
+  username : gerai.ak
+  password : ak123
+
+GERAI OSIS
+  username : gerai.osis
+  password : osis123
+
+Rating & ulasan: di-reset ke 0 (fresh).
+
+--- ADMIN ---
+
+Super Admin
+  username : superadmin
+  password : super123
+
+Admin Platform
+  username : admin
+  password : admin123
+
+========================================
+Catatan:
+- Login lewat halaman /login
+- Jika data lama masih muncul: hard refresh (Ctrl+Shift+R)
+  atau hapus localStorage key "kantinku_v3" & "kantinku_local_v1"
+========================================
