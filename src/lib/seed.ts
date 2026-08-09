@@ -86,6 +86,8 @@ export const DEFAULT_SELLERS: Seller[] = PEDAGANG.map((p) => ({
   rating: 0,
   reviewCount: 0,
   ratingSum: 0,
+  isOpen: true,
+  deliveryFee: p.id === "seller_1" ? 2000 : p.id === "seller_3" ? 3000 : 0,
 }));
 
 export const DEFAULT_USERS: User[] = [
@@ -129,6 +131,7 @@ export const DEFAULT_PRODUCTS: Product[] = [
   {
     id: "prod_s1_mie",
     sellerId: "seller_1",
+    canDeliver: true,
     name: "Mie",
     category: "Makanan",
     description:
@@ -170,6 +173,7 @@ export const DEFAULT_PRODUCTS: Product[] = [
   {
     id: "prod_s1_teh",
     sellerId: "seller_1",
+    canDeliver: true,
     name: "Teh",
     category: "Minuman",
     description: "Teh manis/tawar, es atau anget.",
@@ -210,6 +214,7 @@ export const DEFAULT_PRODUCTS: Product[] = [
   {
     id: "prod_s1_nasgor",
     sellerId: "seller_1",
+    canDeliver: true,
     name: "Nasi Goreng",
     category: "Makanan",
     description: "Nasi goreng pilihan level.",
@@ -237,6 +242,7 @@ export const DEFAULT_PRODUCTS: Product[] = [
   {
     id: "prod_s2_bakso",
     sellerId: "seller_2",
+    canDeliver: false,
     name: "Bakso",
     category: "Makanan",
     description: "Bakso sapi kuah kaldu.",
@@ -270,6 +276,7 @@ export const DEFAULT_PRODUCTS: Product[] = [
   {
     id: "prod_s2_mieayam",
     sellerId: "seller_2",
+    canDeliver: false,
     name: "Mie Ayam",
     category: "Makanan",
     description: "Mie ayam kuah / yamin.",
@@ -296,6 +303,7 @@ export const DEFAULT_PRODUCTS: Product[] = [
   {
     id: "prod_s2_pangsit",
     sellerId: "seller_2",
+    canDeliver: false,
     name: "Pangsit",
     category: "Snack",
     description: "Pangsit goreng isi ayam.",
@@ -316,6 +324,7 @@ export const DEFAULT_PRODUCTS: Product[] = [
   {
     id: "prod_s3_jeruk",
     sellerId: "seller_3",
+    canDeliver: true,
     name: "Jeruk",
     category: "Minuman",
     description: "Jeruk peras segar.",
@@ -342,6 +351,7 @@ export const DEFAULT_PRODUCTS: Product[] = [
   {
     id: "prod_s3_coklat",
     sellerId: "seller_3",
+    canDeliver: true,
     name: "Coklat",
     category: "Minuman",
     description: "Coklat susu.",
@@ -368,6 +378,7 @@ export const DEFAULT_PRODUCTS: Product[] = [
   {
     id: "prod_s3_air",
     sellerId: "seller_3",
+    canDeliver: true,
     name: "Air Mineral",
     category: "Minuman",
     description: "Air mineral botol.",
@@ -388,6 +399,7 @@ export const DEFAULT_PRODUCTS: Product[] = [
   {
     id: "prod_s4_risoles",
     sellerId: "seller_4",
+    canDeliver: false,
     name: "Risoles",
     category: "Snack",
     description: "Risoles renyah isi pilihan.",
@@ -414,6 +426,7 @@ export const DEFAULT_PRODUCTS: Product[] = [
   {
     id: "prod_s4_pisang",
     sellerId: "seller_4",
+    canDeliver: false,
     name: "Pisang Goreng",
     category: "Snack",
     description: "Pisang goreng isi.",
@@ -440,6 +453,7 @@ export const DEFAULT_PRODUCTS: Product[] = [
   {
     id: "prod_s4_keripik",
     sellerId: "seller_4",
+    canDeliver: false,
     name: "Keripik",
     category: "Snack",
     description: "Keripik renyah.",
@@ -460,6 +474,7 @@ export const DEFAULT_PRODUCTS: Product[] = [
   {
     id: "prod_s5_nasi",
     sellerId: "seller_5",
+    canDeliver: false,
     name: "Nasi",
     category: "Makanan",
     description: "Nasi rames & lauk harian.",
@@ -486,6 +501,7 @@ export const DEFAULT_PRODUCTS: Product[] = [
   {
     id: "prod_s5_ayam",
     sellerId: "seller_5",
+    canDeliver: false,
     name: "Ayam",
     category: "Makanan",
     description: "Ayam goreng / geprek.",
@@ -512,6 +528,7 @@ export const DEFAULT_PRODUCTS: Product[] = [
   {
     id: "prod_s5_soto",
     sellerId: "seller_5",
+    canDeliver: false,
     name: "Soto",
     category: "Makanan",
     description: "Soto hangat.",
@@ -539,7 +556,7 @@ export function createInitialState(): AppState {
     settings: {
       schoolName: "SMK Negeri 17",
       commissionRate: 7,
-      platformWhatsapp: "",
+      platformWhatsapp: "6285810383881",
       withdrawalFeeType: "percent",
       withdrawalFeeValue: 3,
     },
@@ -548,5 +565,6 @@ export function createInitialState(): AppState {
     orderSeq: 0,
     reviews: [],
     withdrawals: [],
+    autoPayouts: {},
   };
 }

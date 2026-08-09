@@ -17,21 +17,15 @@ const ThemeContext = createContext<{
 
 const KEY = "kantinku_theme";
 
-function readTheme(): Theme {
-  if (typeof document !== "undefined") {
-    return document.documentElement.classList.contains("dark") ? "dark" : "light";
-  }
-  return "dark";
-}
-
 export function ThemeProvider({ children }: { children: React.ReactNode }) {
-  // Sinkron dengan ThemeScript (default dark) — hindari ikon/toggle salah di first paint
-  const [theme, setTheme] = useState<Theme>(readTheme);
+  // Default "light" deterministik di server & client (hindari mismatch hydration).
+  // Class dark di <html> sudah diatur ThemeScript, jadi first paint tetap benar.
+  const [theme, setTheme] = useState<Theme>("light");
 
   useEffect(() => {
     const stored = localStorage.getItem(KEY) as Theme | null;
     const preferred: Theme =
-      stored === "light" || stored === "dark" ? stored : "dark";
+      stored === "light" || stored === "dark" ? stored : "light";
     setTheme(preferred);
     document.documentElement.classList.toggle("dark", preferred === "dark");
   }, []);

@@ -1,8 +1,8 @@
 <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 32 32" fill="none">
-  <!-- Rounded green plate — sama dengan mark navbar -->
-  <rect width="32" height="32" rx="9" fill="#10B981"/>
-  <!-- Bag icon (viewBox 24×24 scaled into 32 with padding) -->
-  <g transform="translate(4 4)" stroke="#04140e" stroke-width="1.6" fill="none">
+  <!-- Rounded orange tile — brand #ee4d2d, selaras dengan header -->
+  <rect width="32" height="32" rx="9" fill="#ee4d2d"/>
+  <!-- Bag icon (viewBox 24×24 scaled into 32 with padding) — sama dengan mark navbar -->
+  <g transform="translate(4 4)" stroke="#ffffff" stroke-width="1.7" fill="none">
     <path
       d="M6.5 8.5h11l.9 11.2a1.5 1.5 0 0 1-1.5 1.6H7.1a1.5 1.5 0 0 1-1.5-1.6L6.5 8.5z"
       stroke-linejoin="round"

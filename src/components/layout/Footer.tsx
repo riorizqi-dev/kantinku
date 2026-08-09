@@ -1,4 +1,5 @@
 import { LogoMark } from "@/components/brand/Logo";
+import { ContactAdmin } from "@/components/layout/ContactAdmin";
 
 export function Footer() {
   return (
@@ -20,9 +21,12 @@ export function Footer() {
             </p>
           </div>
         </div>
-        <p className="text-center text-xs text-stone-400 dark:text-white/30 sm:text-right">
-          &copy; {new Date().getFullYear()} KantinKu · SMK Negeri 17 Jakarta
-        </p>
+        <div className="flex items-center gap-5">
+          <ContactAdmin />
+          <p className="text-center text-xs text-stone-400 dark:text-white/30 sm:text-right">
+            &copy; {new Date().getFullYear()} KantinKu · SMK Negeri 17 Jakarta
+          </p>
+        </div>
       </div>
     </footer>
   );

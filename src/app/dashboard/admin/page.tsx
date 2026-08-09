@@ -100,7 +100,7 @@ export default function AdminDashboardPage() {
   if (!ready || !session || session.role !== "admin") {
     return (
       <div className="flex min-h-[40vh] items-center justify-center">
-        <div className="h-8 w-8 animate-spin rounded-full border-2 border-kantin-200 border-t-kantin-600" />
+        <div className="h-8 w-8 animate-spin rounded-full border-2 border-orange-200 border-t-[#f97316]" />
       </div>
     );
   }
@@ -158,7 +158,7 @@ export default function AdminDashboardPage() {
                 <p className="text-xs font-semibold uppercase tracking-wide text-stone-500">
                   {s.label}
                 </p>
-                <s.icon className="h-4 w-4 text-kantin-600" />
+                <s.icon className="h-4 w-4 text-[#f97316]" />
               </div>
               <p className="mt-2 text-xl font-bold text-stone-900 dark:text-white">
                 {s.value}
@@ -176,7 +176,7 @@ export default function AdminDashboardPage() {
               className={cn(
                 "rounded-full px-4 py-2 text-sm font-semibold transition-all duration-300",
                 tab === t.id
-                  ? "bg-kantin-600 text-white shadow-soft"
+                  ? "bg-[#f97316] text-[#1c1917] shadow-soft"
                   : "text-stone-600 hover:bg-stone-100 dark:text-stone-300 dark:hover:bg-stone-800"
               )}
             >
@@ -219,7 +219,7 @@ export default function AdminDashboardPage() {
             </div>
             <div className="rounded-2xl border border-stone-200 bg-white p-5 sm:p-6 dark:border-stone-800 dark:bg-[#121214]">
               <div className="flex items-center gap-2">
-                <Wallet className="h-4 w-4 text-kantin-600" />
+                <Wallet className="h-4 w-4 text-[#f97316]" />
                 <h2 className="font-bold text-stone-900 dark:text-white">
                   Akses Anda
                 </h2>
@@ -237,7 +237,7 @@ export default function AdminDashboardPage() {
               <h2 className="font-bold text-stone-900 dark:text-white">
                 Komisi platform
               </h2>
-              <p className="mt-2 text-3xl font-semibold text-kantin-700 dark:text-kantin-400">
+              <p className="mt-2 text-3xl font-semibold text-[#ea580c] dark:text-[#fb923c]">
                 {formatRupiah(stats.commission)}
               </p>
               <p className="mt-2 text-sm text-stone-500">
@@ -278,7 +278,7 @@ export default function AdminDashboardPage() {
                       </ul>
                     </div>
                     <div className="text-right text-sm">
-                      <p className="font-bold text-kantin-700 dark:text-kantin-400">
+                      <p className="font-bold text-[#ea580c] dark:text-[#fb923c]">
                         {formatRupiah(o.total)}
                       </p>
                       <p className="text-xs text-stone-400">
@@ -359,7 +359,7 @@ export default function AdminDashboardPage() {
                       <td className="px-4 py-3 text-amber-700 dark:text-amber-400">
                         {formatRupiah(r.commission)}
                       </td>
-                      <td className="px-4 py-3 font-bold text-kantin-700 dark:text-kantin-400">
+                      <td className="px-4 py-3 font-bold text-[#ea580c] dark:text-[#fb923c]">
                         {formatRupiah(r.net)}
                       </td>
                     </tr>
@@ -403,7 +403,7 @@ export default function AdminDashboardPage() {
                       .reduce((n, w) => n + w.fee, 0)
                   ),
                   icon: Wallet,
-                  color: "text-kantin-600",
+                  color: "text-[#f97316]",
                 },
                 {
                   label: "Total dicairkan",
@@ -491,7 +491,7 @@ export default function AdminDashboardPage() {
                           <p className="text-xs text-stone-500">
                             Fee: {formatRupiah(w.fee)}
                           </p>
-                          <p className="text-xs font-bold text-kantin-700 dark:text-kantin-400">
+                          <p className="text-xs font-bold text-[#ea580c] dark:text-[#fb923c]">
                             Diterima: {formatRupiah(w.netAmount)}
                           </p>
                         </div>
@@ -503,7 +503,7 @@ export default function AdminDashboardPage() {
                           <button
                             type="button"
                             onClick={() => processWithdrawal(w.id, "approved")}
-                            className="inline-flex items-center gap-1.5 rounded-full bg-kantin-600 px-4 py-2 text-xs font-bold text-white transition hover:bg-kantin-700"
+                            className="inline-flex items-center gap-1.5 rounded-full bg-[#f97316] px-4 py-2 text-xs font-bold text-[#1c1917] transition hover:bg-[#ea580c]"
                           >
                             <CheckCircle className="h-3.5 w-3.5" />
                             Setujui

@@ -118,8 +118,8 @@ function StoreRatingBlock({
   }
 
   return (
-    <div className="mt-3 rounded-xl border border-kantin-200/80 bg-kantin-50/50 px-3.5 py-3 dark:border-[#f97316]/25 dark:bg-[#f97316]/08">
-      <p className="text-[11px] font-semibold uppercase tracking-wide text-kantin-800/70 dark:text-[#fb923c]/80">
+    <div className="mt-3 rounded-xl border border-[#f97316]/25 bg-[#f97316]/05 px-3.5 py-3 dark:border-[#f97316]/25 dark:bg-[#f97316]/08">
+      <p className="text-[11px] font-semibold uppercase tracking-wide text-[#ea580c]/80 dark:text-[#fb923c]/80">
         Bagaimana pengalaman di {order.sellerName}?
       </p>
       <p className="mt-0.5 text-xs text-stone-500 dark:text-white/40">
@@ -161,13 +161,13 @@ function StoreRatingBlock({
         onChange={(e) => setComment(e.target.value.slice(0, 280))}
         placeholder="Komentar opsional (maks. 280 karakter)"
         rows={2}
-        className="mt-2.5 w-full resize-none rounded-lg border border-stone-200 bg-white px-3 py-2 text-xs text-stone-800 placeholder:text-stone-400 focus:border-kantin-500/50 focus:outline-none focus:ring-2 focus:ring-kantin-500/15 dark:border-white/10 dark:bg-black/30 dark:text-white dark:placeholder:text-white/30"
+        className="mt-2.5 w-full resize-none rounded-lg border border-stone-200 bg-white px-3 py-2 text-xs text-stone-800 placeholder:text-stone-400 focus:border-[#f97316]/50 focus:outline-none focus:ring-2 focus:ring-[#f97316]/15 dark:border-white/10 dark:bg-black/30 dark:text-white dark:placeholder:text-white/30"
       />
       <button
         type="button"
         disabled={!picked || busy}
         onClick={submit}
-        className="mt-2 inline-flex cursor-pointer items-center rounded-full bg-[#f97316] px-4 py-2 text-xs font-bold text-[#1c1917] transition hover:bg-[#0ea572] disabled:cursor-not-allowed disabled:opacity-40"
+        className="mt-2 inline-flex cursor-pointer items-center rounded-full bg-[#f97316] px-4 py-2 text-xs font-bold text-[#1c1917] transition hover:bg-[#ea580c] disabled:cursor-not-allowed disabled:opacity-40"
       >
         Kirim rating
       </button>
@@ -305,7 +305,7 @@ export default function OrdersPage() {
   if (!ready) {
     return (
       <div className="flex min-h-[40vh] items-center justify-center">
-        <div className="h-8 w-8 animate-spin rounded-full border-2 border-kantin-200 border-t-kantin-600" />
+        <div className="h-8 w-8 animate-spin rounded-full border-2 border-orange-200 border-t-[#f97316]" />
       </div>
     );
   }
@@ -335,7 +335,7 @@ export default function OrdersPage() {
               </p>
               <Link
                 href="/"
-                className="mt-5 rounded-full bg-kantin-600 px-5 py-2.5 text-sm font-bold text-white transition hover:bg-kantin-700"
+                className="mt-5 rounded-full bg-[#f97316] px-5 py-2.5 text-sm font-bold text-[#1c1917] transition hover:bg-[#ea580c]"
               >
                 Lihat Menu
               </Link>
@@ -419,14 +419,14 @@ export default function OrdersPage() {
                   />
 
                   <div className="mt-4 flex flex-wrap items-center justify-between gap-3 border-t border-stone-100 pt-3 dark:border-stone-800">
-                    <p className="text-base font-bold text-kantin-700 dark:text-kantin-400">
+                    <p className="text-base font-bold text-[#ea580c] dark:text-[#fb923c]">
                       {formatRupiah(o.total)}
                     </p>
                     <div className="flex flex-wrap gap-2">
                       {o.paymentStatus !== "paid" && o.bayarPaymentUrl && (
                         <a
                           href={o.bayarPaymentUrl}
-                          className="inline-flex items-center gap-1.5 rounded-full bg-kantin-600 px-3 py-1.5 text-xs font-bold text-white transition hover:bg-kantin-700"
+                          className="inline-flex items-center gap-1.5 rounded-full bg-[#f97316] px-3 py-1.5 text-xs font-bold text-[#1c1917] transition hover:bg-[#ea580c]"
                         >
                           <ExternalLink className="h-3.5 w-3.5" /> Lanjut Bayar
                         </a>

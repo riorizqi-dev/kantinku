@@ -25,7 +25,7 @@ function CustomerProfileInner() {
           </Link>
 
           <div className="rounded-2xl border border-stone-200/90 bg-white p-6 shadow-sm dark:border-white/[0.07] dark:bg-[#121214] dark:shadow-none sm:p-8">
-            <p className="mb-1 text-[11px] font-semibold uppercase tracking-[0.14em] text-kantin-600 dark:text-[#fb923c]/90">
+            <p className="mb-1 text-[11px] font-semibold uppercase tracking-[0.14em] text-[#f97316] dark:text-[#fb923c]/90">
               Akun Customer
             </p>
             <ProfileForm

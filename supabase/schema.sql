@@ -60,6 +60,8 @@ create table if not exists public.sellers (
   owner_user_id text,
   phone text not null default '',
   booth text,
+  is_open boolean not null default true,
+  delivery_fee integer not null default 0,
   is_active boolean not null default true,
   rating numeric(3,1),
   review_count integer not null default 0,
@@ -93,6 +95,7 @@ create table if not exists public.products (
   description text not null default '',
   image text not null default '',
   is_active boolean not null default true,
+  can_deliver boolean not null default false,
   created_at timestamptz not null default now(),
   updated_at timestamptz
 );
@@ -149,6 +152,8 @@ create table if not exists public.orders (
   status order_status not null default 'waiting',
   payment_status payment_status not null default 'pending',
   payment_method payment_method,
+  pickup_method text check (pickup_method is null or pickup_method in ('takeaway', 'dinein', 'delivery')),
+  delivery_fee integer not null default 0,
   bayar_invoice_id text,
   bayar_payment_url text,
   paid_at timestamptz,

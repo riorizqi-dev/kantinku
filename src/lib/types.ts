@@ -24,6 +24,8 @@ export type PaymentStatus = "unpaid" | "pending" | "paid" | "failed" | "expired"
 
 /** online = Bayar.gg/QRIS, canteen = bayar di kantin (COD) */
 export type CheckoutPaymentMethod = "online" | "canteen";
+/** Cara penyajian pesanan: ambil / makan di tempat / antar ke kelas */
+export type CheckoutPickupMethod = "takeaway" | "dinein" | "delivery";
 
 export interface User {
   id: string;
@@ -57,6 +59,10 @@ export interface Seller {
   reviewCount?: number;
   /** Jumlah bintang total (untuk hitung ulang rata-rata) */
   ratingSum?: number;
+  /** Status buka/tutup gerai (seller bisa toggle sendiri) */
+  isOpen?: boolean;
+  /** Ongkir antar ke kelas (Rp) — aktif per-produk lewat Product.canDeliver */
+  deliveryFee?: number;
 }
 
 /** Ulasan lapak (dari halaman profil lapak / pesanan selesai) */
@@ -121,6 +127,8 @@ export interface Product {
   /** Foto cover produk utama */
   image: string;
   isActive: boolean;
+  /** Produk ini bisa diantar ke kelas (per-produk, bukan per-gerai) */
+  canDeliver?: boolean;
   createdAt: number;
   updatedAt?: number;
   variants: ProductVariant[];
@@ -169,11 +177,17 @@ export interface Order {
   commissionAmount: number;
   sellerAmount: number;
   total: number;
+  /** Biaya admin QRIS dari payment gateway (fee yang ditambahkan ke customer) */
+  paymentFee?: number;
   notes?: string;
   status: OrderStatus;
   paymentStatus: PaymentStatus;
   /** online = QRIS/Bayar.gg, canteen = bayar di tempat */
   paymentMethod?: CheckoutPaymentMethod;
+  /** Cara penyajian: takeaway / dinein / delivery (antar ke kelas) */
+  pickupMethod?: CheckoutPickupMethod;
+  /** Ongkos antar ke kelas (diisi saat pickupMethod=delivery) */
+  deliveryFee?: number;
   /** Bayar.gg invoice id (PAY-...) */
   bayarInvoiceId?: string;
   bayarPaymentUrl?: string;
@@ -210,6 +224,16 @@ export interface SessionUser {
   avatar?: string;
 }
 
+/** Konfigurasi pencairan otomatis penjual (disimpan lokal per perangkat) */
+export interface AutoPayoutConfig {
+  enabled: boolean;
+  /** Saldo minimum yang memicu pencairan otomatis */
+  threshold: number;
+  method: WithdrawalMethod;
+  accountNumber: string;
+  accountName: string;
+}
+
 export interface AppState {
   users: User[];
   sellers: Seller[];
@@ -223,4 +247,6 @@ export interface AppState {
   reviews: SellerReview[];
   /** Request pencairan dari semua penjual */
   withdrawals: WithdrawalRequest[];
+  /** Konfigurasi pencairan otomatis per penjual (lokal, seperti reviews) */
+  autoPayouts: Record<string, AutoPayoutConfig>;
 }

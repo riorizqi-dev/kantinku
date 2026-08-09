@@ -110,7 +110,7 @@ export default function ProductDetailPage() {
           </p>
           <Link
             href="/#menu"
-            className="mt-6 inline-flex items-center gap-2 rounded-full bg-[#10B981] px-5 py-2.5 text-sm font-semibold text-[#04140e] transition hover:bg-[#0ea572]"
+            className="mt-6 inline-flex items-center gap-2 rounded-full bg-[#f97316] px-5 py-2.5 text-sm font-semibold text-white transition hover:bg-[#ea580c]"
           >
             <ArrowLeft className="h-4 w-4" strokeWidth={1.75} />
             Kembali ke Menu
@@ -187,7 +187,7 @@ export default function ProductDetailPage() {
                     className="pointer-events-none absolute inset-0 opacity-40 dark:opacity-30"
                     style={{
                       backgroundImage:
-                        "radial-gradient(ellipse at 50% 45%, rgba(16,185,129,0.08), transparent 65%)",
+                        "radial-gradient(ellipse at 50% 45%, rgba(249,115,22,0.08), transparent 65%)",
                     }}
                     aria-hidden
                   />
@@ -225,7 +225,7 @@ export default function ProductDetailPage() {
                         Habis
                       </span>
                     ) : (
-                      <span className="rounded-full bg-[#10B981] px-3 py-1.5 text-xs font-semibold text-[#04140e]">
+                      <span className="rounded-full bg-[#f97316] px-3 py-1.5 text-xs font-semibold text-white">
                         Stok {selected?.stock ?? 0}
                       </span>
                     )}
@@ -247,10 +247,10 @@ export default function ProductDetailPage() {
                     )}
 
                     <p
-                      className="mt-3 flex min-w-0 flex-wrap items-baseline gap-x-1.5 gap-y-0.5 tabular-nums text-emerald-600 dark:text-[#34d399]"
+                      className="mt-3 flex min-w-0 flex-wrap items-baseline gap-x-1.5 gap-y-0.5 tabular-nums text-[#f97316]"
                       aria-label={formatRupiah(displayPrice)}
                     >
-                      <span className="shrink-0 text-sm font-medium tracking-[0.02em] text-emerald-600/75 dark:text-[#34d399]/75 sm:text-base">
+                      <span className="shrink-0 text-sm font-medium tracking-[0.02em] text-[#f97316]/75 sm:text-base">
                         Rp
                       </span>
                       <span className="break-all text-2xl font-semibold leading-tight tracking-[-0.03em] sm:text-[28px]">
@@ -285,7 +285,7 @@ export default function ProductDetailPage() {
                               className={cn(
                                 "inline-flex max-w-full items-center gap-2.5 rounded-2xl border py-2 pl-2 pr-3.5 text-left transition-colors duration-200",
                                 active
-                                  ? "border-emerald-500/50 bg-emerald-500/10 ring-1 ring-emerald-500/30 dark:border-[#10B981]/45 dark:bg-[#10B981]/12 dark:ring-[#10B981]/25"
+                                  ? "border-[#f97316]/50 bg-[#f97316]/10 ring-1 ring-[#f97316]/30"
                                   : "border-stone-200 bg-stone-50 hover:border-stone-300 dark:border-white/[0.08] dark:bg-white/[0.03] dark:hover:border-white/15",
                                 vOut && "cursor-not-allowed opacity-45"
                               )}
@@ -302,13 +302,13 @@ export default function ProductDetailPage() {
                                 <span className="flex items-center gap-1.5 text-sm font-semibold text-stone-900 dark:text-white">
                                   {active && (
                                     <Check
-                                      className="h-3.5 w-3.5 shrink-0 text-emerald-600 dark:text-[#34d399]"
+                                      className="h-3.5 w-3.5 shrink-0 text-[#f97316]"
                                       strokeWidth={2.5}
                                     />
                                   )}
                                   <span className="line-clamp-1">{v.name}</span>
                                 </span>
-                                <span className="mt-0.5 block break-words text-xs font-medium text-emerald-700 dark:text-[#34d399]">
+                                <span className="mt-0.5 block break-words text-xs font-medium text-[#c2410c]">
                                   <span className="whitespace-nowrap">
                                     {formatRupiah(v.price)}
                                   </span>
@@ -430,7 +430,7 @@ export default function ProductDetailPage() {
                           "inline-flex flex-1 items-center justify-center gap-2 rounded-full py-3.5 text-sm font-semibold transition-all duration-200 active:scale-[0.98]",
                           out
                             ? "cursor-not-allowed bg-stone-100 text-stone-400 dark:bg-white/[0.06] dark:text-white/30"
-                            : "bg-[#10B981] text-[#04140e] hover:bg-[#0ea572]"
+                            : "bg-[#f97316] text-white hover:bg-[#ea580c]"
                         )}
                         style={
                           out
@@ -486,7 +486,7 @@ export default function ProductDetailPage() {
                   </div>
                   <Link
                     href="/#menu"
-                    className="text-sm font-medium text-emerald-600 hover:underline dark:text-[#34d399]"
+                    className="text-sm font-medium text-[#f97316] hover:underline"
                   >
                     Lihat semua
                   </Link>
@@ -518,10 +518,10 @@ export default function ProductDetailPage() {
                           </p>
                         )}
                         <p
-                          className="mt-0.5 flex min-w-0 flex-wrap items-baseline gap-x-1 tabular-nums text-emerald-600 dark:text-[#34d399]"
+                          className="mt-0.5 flex min-w-0 flex-wrap items-baseline gap-x-1 tabular-nums text-[#f97316]"
                           aria-label={formatRupiah(getProductMinPrice(p))}
                         >
-                          <span className="shrink-0 text-[10px] font-medium tracking-[0.02em] text-emerald-600/75 dark:text-[#34d399]/75">
+                          <span className="shrink-0 text-[10px] font-medium tracking-[0.02em] text-[#f97316]/75">
                             Rp
                           </span>
                           <span className="break-all text-[13px] font-semibold leading-tight tracking-[-0.02em] sm:text-sm">

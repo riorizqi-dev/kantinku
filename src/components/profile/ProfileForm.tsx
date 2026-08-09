@@ -205,7 +205,7 @@ export function ProfileForm({
           required
           minLength={2}
           maxLength={60}
-          className="w-full rounded-xl border border-stone-200 bg-white px-3.5 py-3 text-base font-medium text-stone-900 placeholder:text-stone-400 focus:border-kantin-500/50 focus:ring-2 focus:ring-kantin-500/15 dark:border-white/10 dark:bg-black/30 dark:text-white dark:placeholder:text-white/30 dark:focus:border-[#f97316]/40 dark:focus:ring-[#f97316]/15"
+          className="w-full rounded-xl border border-stone-200 bg-white px-3.5 py-3 text-base font-medium text-stone-900 placeholder:text-stone-400 focus:border-[#f97316]/50 focus:ring-2 focus:ring-[#f97316]/15 dark:border-white/10 dark:bg-black/30 dark:text-white dark:placeholder:text-white/30 dark:focus:border-[#f97316]/40 dark:focus:ring-[#f97316]/15"
           placeholder="Nama lengkap Anda"
         />
       </div>

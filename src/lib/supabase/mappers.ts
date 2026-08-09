@@ -12,6 +12,7 @@ import type {
   User,
   UserRole,
   CheckoutPaymentMethod,
+  CheckoutPickupMethod,
   WithdrawalRequest,
   WithdrawalMethod,
   WithdrawalStatus,
@@ -31,6 +32,8 @@ export type DbSeller = {
   review_count: number;
   rating_sum: number;
   created_at: string;
+  is_open: boolean;
+  delivery_fee: number;
 };
 
 export type DbUser = {
@@ -54,6 +57,7 @@ export type DbProduct = {
   description: string;
   image: string;
   is_active: boolean;
+  can_deliver: boolean;
   created_at: string;
   updated_at: string | null;
 };
@@ -95,10 +99,13 @@ export type DbOrder = {
   commission_amount: number;
   seller_amount: number;
   total: number;
+  payment_fee: number;
   notes: string | null;
   status: OrderStatus;
   payment_status: PaymentStatus;
   payment_method: CheckoutPaymentMethod | null;
+  pickup_method: CheckoutPickupMethod | null;
+  delivery_fee: number;
   bayar_invoice_id: string | null;
   bayar_payment_url: string | null;
   paid_at: string | null;
@@ -164,6 +171,8 @@ export function sellerToDb(s: Seller): DbSeller {
     review_count: s.reviewCount ?? 0,
     rating_sum: s.ratingSum ?? 0,
     created_at: ts(s.createdAt) || new Date().toISOString(),
+    is_open: s.isOpen !== false,
+    delivery_fee: s.deliveryFee || 0,
   };
 }
 
@@ -179,6 +188,8 @@ export function sellerFromDb(r: DbSeller): Seller {
     reviewCount: r.review_count,
     ratingSum: r.rating_sum,
     createdAt: ms(r.created_at),
+    isOpen: r.is_open !== false,
+    deliveryFee: r.delivery_fee || 0,
   };
 }
 
@@ -221,6 +232,7 @@ export function productToDb(p: Product): DbProduct {
     description: p.description || "",
     image: p.image || "",
     is_active: p.isActive !== false,
+    can_deliver: p.canDeliver === true,
     created_at: ts(p.createdAt) || new Date().toISOString(),
     updated_at: ts(p.updatedAt),
   };
@@ -250,6 +262,7 @@ export function productFromDb(
     description: p.description || "",
     image: p.image || "",
     isActive: p.is_active,
+    canDeliver: p.can_deliver === true,
     createdAt: ms(p.created_at),
     updatedAt: p.updated_at ? ms(p.updated_at) : undefined,
     variants: variants.map((v) => ({
@@ -312,10 +325,13 @@ export function orderToDb(o: Order): DbOrder {
     commission_amount: o.commissionAmount,
     seller_amount: o.sellerAmount,
     total: o.total,
+    payment_fee: o.paymentFee || 0,
     notes: o.notes || null,
     status: o.status,
     payment_status: o.paymentStatus,
     payment_method: o.paymentMethod || null,
+    pickup_method: o.pickupMethod || null,
+    delivery_fee: o.deliveryFee || 0,
     bayar_invoice_id: o.bayarInvoiceId || null,
     bayar_payment_url: o.bayarPaymentUrl || null,
     paid_at: ts(o.paidAt),
@@ -370,10 +386,13 @@ export function orderFromDb(o: DbOrder, items: DbOrderItem[]): Order {
     commissionAmount: o.commission_amount,
     sellerAmount: o.seller_amount,
     total: o.total,
+    paymentFee: o.payment_fee || 0,
     notes: o.notes || undefined,
     status: o.status,
     paymentStatus: o.payment_status,
     paymentMethod: o.payment_method || undefined,
+    pickupMethod: o.pickup_method || undefined,
+    deliveryFee: o.delivery_fee || 0,
     bayarInvoiceId: o.bayar_invoice_id || undefined,
     bayarPaymentUrl: o.bayar_payment_url || undefined,
     paidAt: o.paid_at ? ms(o.paid_at) : undefined,

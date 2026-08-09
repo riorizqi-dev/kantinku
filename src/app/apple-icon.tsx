@@ -1,6 +1,6 @@
 import { ImageResponse } from "next/og";
 
-/** Apple touch icon 180×180 — mark tas hijau KantinKu */
+/** Apple touch icon 180×180 — mark tas oranye brand KantinKu */
 export const runtime = "edge";
 export const size = { width: 180, height: 180 };
 export const contentType = "image/png";
@@ -15,7 +15,7 @@ export default function AppleIcon() {
           display: "flex",
           alignItems: "center",
           justifyContent: "center",
-          background: "#f97316",
+          background: "#ee4d2d",
           borderRadius: 40,
         }}
       >
@@ -28,13 +28,13 @@ export default function AppleIcon() {
         >
           <path
             d="M6.5 8.5h11l.9 11.2a1.5 1.5 0 01-1.5 1.6H7.1a1.5 1.5 0 01-1.5-1.6L6.5 8.5z"
-            stroke="#1c1917"
+            stroke="#ffffff"
             strokeWidth="1.5"
             strokeLinejoin="round"
           />
           <path
             d="M9 8.5V7a3 3 0 016 0v1.5"
-            stroke="#1c1917"
+            stroke="#ffffff"
             strokeWidth="1.5"
             strokeLinecap="round"
           />

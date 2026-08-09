@@ -10,8 +10,10 @@ import React, {
 } from "react";
 import type {
   AppState,
+  AutoPayoutConfig,
   CartItem,
   CheckoutPaymentMethod,
+  CheckoutPickupMethod,
   Order,
   OrderStatus,
   PaymentStatus,
@@ -82,7 +84,8 @@ interface AppContextValue {
     buyerPhone: string;
     notes?: string;
     paymentMethod?: CheckoutPaymentMethod;
-  }) => Order | null;
+    pickupMethod?: CheckoutPickupMethod;
+  }) => Promise<Order | null>;
   /** Tandai pesanan COD sudah dibayar di kantin */
   markCanteenPaid: (orderId: string) => void;
   markOrderPaid: (orderId: string, bayarInvoiceId?: string) => void;
@@ -90,7 +93,8 @@ interface AppContextValue {
   attachBayarPayment: (
     orderId: string,
     invoiceId: string,
-    paymentUrl: string
+    paymentUrl: string,
+    paymentFee?: number
   ) => void;
   markOrderPaymentStatus: (
     orderId: string,
@@ -122,6 +126,7 @@ interface AppContextValue {
       sellerId: string;
       variants: ProductVariant[];
       isActive?: boolean;
+      canDeliver?: boolean;
     },
     id?: string
   ) => void;
@@ -173,6 +178,11 @@ interface AppContextValue {
   ) => void;
   /** Tandai selesai (admin sudah transfer) */
   completeWithdrawal: (withdrawalId: string) => void;
+  /** Aktifkan / matikan pencairan otomatis untuk penjual */
+  setAutoPayout: (
+    sellerId: string,
+    config: AutoPayoutConfig | null
+  ) => void;
 }
 
 const AppContext = createContext<AppContextValue | null>(null);
@@ -243,6 +253,7 @@ export function AppProvider({ children }: { children: React.ReactNode }) {
               cart: local.cart,
               session: local.session,
               reviews: ratingsFresh ? [] : local.reviews || [],
+              autoPayouts: local.autoPayouts || {},
             });
             setUseRemote(true);
             setHydrated(true);
@@ -265,6 +276,7 @@ export function AppProvider({ children }: { children: React.ReactNode }) {
           // prefer session/cart dari slice baru kalau ada
           cart: local.cart.length ? local.cart : legacy.cart,
           session: local.session ?? legacy.session,
+          autoPayouts: local.autoPayouts || legacy.autoPayouts || {},
         });
         setUseRemote(false);
         setHydrated(true);
@@ -278,15 +290,16 @@ export function AppProvider({ children }: { children: React.ReactNode }) {
     };
   }, []);
 
-  // Persist cart + session + reviews di browser
+  // Persist cart + session + reviews + autoPayouts di browser
   useEffect(() => {
     if (!hydrated) return;
     saveLocalSlice({
       cart: state.cart,
       session: state.session,
       reviews: state.reviews || [],
+      autoPayouts: state.autoPayouts || {},
     });
-  }, [state.cart, state.session, state.reviews, hydrated]);
+  }, [state.cart, state.session, state.reviews, state.autoPayouts, hydrated]);
 
   // Sync entity ke Supabase (debounced) ATAU full localStorage fallback
   useEffect(() => {
@@ -484,6 +497,25 @@ export function AppProvider({ children }: { children: React.ReactNode }) {
         return;
       }
 
+      // Guard: tidak boleh menambah ke keranjang dari kantin yang tutup
+      const seller = state.sellers.find((s) => s.id === product.sellerId);
+      if (!seller) {
+        toast("Kantin tidak ditemukan", "error");
+        return;
+      }
+      if (seller.isOpen === false) {
+        toast("Kantin sedang tutup. Coba lagi nanti.", "error");
+        return;
+      }
+      const cartSellerId = state.cart[0]?.sellerId;
+      const cartSeller = cartSellerId
+        ? state.sellers.find((s) => s.id === cartSellerId)
+        : null;
+      if (cartSeller?.isOpen === false) {
+        toast("Keranjang berisi item dari kantin yang tutup. Kosongkan dulu.", "warning");
+        return;
+      }
+
       const addQty = Math.max(1, Math.floor(qty));
       const cart = state.cart;
       const existing = cart.find((c) =>
@@ -526,7 +558,7 @@ export function AppProvider({ children }: { children: React.ReactNode }) {
         addQty > 1 ? `${label} ×${addQty} ditambahkan` : `${label} ditambahkan`
       );
     },
-    [state.products, state.cart, toast]
+    [state.products, state.cart, state.sellers, toast]
   );
 
   const updateCartQty = useCallback(
@@ -577,17 +609,43 @@ export function AppProvider({ children }: { children: React.ReactNode }) {
   );
 
   const createPendingOrder = useCallback(
-    (payload: {
+    async (payload: {
       buyerName: string;
       buyerClass: string;
       buyerPhone: string;
       notes?: string;
       paymentMethod?: CheckoutPaymentMethod;
-    }): Order | null => {
+      pickupMethod?: CheckoutPickupMethod;
+    }): Promise<Order | null> => {
       if (!state.cart.length) {
         toast("Keranjang kosong", "error");
         return null;
       }
+
+      const sellerId = state.cart[0].sellerId;
+      const seller = state.sellers.find((s) => s.id === sellerId);
+      if (!seller) {
+        toast("Kantin tidak ditemukan", "error");
+        return null;
+      }
+      if (seller.isOpen === false) {
+        toast("Kantin sedang tutup. Pesanan belum bisa dibuat.", "error");
+        return null;
+      }
+
+      const pickupMethod: CheckoutPickupMethod =
+        payload.pickupMethod || "takeaway";
+      // Antar ke kelas hanya jika SEMUA produk di keranjang bisa diantar
+      const allCanDeliver = state.cart.every((item) => {
+        const p = state.products.find((pp) => pp.id === item.productId);
+        return p?.canDeliver === true;
+      });
+      if (pickupMethod === "delivery" && !allCanDeliver) {
+        toast("Ada produk yang tidak bisa diantar ke kelas", "error");
+        return null;
+      }
+      const deliveryFee =
+        pickupMethod === "delivery" ? seller.deliveryFee || 0 : 0;
 
       // Validasi stok per varian
       for (const item of state.cart) {
@@ -601,38 +659,105 @@ export function AppProvider({ children }: { children: React.ReactNode }) {
 
       const paymentMethod: CheckoutPaymentMethod =
         payload.paymentMethod || "online";
-      const sellerId = state.cart[0].sellerId;
-      const seller = state.sellers.find((s) => s.id === sellerId);
+      const isCanteen = paymentMethod === "canteen";
+      const subtotal = state.cart.reduce((n, i) => n + i.price * i.qty, 0);
+      const { commissionAmount, sellerAmount, total } = calcCommission(
+        subtotal,
+        state.settings.commissionRate
+      );
+      const grandTotal = total + deliveryFee;
+
       // Avatar pemilik lapak (user role seller)
       const sellerOwner = state.users.find(
         (u) =>
           u.sellerId === sellerId ||
           (seller && u.id === seller.ownerUserId)
       );
-      const subtotal = state.cart.reduce((n, i) => n + i.price * i.qty, 0);
-      const { commissionAmount, sellerAmount, total } = calcCommission(
-        subtotal,
-        state.settings.commissionRate
-      );
-
-      const seq = state.orderSeq + 1;
-      const d = new Date();
-      const orderNumber = `KK-${d.getFullYear()}${String(d.getMonth() + 1).padStart(2, "0")}${String(d.getDate()).padStart(2, "0")}-${String(seq).padStart(4, "0")}`;
-
-      // COD: stok langsung dikurangi (pesanan masuk ke kantin)
-      // Online: stok dikurangi setelah bayar sukses (markOrderPaid)
-      const isCanteen = paymentMethod === "canteen";
-
       // Snapshot profil customer (login) atau hanya nama form (guest)
       const buyerAvatar =
         state.session?.avatar ||
         state.users.find((u) => u.id === state.session?.id)?.avatar;
 
+      // Jalur server: validasi ulang (gerai tutup / stok / can_deliver / harga)
+      // lalu tulis order secara otoritatif. Server bilang "belum dikonfigurasi"
+      // → fallback lokal (demo offline).
+      try {
+        const res = await fetch("/api/orders", {
+          method: "POST",
+          headers: { "Content-Type": "application/json" },
+          body: JSON.stringify({
+            sellerId,
+            buyerId: state.session?.id || null,
+            buyerAvatar: buyerAvatar || null,
+            buyerName: payload.buyerName.trim(),
+            buyerClass: payload.buyerClass.trim(),
+            buyerPhone: payload.buyerPhone.trim(),
+            notes: payload.notes?.trim() || "",
+            paymentMethod,
+            pickupMethod,
+            items: state.cart.map((c) => ({
+              productId: c.productId,
+              variantId: c.variantId,
+              qty: c.qty,
+            })),
+          }),
+        });
+        const data = await res.json().catch(() => ({}));
+
+        if (res.ok && data?.order) {
+          const order = data.order as Order;
+          const newOrderSeq = Number(data.orderSeq ?? state.orderSeq + 1);
+          setState((s) => {
+            let products = s.products;
+            if (isCanteen) {
+              for (const item of order.items) {
+                const next = deductVariantStock(
+                  products,
+                  item.productId,
+                  item.variantId,
+                  item.qty
+                );
+                if (next) products = next;
+              }
+            }
+            return {
+              ...s,
+              orderSeq: newOrderSeq,
+              orders: [order, ...s.orders],
+              products,
+              cart: isCanteen ? [] : s.cart,
+            };
+          });
+          return order;
+        }
+
+        if (data?.code === "not_configured") {
+          // lanjut ke fallback lokal di bawah
+        } else {
+          toast(
+            data?.error || "Pesanan gagal dibuat. Coba lagi.",
+            "error"
+          );
+          return null;
+        }
+      } catch {
+        toast(
+          "Tidak dapat menghubungi server. Cek koneksi lalu coba lagi.",
+          "error"
+        );
+        return null;
+      }
+
+      // ---- Fallback lokal (demo offline tanpa supabase) ----
+      const seq = state.orderSeq + 1;
+      const d = new Date();
+      const orderNumber = `KK-${d.getFullYear()}${String(d.getMonth() + 1).padStart(2, "0")}${String(d.getDate()).padStart(2, "0")}-${String(seq).padStart(4, "0")}`;
+
       const order: Order = {
         id: uid("ord"),
         orderNumber,
         sellerId,
-        sellerName: seller?.name || "Kantin",
+        sellerName: seller.name || "Kantin",
         sellerAvatar: sellerOwner?.avatar,
         buyerId: state.session?.id || null,
         buyerName: payload.buyerName.trim(),
@@ -652,8 +777,10 @@ export function AppProvider({ children }: { children: React.ReactNode }) {
         subtotal,
         commissionRate: state.settings.commissionRate,
         commissionAmount,
-        sellerAmount,
-        total,
+        sellerAmount: sellerAmount + deliveryFee,
+        total: grandTotal,
+        deliveryFee,
+        pickupMethod,
         notes: payload.notes?.trim() || "",
         status: "waiting",
         paymentStatus: isCanteen ? "unpaid" : "pending",
@@ -711,7 +838,7 @@ export function AppProvider({ children }: { children: React.ReactNode }) {
   );
 
   const attachBayarPayment = useCallback(
-    (orderId: string, invoiceId: string, paymentUrl: string) => {
+    (orderId: string, invoiceId: string, paymentUrl: string, paymentFee?: number) => {
       setState((s) => ({
         ...s,
         orders: s.orders.map((o) =>
@@ -720,6 +847,7 @@ export function AppProvider({ children }: { children: React.ReactNode }) {
                 ...o,
                 bayarInvoiceId: invoiceId,
                 bayarPaymentUrl: paymentUrl,
+                paymentFee: paymentFee || 0,
                 paymentStatus: "pending" as PaymentStatus,
                 updatedAt: Date.now(),
               }
@@ -1089,6 +1217,7 @@ export function AppProvider({ children }: { children: React.ReactNode }) {
         sellerId: string;
         variants: ProductVariant[];
         isActive?: boolean;
+        canDeliver?: boolean;
       },
       id?: string
     ) => {
@@ -1142,6 +1271,7 @@ export function AppProvider({ children }: { children: React.ReactNode }) {
                     image,
                     variants,
                     isActive: data.isActive ?? p.isActive,
+                    canDeliver: data.canDeliver ?? p.canDeliver,
                     updatedAt: Date.now(),
                   }
                 : p
@@ -1157,6 +1287,7 @@ export function AppProvider({ children }: { children: React.ReactNode }) {
           image,
           variants,
           isActive: data.isActive !== false,
+          canDeliver: data.canDeliver === true,
           createdAt: Date.now(),
         };
         return { ...s, products: [product, ...s.products] };
@@ -1326,6 +1457,7 @@ export function AppProvider({ children }: { children: React.ReactNode }) {
               cart: [],
               session: state.session,
               reviews: [],
+              autoPayouts: {},
             });
             toast("Data Supabase di-reset ke seed demo", "warning");
             return;
@@ -1341,6 +1473,7 @@ export function AppProvider({ children }: { children: React.ReactNode }) {
         cart: [],
         session: state.session,
         reviews: [],
+        autoPayouts: {},
       });
       toast("Data lokal dikembalikan ke awal", "warning");
     })();
@@ -1511,6 +1644,101 @@ export function AppProvider({ children }: { children: React.ReactNode }) {
     [state.session, toast]
   );
 
+  const setAutoPayout = useCallback(
+    (sellerId: string, config: AutoPayoutConfig | null) => {
+      const session = state.session;
+      if (
+        !session ||
+        session.role !== "seller" ||
+        session.sellerId !== sellerId
+      ) {
+        toast("Hanya penjual yang dapat mengatur pencairan otomatis", "error");
+        return;
+      }
+      setState((s) => {
+        const autoPayouts = { ...(s.autoPayouts || {}) };
+        if (!config || !config.enabled) {
+          delete autoPayouts[sellerId];
+        } else {
+          autoPayouts[sellerId] = config;
+        }
+        return { ...s, autoPayouts };
+      });
+      toast(
+        config?.enabled
+          ? "Pencairan otomatis diaktifkan — saldo dicairkan otomatis saat mencapai batas"
+          : "Pencairan otomatis dimatikan",
+        config?.enabled ? "success" : "info"
+      );
+    },
+    [state.session, toast]
+  );
+
+  // Pencairan otomatis: saat saldo >= threshold → langsung dibuat & diselesaikan
+  // (processedBy "system" = pencairan otomatis). Converges karena saldo berkurang.
+  useEffect(() => {
+    if (!hydrated) return;
+    const entries = Object.entries(state.autoPayouts || {}).filter(
+      ([, c]) =>
+        c?.enabled &&
+        c.threshold > 0 &&
+        c.accountNumber?.trim() &&
+        c.accountName?.trim()
+    );
+    if (!entries.length) return;
+
+    for (const [sellerId] of entries) {
+      setState((s) => {
+        const auto = s.autoPayouts?.[sellerId];
+        if (!auto?.enabled) return s;
+        const paid = s.orders.filter(
+          (o) =>
+            o.sellerId === sellerId &&
+            o.paymentStatus === "paid" &&
+            o.status !== "cancelled"
+        );
+        const earned = paid.reduce((n, o) => n + o.sellerAmount, 0);
+        const withdrawn = s.withdrawals
+          .filter(
+            (w) =>
+              w.sellerId === sellerId &&
+              (w.status === "approved" || w.status === "completed")
+          )
+          .reduce((n, w) => n + w.amount, 0);
+        const balance = Math.max(0, earned - withdrawn);
+        if (balance < auto.threshold) return s;
+
+        const amount = Math.max(
+          auto.threshold,
+          Math.floor(balance / 1000) * 1000
+        );
+        const { withdrawalFeeType, withdrawalFeeValue } = s.settings;
+        const fee =
+          withdrawalFeeType === "percent"
+            ? Math.round((amount * withdrawalFeeValue) / 100)
+            : withdrawalFeeValue;
+        const netAmount = amount - fee;
+        const seller = s.sellers.find((x) => x.id === sellerId);
+        const withdrawal: WithdrawalRequest = {
+          id: uid("wd"),
+          sellerId,
+          sellerName: seller?.name || "Penjual",
+          amount,
+          fee,
+          netAmount,
+          method: auto.method,
+          accountNumber: auto.accountNumber.trim(),
+          accountName: auto.accountName.trim(),
+          status: "completed",
+          processedBy: "system",
+          processedAt: Date.now(),
+          createdAt: Date.now(),
+        };
+        return { ...s, withdrawals: [withdrawal, ...s.withdrawals] };
+      });
+    }
+  }, [state.autoPayouts, state.orders, state.withdrawals, hydrated]);
+
   const value: AppContextValue = {
     ready,
     state,
@@ -1549,6 +1777,7 @@ export function AppProvider({ children }: { children: React.ReactNode }) {
     requestWithdrawal,
     processWithdrawal,
     completeWithdrawal,
+    setAutoPayout,
   };
 
   return <AppContext.Provider value={value}>{children}</AppContext.Provider>;

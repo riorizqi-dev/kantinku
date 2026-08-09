@@ -27,6 +27,33 @@ import {
 const inputClass =
   "w-full rounded-xl border border-stone-200 bg-white px-3.5 py-2.5 text-sm font-medium text-stone-900 placeholder:text-stone-400 transition focus:ring-2 dark:border-stone-600 dark:bg-stone-900 dark:text-stone-100 dark:placeholder:text-stone-500";
 
+/** Ambil opsi jam pengambilan berdasarkan hari ini */
+function getPickupTimeOptions() {
+  const day = new Date().getDay(); // 0=Minggu, 1=Senin, ..., 5=Jumat, 6=Sabtu
+  const isJumat = day === 5;
+  const isWeekend = day === 0 || day === 6;
+
+  if (isWeekend) {
+    return [
+      { value: "09:45", label: "09:45 — Istirahat 1" },
+      { value: "12:15", label: "12:15 — Istirahat 2" },
+    ];
+  }
+
+  if (isJumat) {
+    return [
+      { value: "09:30", label: "09:30 — Istirahat 1" },
+      { value: "12:45", label: "12:45 — Istirahat 2" },
+    ];
+  }
+
+  // Senin — Kamis
+  return [
+    { value: "09:45", label: "09:45 — Istirahat 1" },
+    { value: "12:15", label: "12:15 — Istirahat 2" },
+  ];
+}
+
 export default function CheckoutPage() {
   const router = useRouter();
   const { color: stallColor } = useStallColor();
@@ -103,6 +130,21 @@ export default function CheckoutPage() {
     );
   }
 
+  // Lookup seller dari cart (asumsi semua item di cart dari seller yang sama)
+  const cartSellerId = state.cart[0]?.sellerId;
+  const cartSeller = cartSellerId
+    ? state.sellers.find((s) => s.id === cartSellerId)
+    : null;
+  const sellerIsOpen = cartSeller?.isOpen !== false;
+  // Antar ke kelas hanya aktif bila SEMUA produk di keranjang bisa diantar
+  const sellerSupportDelivery =
+    state.cart.length > 0 &&
+    state.cart.every((item) => {
+      const p = state.products.find((pp) => pp.id === item.productId);
+      return p?.canDeliver === true;
+    });
+  const sellerDeliveryFee = cartSeller?.deliveryFee || 0;
+
   async function onSubmit(e: FormEvent<HTMLFormElement>) {
     e.preventDefault();
     const fd = new FormData(e.currentTarget);
@@ -122,12 +164,13 @@ export default function CheckoutPage() {
 
     setLoading(true);
     try {
-      const order = createPendingOrder({
+      const order = await createPendingOrder({
         buyerName,
         buyerClass,
         buyerPhone,
         notes,
         paymentMethod: payMethod,
+        pickupMethod,
       });
       if (!order) {
         setLoading(false);
@@ -203,7 +246,7 @@ export default function CheckoutPage() {
         if (browserPay.finalAmount) finalAmount = browserPay.finalAmount;
       }
 
-      attachBayarPayment(order.id, invoiceId, paymentUrl);
+      attachBayarPayment(order.id, invoiceId, paymentUrl, finalAmount - order.total);
 
       try {
         sessionStorage.setItem(
@@ -402,27 +445,58 @@ export default function CheckoutPage() {
                 </label>
 
                 <div className="relative">
-                  <div className="cursor-not-allowed rounded-2xl border-2 border-stone-200 p-4 opacity-60 dark:border-stone-700">
-                    <div className="flex flex-col items-center gap-2 text-center">
-                      <span className="flex h-10 w-10 shrink-0 items-center justify-center rounded-xl bg-stone-100 text-stone-400 dark:bg-stone-800 dark:text-stone-500">
-                        <Truck className="h-5 w-5" />
-                      </span>
-                      <div>
-                        <p className="text-sm font-bold text-stone-900 dark:text-white">
-                          Antar ke Kelas
-                        </p>
-                        <p className="mt-0.5 text-[11px] leading-relaxed text-stone-500">
-                          Delivery
-                        </p>
+                  {sellerSupportDelivery ? (
+                    <label
+                      className={cn(
+                        "relative cursor-pointer rounded-2xl border-2 p-4 transition-all",
+                        pickupMethod === "delivery"
+                          ? "bg-white/80 dark:bg-white/5"
+                          : "border-stone-200 hover:border-stone-300 dark:border-stone-700 dark:hover:border-stone-600"
+                      )}
+                      style={pickupMethod === "delivery" ? { borderColor: stallColor.primary } : undefined}
+                    >
+                      <input
+                        type="radio"
+                        name="pickupMethod"
+                        value="delivery"
+                        checked={pickupMethod === "delivery"}
+                        onChange={() => setPickupMethod("delivery")}
+                        className="sr-only"
+                      />
+                      <div className="flex flex-col items-center gap-2 text-center">
+                        <span
+                          className="flex h-10 w-10 shrink-0 items-center justify-center rounded-xl"
+                          style={pickupMethod === "delivery" ? { backgroundColor: stallColor.primary, color: "#fff" } : { backgroundColor: stallColor.bg, color: stallColor.text }}
+                        >
+                          <Truck className="h-5 w-5" />
+                        </span>
+                        <div>
+                          <p className="text-sm font-bold text-stone-900 dark:text-white">
+                            Antar ke Kelas
+                          </p>
+                          <p className="mt-0.5 text-[11px] leading-relaxed text-stone-500">
+                            +{formatRupiah(sellerDeliveryFee)}
+                          </p>
+                        </div>
+                      </div>
+                    </label>
+                  ) : (
+                    <div className="cursor-not-allowed rounded-2xl border-2 border-stone-200 p-4 opacity-60 dark:border-stone-700">
+                      <div className="flex flex-col items-center gap-2 text-center">
+                        <span className="flex h-10 w-10 shrink-0 items-center justify-center rounded-xl bg-stone-100 text-stone-400 dark:bg-stone-800 dark:text-stone-500">
+                          <Truck className="h-5 w-5" />
+                        </span>
+                        <div>
+                          <p className="text-sm font-bold text-stone-900 dark:text-white">
+                            Antar ke Kelas
+                          </p>
+                          <p className="mt-0.5 text-[11px] leading-relaxed text-stone-500">
+                            Gerai ini belum support mengantarkan makanan ke kelas
+                          </p>
+                        </div>
                       </div>
                     </div>
-                  </div>
-                  <span
-                    className="absolute -top-2 -right-2 rounded-full px-2 py-0.5 text-[9px] font-bold text-white shadow-sm"
-                    style={{ backgroundColor: stallColor.primary }}
-                  >
-                    Segera Hadir
-                  </span>
+                  )}
                 </div>
               </div>
 
@@ -440,10 +514,11 @@ export default function CheckoutPage() {
                       className={cn(inputClass, "pl-10")}
                     >
                       <option value="">Pilih jam...</option>
-                      <option value="10:00">10:00 - Istirahat 1</option>
-                      <option value="12:00">12:00 - Istirahat 2</option>
-                      <option value="12:30">12:30 - Istirahat 2</option>
-                      <option value="13:00">13:00 - Jam Pelajaran</option>
+                      {getPickupTimeOptions().map((opt) => (
+                        <option key={opt.value} value={opt.value}>
+                          {opt.label}
+                        </option>
+                      ))}
                     </select>
                   </div>
                 </div>
@@ -533,7 +608,7 @@ export default function CheckoutPage() {
                         QRIS / Online
                       </p>
                       <p className="mt-0.5 text-xs leading-relaxed text-stone-500">
-                        QRIS muncul di sini â€” scan langsung tanpa pindah
+                        QRIS muncul di sini — scan langsung tanpa pindah
                         halaman.
                       </p>
                     </div>
@@ -565,10 +640,22 @@ export default function CheckoutPage() {
                 ))}
               </ul>
               <div className="mt-4 space-y-2 border-t border-stone-100 pt-4 text-sm dark:border-stone-800">
+                {pickupMethod === "delivery" && sellerSupportDelivery && (
+                  <div className="flex justify-between text-stone-500 dark:text-stone-400">
+                    <span>Ongkir antar ke kelas</span>
+                    <span>{formatRupiah(sellerDeliveryFee)}</span>
+                  </div>
+                )}
+                {payMethod === "online" && (
+                  <div className="flex justify-between text-stone-500 dark:text-stone-400">
+                    <span>Biaya admin QRIS</span>
+                    <span className="text-xs italic">(dihitung setelah bayar)</span>
+                  </div>
+                )}
                 <div className="flex justify-between pt-1 text-base font-bold text-stone-900 dark:text-white">
                   <span>Total bayar</span>
                   <span style={{ color: stallColor.text }}>
-                    {formatRupiah(cartSubtotal)}
+                    {formatRupiah(cartSubtotal + (pickupMethod === "delivery" && sellerSupportDelivery ? sellerDeliveryFee : 0))}
                   </span>
                 </div>
               </div>
@@ -622,23 +709,25 @@ export default function CheckoutPage() {
           <Reveal delay={0.15}>
             <button
               type="submit"
-              disabled={loading}
+              disabled={loading || !sellerIsOpen}
               className="flex w-full items-center justify-center gap-2 rounded-full py-4 text-sm font-bold text-white shadow-soft transition-all duration-300 hover:scale-[1.01] active:scale-[0.99] disabled:cursor-not-allowed disabled:opacity-60"
               style={{ backgroundColor: stallColor.primary }}
             >
-              {loading ? (
+              {!sellerIsOpen ? (
+                "Gerai Sedang Tutup"
+              ) : loading ? (
                 <>
                   <Loader2 className="h-4 w-4 animate-spin" /> Memproses...
                 </>
               ) : payMethod === "canteen" ? (
                 <>
                   <Store className="h-4 w-4" />
-                  Buat Pesanan Â· {formatRupiah(cartSubtotal)}
+                  Buat Pesanan · {formatRupiah(cartSubtotal + (pickupMethod === "delivery" && sellerSupportDelivery ? sellerDeliveryFee : 0))}
                 </>
               ) : (
                 <>
                   <QrCode className="h-4 w-4" />
-                  Tampilkan QRIS Â· {formatRupiah(cartSubtotal)}
+                  Tampilkan QRIS · {formatRupiah(cartSubtotal + (pickupMethod === "delivery" && sellerSupportDelivery ? sellerDeliveryFee : 0))}
                 </>
               )}
             </button>

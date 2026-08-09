@@ -3,7 +3,6 @@
 import { AppProvider } from "@/context/AppContext";
 import { ThemeProvider } from "@/components/providers/ThemeProvider";
 import { StallColorProvider } from "@/context/StallColorContext";
-import { SmoothScroll } from "@/components/motion/SmoothScroll";
 import { Header } from "@/components/layout/Header";
 import { Footer } from "@/components/layout/Footer";
 import { ToastContainer } from "@/components/ui/Toast";
@@ -15,7 +14,7 @@ function ShellInner({ children }: { children: React.ReactNode }) {
     pathname.startsWith("/login") || pathname.startsWith("/register");
 
   return (
-    <SmoothScroll>
+    <>
       <div className="flex min-h-[100dvh] flex-col">
         <div className={bare ? "hidden" : "contents"}>
           <Header />
@@ -26,7 +25,7 @@ function ShellInner({ children }: { children: React.ReactNode }) {
         </div>
       </div>
       <ToastContainer />
-    </SmoothScroll>
+    </>
   );
 }
 
