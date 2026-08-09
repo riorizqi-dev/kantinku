@@ -379,7 +379,7 @@ export default function CheckoutPage() {
               <div className="mt-4 grid gap-3 sm:grid-cols-3">
                 <label
                   className={cn(
-                    "relative cursor-pointer rounded-2xl border-2 p-4 transition-all",
+                    "relative h-full cursor-pointer rounded-2xl border-2 p-4 transition-all",
                     pickupMethod === "takeaway"
                       ? "bg-white/80 dark:bg-white/5"
                       : "border-stone-200 hover:border-stone-300 dark:border-stone-700 dark:hover:border-stone-600"
@@ -414,7 +414,7 @@ export default function CheckoutPage() {
 
                 <label
                   className={cn(
-                    "relative cursor-pointer rounded-2xl border-2 p-4 transition-all",
+                    "relative h-full cursor-pointer rounded-2xl border-2 p-4 transition-all",
                     pickupMethod === "dinein"
                       ? "bg-white/80 dark:bg-white/5"
                       : "border-stone-200 hover:border-stone-300 dark:border-stone-700 dark:hover:border-stone-600"
@@ -444,60 +444,58 @@ export default function CheckoutPage() {
                   </div>
                 </label>
 
-                <div className="relative">
-                  {sellerSupportDelivery ? (
-                    <label
-                      className={cn(
-                        "relative cursor-pointer rounded-2xl border-2 p-4 transition-all",
-                        pickupMethod === "delivery"
-                          ? "bg-white/80 dark:bg-white/5"
-                          : "border-stone-200 hover:border-stone-300 dark:border-stone-700 dark:hover:border-stone-600"
-                      )}
-                      style={pickupMethod === "delivery" ? { borderColor: stallColor.primary } : undefined}
-                    >
-                      <input
-                        type="radio"
-                        name="pickupMethod"
-                        value="delivery"
-                        checked={pickupMethod === "delivery"}
-                        onChange={() => setPickupMethod("delivery")}
-                        className="sr-only"
-                      />
-                      <div className="flex flex-col items-center gap-2 text-center">
-                        <span
-                          className="flex h-10 w-10 shrink-0 items-center justify-center rounded-xl"
-                          style={pickupMethod === "delivery" ? { backgroundColor: stallColor.primary, color: "#fff" } : { backgroundColor: stallColor.bg, color: stallColor.text }}
-                        >
-                          <Truck className="h-5 w-5" />
-                        </span>
-                        <div>
-                          <p className="text-sm font-bold text-stone-900 dark:text-white">
-                            Antar ke Kelas
-                          </p>
-                          <p className="mt-0.5 text-[11px] leading-relaxed text-stone-500">
-                            +{formatRupiah(sellerDeliveryFee)}
-                          </p>
-                        </div>
-                      </div>
-                    </label>
-                  ) : (
-                    <div className="cursor-not-allowed rounded-2xl border-2 border-stone-200 p-4 opacity-60 dark:border-stone-700">
-                      <div className="flex flex-col items-center gap-2 text-center">
-                        <span className="flex h-10 w-10 shrink-0 items-center justify-center rounded-xl bg-stone-100 text-stone-400 dark:bg-stone-800 dark:text-stone-500">
-                          <Truck className="h-5 w-5" />
-                        </span>
-                        <div>
-                          <p className="text-sm font-bold text-stone-900 dark:text-white">
-                            Antar ke Kelas
-                          </p>
-                          <p className="mt-0.5 text-[11px] leading-relaxed text-stone-500">
-                            Gerai ini belum support mengantarkan makanan ke kelas
-                          </p>
-                        </div>
+                {sellerSupportDelivery ? (
+                  <label
+                    className={cn(
+                      "relative h-full cursor-pointer rounded-2xl border-2 p-4 transition-all",
+                      pickupMethod === "delivery"
+                        ? "bg-white/80 dark:bg-white/5"
+                        : "border-stone-200 hover:border-stone-300 dark:border-stone-700 dark:hover:border-stone-600"
+                    )}
+                    style={pickupMethod === "delivery" ? { borderColor: stallColor.primary } : undefined}
+                  >
+                    <input
+                      type="radio"
+                      name="pickupMethod"
+                      value="delivery"
+                      checked={pickupMethod === "delivery"}
+                      onChange={() => setPickupMethod("delivery")}
+                      className="sr-only"
+                    />
+                    <div className="flex flex-col items-center gap-2 text-center">
+                      <span
+                        className="flex h-10 w-10 shrink-0 items-center justify-center rounded-xl"
+                        style={pickupMethod === "delivery" ? { backgroundColor: stallColor.primary, color: "#fff" } : { backgroundColor: stallColor.bg, color: stallColor.text }}
+                      >
+                        <Truck className="h-5 w-5" />
+                      </span>
+                      <div>
+                        <p className="text-sm font-bold text-stone-900 dark:text-white">
+                          Antar ke Kelas
+                        </p>
+                        <p className="mt-0.5 text-[11px] leading-relaxed text-stone-500">
+                          +{formatRupiah(sellerDeliveryFee)}
+                        </p>
                       </div>
                     </div>
-                  )}
-                </div>
+                  </label>
+                ) : (
+                  <div className="h-full cursor-not-allowed rounded-2xl border-2 border-stone-200 p-4 opacity-60 dark:border-stone-700">
+                    <div className="flex flex-col items-center gap-2 text-center">
+                      <span className="flex h-10 w-10 shrink-0 items-center justify-center rounded-xl bg-stone-100 text-stone-400 dark:bg-stone-800 dark:text-stone-500">
+                        <Truck className="h-5 w-5" />
+                      </span>
+                      <div>
+                        <p className="text-sm font-bold text-stone-900 dark:text-white">
+                          Antar ke Kelas
+                        </p>
+                        <p className="mt-0.5 text-[11px] leading-relaxed text-stone-500">
+                          Gerai ini belum support mengantarkan makanan ke kelas
+                        </p>
+                      </div>
+                    </div>
+                  </div>
+                )}
               </div>
 
               {pickupMethod === "takeaway" && (
