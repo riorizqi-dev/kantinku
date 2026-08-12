@@ -10,6 +10,7 @@ export type QrisPayPayload = {
   invoiceId: string;
   paymentUrl: string;
   qrisString?: string;
+  qrDataUrl?: string;
   amount: number;
   finalAmount?: number;
 };
@@ -22,7 +23,6 @@ type Props = {
 };
 
 function qrisImageUrl(qris: string, size = 280) {
-  // Render QR dari payload EMVCo tanpa redirect ke Bayar.gg
   return `https://api.qrserver.com/v1/create-qr-code/?size=${size}x${size}&margin=12&data=${encodeURIComponent(qris)}`;
 }
 
@@ -35,12 +35,16 @@ export function QrisPayModal({ open, payload, onClose, onPaid }: Props) {
   const paidOnce = useRef(false);
 
   const amount = payload?.finalAmount ?? payload?.amount ?? 0;
-  const hasQris = Boolean(payload?.qrisString && payload.qrisString.length > 20);
+  const hasQris = Boolean(
+    payload?.qrDataUrl ||
+      (payload?.qrisString && payload.qrisString.length > 20)
+  );
 
   const imgSrc = useMemo(() => {
+    if (payload?.qrDataUrl) return payload.qrDataUrl;
     if (!payload?.qrisString) return "";
     return qrisImageUrl(payload.qrisString, 300);
-  }, [payload?.qrisString]);
+  }, [payload?.qrDataUrl, payload?.qrisString]);
 
   useEffect(() => {
     if (!open || !payload?.invoiceId) return;
@@ -139,7 +143,7 @@ export function QrisPayModal({ open, payload, onClose, onPaid }: Props) {
                 <p className="text-xs font-semibold uppercase tracking-wide text-stone-400 dark:text-white/35">
                   Total bayar
                 </p>
-                <p className="mt-1 text-2xl font-bold tabular-nums text-[#f97316] dark:text-[#fb923c]">
+                <p className="mt-1 text-2xl font-bold tabular-nums text-[#FFB300] dark:text-[#FFC107]">
                   {formatRupiah(amount)}
                 </p>
                 {payload?.finalAmount && payload.finalAmount > (payload.amount || 0) && (
@@ -161,16 +165,16 @@ export function QrisPayModal({ open, payload, onClose, onPaid }: Props) {
                   />
                 ) : (
                   <div className="flex h-[260px] w-[260px] flex-col items-center justify-center gap-3 rounded-lg bg-stone-50 px-4 text-center dark:bg-white/[0.03] sm:h-[280px] sm:w-[280px]">
-                    <Loader2 className="h-8 w-8 animate-spin text-[#f97316]" />
+                    <Loader2 className="h-8 w-8 animate-spin text-[#FFB300]" />
                     <p className="text-xs text-stone-500">
-                      QR tidak tersedia di respons. Buka halaman bayar Bayar.gg.
+                      QR tidak tersedia di respons. Buka halaman pembayaran.
                     </p>
                     {payload.paymentUrl && (
                       <a
                         href={payload.paymentUrl}
                         target="_blank"
                         rel="noreferrer"
-                        className="inline-flex items-center gap-1.5 text-xs font-semibold text-[#ea580c] dark:text-[#fb923c]"
+                        className="inline-flex items-center gap-1.5 text-xs font-semibold text-[#F0A500] dark:text-[#FFC107]"
                       >
                         Buka halaman bayar <ExternalLink className="h-3.5 w-3.5" />
                       </a>
@@ -214,7 +218,7 @@ export function QrisPayModal({ open, payload, onClose, onPaid }: Props) {
                     className="inline-flex items-center justify-center gap-2 rounded-full border border-stone-200 py-2.5 text-sm font-semibold text-stone-700 transition hover:bg-stone-50 dark:border-white/10 dark:text-white/80 dark:hover:bg-white/[0.04]"
                   >
                     <ExternalLink className="h-4 w-4" strokeWidth={1.75} />
-                    Buka di Bayar.gg (opsional)
+                    Buka halaman pembayaran
                   </a>
                 )}
                 <button

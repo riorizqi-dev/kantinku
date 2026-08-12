@@ -92,7 +92,7 @@ export default function RegisterPage() {
                 autoComplete="off"
                 data-lpignore="true"
                 data-1p-ignore
-                className="w-full rounded-xl border border-stone-200 bg-stone-50 px-3.5 py-3 text-sm font-medium transition focus:border-[#f97316] focus:ring-2 focus:ring-[#f97316]/20 dark:border-stone-700 dark:bg-stone-900"
+                className="w-full rounded-xl border border-stone-200 bg-stone-50 px-3.5 py-3 text-sm font-medium transition focus:border-[#FFB300] focus:ring-2 focus:ring-[#FFB300]/20 dark:border-stone-700 dark:bg-stone-900"
                 placeholder="Nama lengkap"
               />
             </div>
@@ -110,7 +110,7 @@ export default function RegisterPage() {
                 autoComplete="off"
                 data-lpignore="true"
                 data-1p-ignore
-                className="w-full rounded-xl border border-stone-200 bg-stone-50 px-3.5 py-3 text-sm font-medium transition focus:border-[#f97316] focus:ring-2 focus:ring-[#f97316]/20 dark:border-stone-700 dark:bg-stone-900"
+                className="w-full rounded-xl border border-stone-200 bg-stone-50 px-3.5 py-3 text-sm font-medium transition focus:border-[#FFB300] focus:ring-2 focus:ring-[#FFB300]/20 dark:border-stone-700 dark:bg-stone-900"
                 placeholder="X IPA 1"
               />
             </div>
@@ -132,7 +132,7 @@ export default function RegisterPage() {
                 data-lpignore="true"
                 data-1p-ignore
                 data-form-type="other"
-                className="w-full rounded-xl border border-stone-200 bg-stone-50 px-3.5 py-3 text-sm font-medium transition focus:border-[#f97316] focus:ring-2 focus:ring-[#f97316]/20 dark:border-stone-700 dark:bg-stone-900"
+                className="w-full rounded-xl border border-stone-200 bg-stone-50 px-3.5 py-3 text-sm font-medium transition focus:border-[#FFB300] focus:ring-2 focus:ring-[#FFB300]/20 dark:border-stone-700 dark:bg-stone-900"
                 placeholder="username"
               />
             </div>
@@ -155,7 +155,7 @@ export default function RegisterPage() {
                   data-lpignore="true"
                   data-1p-ignore
                   data-form-type="other"
-                  className="w-full rounded-xl border border-stone-200 bg-stone-50 px-3.5 py-3 pr-12 text-sm font-medium transition focus:border-[#f97316] focus:ring-2 focus:ring-[#f97316]/20 dark:border-stone-700 dark:bg-stone-900"
+                  className="w-full rounded-xl border border-stone-200 bg-stone-50 px-3.5 py-3 pr-12 text-sm font-medium transition focus:border-[#FFB300] focus:ring-2 focus:ring-[#FFB300]/20 dark:border-stone-700 dark:bg-stone-900"
                   placeholder="Min. 6 karakter"
                 />
                 <button
@@ -189,7 +189,7 @@ export default function RegisterPage() {
                 autoComplete="off"
                 data-lpignore="true"
                 data-1p-ignore
-                className="w-full rounded-xl border border-stone-200 bg-stone-50 px-3.5 py-3 text-sm font-medium transition focus:border-[#f97316] focus:ring-2 focus:ring-[#f97316]/20 dark:border-stone-700 dark:bg-stone-900"
+                className="w-full rounded-xl border border-stone-200 bg-stone-50 px-3.5 py-3 text-sm font-medium transition focus:border-[#FFB300] focus:ring-2 focus:ring-[#FFB300]/20 dark:border-stone-700 dark:bg-stone-900"
                 placeholder="08xxxxxxxxxx"
               />
             </div>
@@ -197,7 +197,7 @@ export default function RegisterPage() {
             <button
               type="submit"
               disabled={loading}
-              className="flex w-full items-center justify-center gap-2 rounded-full bg-[#f97316] py-3.5 text-sm font-bold text-white shadow-soft transition-all duration-300 hover:bg-[#ea580c] hover:scale-[1.01] disabled:opacity-60"
+              className="flex w-full items-center justify-center gap-2 rounded-full bg-[#FFB300] py-3.5 text-sm font-bold text-white shadow-soft transition-all duration-300 hover:bg-[#F0A500] hover:scale-[1.01] disabled:opacity-60"
             >
               <UserPlus className="h-4 w-4" /> Daftar
             </button>
@@ -207,7 +207,7 @@ export default function RegisterPage() {
             Sudah punya akun?{" "}
             <Link
               href="/login"
-              className="font-bold text-[#ea580c] hover:underline dark:text-[#fb923c]"
+              className="font-bold text-[#F0A500] hover:underline dark:text-[#FFC107]"
             >
               Masuk
             </Link>

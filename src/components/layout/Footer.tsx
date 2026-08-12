@@ -7,7 +7,7 @@ export function Footer() {
       <div className="mx-auto flex max-w-6xl flex-col items-center justify-between gap-4 px-4 py-10 sm:flex-row sm:px-6">
         <div className="flex items-center gap-3">
           <span
-            className="flex h-9 w-9 items-center justify-center rounded-[9px] bg-[#f97316] text-[#1c1917]"
+            className="flex h-9 w-9 items-center justify-center rounded-[9px] bg-[#FFB300] text-[#1c1917]"
             style={{ boxShadow: "inset 0 1px 0 rgba(255,255,255,0.18)" }}
           >
             <LogoMark className="h-4 w-4" />

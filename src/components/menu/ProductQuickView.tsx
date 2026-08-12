@@ -176,10 +176,10 @@ export function ProductQuickView({
 
               {/* Harga */}
               <p
-                className="mt-4 flex min-w-0 flex-wrap items-baseline gap-x-1 tabular-nums text-[#f97316]"
+                className="mt-4 flex min-w-0 flex-wrap items-baseline gap-x-1 tabular-nums text-[#FFB300]"
                 aria-label={formatRupiah(displayPrice)}
               >
-                <span className="shrink-0 text-sm font-medium tracking-[0.02em] text-[#f97316]/75">
+                <span className="shrink-0 text-sm font-medium tracking-[0.02em] text-[#FFB300]/75">
                   Rp
                 </span>
                 <span className="break-all text-2xl font-semibold leading-tight tracking-[-0.03em]">
@@ -217,7 +217,7 @@ export function ProductQuickView({
                           className={cn(
                             "inline-flex w-full items-center gap-2.5 rounded-2xl border py-2 pl-2 pr-3.5 text-left transition-colors duration-200",
                             active
-                              ? "border-[#f97316]/50 bg-[#f97316]/10 ring-1 ring-[#f97316]/30"
+                              ? "border-[#FFB300]/50 bg-[#FFB300]/10 ring-1 ring-[#FFB300]/30"
                               : "border-stone-200 bg-stone-50 hover:border-stone-300 dark:border-white/[0.08] dark:bg-white/[0.03] dark:hover:border-white/15",
                             vOut && "cursor-not-allowed opacity-45"
                           )}
@@ -234,13 +234,13 @@ export function ProductQuickView({
                             <span className="flex items-center gap-1.5 text-sm font-semibold text-stone-900 dark:text-white">
                               {active && (
                                 <Check
-                                  className="h-3.5 w-3.5 shrink-0 text-[#f97316]"
+                                  className="h-3.5 w-3.5 shrink-0 text-[#FFB300]"
                                   strokeWidth={2.5}
                                 />
                               )}
                               <span className="line-clamp-1">{v.name}</span>
                             </span>
-                            <span className="mt-0.5 block break-words text-xs font-medium text-[#c2410c]">
+                            <span className="mt-0.5 block break-words text-xs font-medium text-[#996A00]">
                               <span className="whitespace-nowrap">
                                 {formatRupiah(v.price)}
                               </span>
@@ -300,7 +300,7 @@ export function ProductQuickView({
                   Total
                 </span>
                 <span
-                  className="text-lg font-semibold tabular-nums text-[#f97316]"
+                  className="text-lg font-semibold tabular-nums text-[#FFB300]"
                   aria-label={formatRupiah(displayPrice * Math.max(1, qty))}
                 >
                   Rp{" "}
@@ -318,7 +318,7 @@ export function ProductQuickView({
                     "inline-flex w-full items-center justify-center gap-2 rounded-full py-3.5 text-sm font-semibold transition-all duration-200 active:scale-[0.98]",
                     out
                       ? "cursor-not-allowed bg-stone-100 text-stone-400 dark:bg-white/[0.06] dark:text-white/30"
-                      : "bg-[#f97316] text-white hover:bg-[#ea580c]"
+                      : "bg-[#FFB300] text-white hover:bg-[#F0A500]"
                   )}
                   style={
                     out

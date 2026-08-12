@@ -462,7 +462,7 @@ function SellerDashboardInner() {
         <div className="mx-auto w-full max-w-[1400px]">
           <div className="flex flex-col justify-between gap-4 sm:flex-row sm:items-end">
             <div>
-              <p className="flex items-center gap-2 text-[11px] font-semibold uppercase tracking-[0.16em] text-[#f97316]/90">
+              <p className="flex items-center gap-2 text-[11px] font-semibold uppercase tracking-[0.16em] text-[#FFB300]/90">
                 <LayoutDashboard className="h-3.5 w-3.5" strokeWidth={1.5} />
                 Dashboard Penjual
               </p>
@@ -475,7 +475,7 @@ function SellerDashboardInner() {
               </p>
             </div>
             {unread > 0 && (
-              <div className="inline-flex items-center gap-2 rounded-full bg-[#f97316] px-4 py-2 text-sm font-semibold text-[#1c1917]">
+              <div className="inline-flex items-center gap-2 rounded-full bg-[#FFB300] px-4 py-2 text-sm font-semibold text-[#1c1917]">
                 <Bell className="h-4 w-4" strokeWidth={1.5} />
                 {unread} pesanan baru
               </div>
@@ -485,7 +485,7 @@ function SellerDashboardInner() {
           {/* Profil penjual — menonjol, mudah ditemukan orang tua / penjual */}
           <Link
             href="/dashboard/seller/profile"
-            className="group mt-6 flex flex-col gap-4 rounded-2xl border border-[#f97316]/35 bg-gradient-to-br from-orange-50 via-white to-white dark:from-[#f97316]/15 dark:via-[#121214] dark:to-[#121214] p-4 shadow-[0_0_0_1px_rgba(249,115,22,0.12)] transition hover:border-[#f97316]/55 hover:from-[#f97316]/22 sm:flex-row sm:items-center sm:justify-between sm:p-5"
+            className="group mt-6 flex flex-col gap-4 rounded-2xl border border-[#FFB300]/35 bg-gradient-to-br from-amber-50 via-white to-white dark:from-[#FFB300]/15 dark:via-[#121214] dark:to-[#121214] p-4 shadow-[0_0_0_1px_rgba(249,115,22,0.12)] transition hover:border-[#FFB300]/55 hover:from-[#FFB300]/22 sm:flex-row sm:items-center sm:justify-between sm:p-5"
           >
             <div className="flex min-w-0 items-center gap-4">
               <span className="relative shrink-0">
@@ -493,17 +493,17 @@ function SellerDashboardInner() {
                   name={session.name}
                   avatar={session.avatar}
                   size="xl"
-                  className="!h-[4.5rem] !w-[4.5rem] !text-lg ring-2 ring-[#f97316]/50 transition group-hover:ring-[#f97316]"
+                  className="!h-[4.5rem] !w-[4.5rem] !text-lg ring-2 ring-[#FFB300]/50 transition group-hover:ring-[#FFB300]"
                 />
                 <span
-                  className="absolute -bottom-0.5 -right-0.5 flex h-8 w-8 items-center justify-center rounded-full border-2 border-white dark:border-[#0a0a0b] bg-[#f97316] text-[#1c1917] shadow-md"
+                  className="absolute -bottom-0.5 -right-0.5 flex h-8 w-8 items-center justify-center rounded-full border-2 border-white dark:border-[#0a0a0b] bg-[#FFB300] text-[#1c1917] shadow-md"
                   aria-hidden
                 >
                   <Camera className="h-4 w-4" strokeWidth={2} />
                 </span>
               </span>
               <div className="min-w-0">
-                <p className="text-[11px] font-semibold uppercase tracking-[0.12em] text-[#fb923c]">
+                <p className="text-[11px] font-semibold uppercase tracking-[0.12em] text-[#FFC107]">
                   Profil Anda
                 </p>
                 <p className="mt-0.5 truncate text-lg font-semibold text-stone-900 dark:text-white">
@@ -521,7 +521,7 @@ function SellerDashboardInner() {
                 </p>
               </div>
             </div>
-            <span className="inline-flex w-full shrink-0 items-center justify-center gap-2 rounded-full bg-[#f97316] px-5 py-3.5 text-sm font-bold text-[#1c1917] transition group-hover:bg-[#ea580c] sm:w-auto sm:min-w-[11rem]">
+            <span className="inline-flex w-full shrink-0 items-center justify-center gap-2 rounded-full bg-[#FFB300] px-5 py-3.5 text-sm font-bold text-[#1c1917] transition group-hover:bg-[#F0A500] sm:w-auto sm:min-w-[11rem]">
               <UserRound className="h-4 w-4" strokeWidth={2} />
               Ubah Foto &amp; Nama
               <ChevronRight className="h-4 w-4 opacity-80" strokeWidth={2} />
@@ -553,7 +553,7 @@ function SellerDashboardInner() {
                   <p className="text-[11px] font-medium uppercase tracking-wide text-stone-500 dark:text-white/35">
                     {s.label}
                   </p>
-                  <s.icon className="h-4 w-4 text-[#f97316]" strokeWidth={1.5} />
+                  <s.icon className="h-4 w-4 text-[#FFB300]" strokeWidth={1.5} />
                 </div>
                 <p className="mt-2 text-xl font-semibold text-stone-900 dark:text-white">{s.value}</p>
                 {"hint" in s && s.hint && (
@@ -580,7 +580,7 @@ function SellerDashboardInner() {
                 className={cn(
                   "cursor-pointer rounded-full px-4 py-2 text-sm font-medium transition-colors",
                   tab === id
-                    ? "bg-[#f97316]/15 text-[#fb923c]"
+                    ? "bg-[#FFB300]/15 text-[#FFC107]"
                     : "text-stone-600 hover:bg-stone-200/80 hover:text-stone-900 dark:text-white/50 dark:hover:bg-white/[0.04] dark:hover:text-white/80"
                 )}
               >
@@ -635,7 +635,7 @@ function SellerDashboardInner() {
                       className={cn(
                         "rounded-2xl border bg-white dark:bg-[#121214] p-5",
                         !o.seenBySeller
-                          ? "border-[#f97316]/35"
+                          ? "border-[#FFB300]/35"
                           : "border-stone-200 dark:border-white/[0.07]"
                       )}
                     >
@@ -646,7 +646,7 @@ function SellerDashboardInner() {
                               {o.orderNumber}
                             </p>
                             {!o.seenBySeller && (
-                              <span className="rounded-full bg-[#f97316] px-2 py-0.5 text-[10px] font-bold text-[#1c1917]">
+                              <span className="rounded-full bg-[#FFB300] px-2 py-0.5 text-[10px] font-bold text-[#1c1917]">
                                 BARU
                               </span>
                             )}
@@ -676,7 +676,7 @@ function SellerDashboardInner() {
                           </div>
                         </div>
                         <div className="text-right">
-                          <p className="text-sm font-semibold text-[#fb923c]">
+                          <p className="text-sm font-semibold text-[#FFC107]">
                             {formatRupiah(o.total)}
                           </p>
                           <p className="text-[11px] text-stone-500 dark:text-white/35">
@@ -772,7 +772,7 @@ function SellerDashboardInner() {
                 <button
                   type="button"
                   onClick={openCreate}
-                  className="inline-flex cursor-pointer items-center gap-2 rounded-full bg-[#f97316] px-4 py-2.5 text-sm font-semibold text-[#1c1917]"
+                  className="inline-flex cursor-pointer items-center gap-2 rounded-full bg-[#FFB300] px-4 py-2.5 text-sm font-semibold text-[#1c1917]"
                 >
                   <Plus className="h-4 w-4" strokeWidth={1.5} /> Tambah Produk
                 </button>
@@ -877,7 +877,7 @@ function SellerDashboardInner() {
                           <button
                             type="button"
                             onClick={() => setShowCalculator(true)}
-                            className="inline-flex cursor-pointer items-center gap-1.5 rounded-full bg-[#f97316]/10 px-3 py-1.5 text-xs font-semibold text-[#f97316] transition hover:bg-[#f97316]/20"
+                            className="inline-flex cursor-pointer items-center gap-1.5 rounded-full bg-[#FFB300]/10 px-3 py-1.5 text-xs font-semibold text-[#FFB300] transition hover:bg-[#FFB300]/20"
                           >
                             <Sparkles className="h-3.5 w-3.5" strokeWidth={1.75} />
                             Kalkulator Harga AI
@@ -1022,7 +1022,7 @@ function SellerDashboardInner() {
                     </button>
                     <button
                       type="submit"
-                      className="cursor-pointer rounded-full bg-[#f97316] px-4 py-2 text-sm font-semibold text-[#1c1917]"
+                      className="cursor-pointer rounded-full bg-[#FFB300] px-4 py-2 text-sm font-semibold text-[#1c1917]"
                     >
                       Simpan
                     </button>
@@ -1130,7 +1130,7 @@ function SellerDashboardInner() {
                                   ? "font-semibold text-red-400"
                                   : totalStock <= 5
                                     ? "font-semibold text-amber-400"
-                                    : "font-semibold text-[#fb923c]"
+                                    : "font-semibold text-[#FFC107]"
                               }
                             >
                               {totalStock}
@@ -1141,7 +1141,7 @@ function SellerDashboardInner() {
                               <button
                                 type="button"
                                 onClick={() => openEdit(p)}
-                                className="cursor-pointer rounded-lg p-2 text-[#fb923c] hover:bg-stone-100 dark:bg-white/[0.04]"
+                                className="cursor-pointer rounded-lg p-2 text-[#FFC107] hover:bg-stone-100 dark:bg-white/[0.04]"
                                 title="Edit produk & varian"
                               >
                                 <Pencil
@@ -1183,8 +1183,8 @@ function SellerDashboardInner() {
             <div className="mt-6 space-y-6">
               {/* Saldo & Form Request */}
               <div className="grid gap-4 lg:grid-cols-5">
-                <div className="rounded-2xl border border-[#f97316]/30 bg-gradient-to-br from-orange-50 via-white to-white dark:from-[#f97316]/15 dark:via-[#121214] dark:to-[#121214] p-5 lg:col-span-2">
-                  <p className="text-[11px] font-semibold uppercase tracking-wide text-[#f97316]">
+                <div className="rounded-2xl border border-[#FFB300]/30 bg-gradient-to-br from-amber-50 via-white to-white dark:from-[#FFB300]/15 dark:via-[#121214] dark:to-[#121214] p-5 lg:col-span-2">
+                  <p className="text-[11px] font-semibold uppercase tracking-wide text-[#FFB300]">
                     Saldo Tersedia
                   </p>
                   <p className="mt-2 text-3xl font-bold text-stone-900 dark:text-white">
@@ -1246,7 +1246,7 @@ function SellerDashboardInner() {
                           onChange={(e) =>
                             setWdMethod(e.target.value as WithdrawalMethod)
                           }
-                          className="w-full appearance-none rounded-xl border border-stone-200 bg-white px-3.5 py-2.5 pr-10 text-sm font-medium text-stone-900 transition focus:border-[#f97316] focus:ring-2 focus:ring-[#f97316]/20 dark:border-white/10 dark:bg-[#1a1a1c] dark:text-white dark:focus:border-[#f97316] dark:focus:ring-[#f97316]/20"
+                          className="w-full appearance-none rounded-xl border border-stone-200 bg-white px-3.5 py-2.5 pr-10 text-sm font-medium text-stone-900 transition focus:border-[#FFB300] focus:ring-2 focus:ring-[#FFB300]/20 dark:border-white/10 dark:bg-[#1a1a1c] dark:text-white dark:focus:border-[#FFB300] dark:focus:ring-[#FFB300]/20"
                         >
                           <option value="bank" className="bg-white text-stone-900 dark:bg-[#1a1a1c] dark:text-white">
                             Rekening Bank
@@ -1308,7 +1308,7 @@ function SellerDashboardInner() {
                   <button
                     type="submit"
                     disabled={balance < 30000}
-                    className="cursor-pointer rounded-full bg-[#f97316] px-6 py-2.5 text-sm font-semibold text-[#1c1917] transition hover:bg-[#ea580c] disabled:cursor-not-allowed disabled:opacity-40"
+                    className="cursor-pointer rounded-full bg-[#FFB300] px-6 py-2.5 text-sm font-semibold text-[#1c1917] transition hover:bg-[#F0A500] disabled:cursor-not-allowed disabled:opacity-40"
                   >
                     Kirim Request
                   </button>
@@ -1318,11 +1318,11 @@ function SellerDashboardInner() {
               {/* Auto-payout */}
               <form
                 onSubmit={onSaveAutoPayout}
-                className="rounded-2xl border border-[#f97316]/30 bg-white dark:bg-[#121214] p-5"
+                className="rounded-2xl border border-[#FFB300]/30 bg-white dark:bg-[#121214] p-5"
               >
                 <div className="flex flex-wrap items-center justify-between gap-3">
                   <div className="flex items-center gap-3">
-                    <span className="inline-flex h-9 w-9 items-center justify-center rounded-lg bg-[#f97316]/15 text-[#f97316]">
+                    <span className="inline-flex h-9 w-9 items-center justify-center rounded-lg bg-[#FFB300]/15 text-[#FFB300]">
                       <Zap className="h-4 w-4" strokeWidth={1.75} />
                     </span>
                     <div>
@@ -1345,7 +1345,7 @@ function SellerDashboardInner() {
                       }}
                       className="peer sr-only"
                     />
-                    <span className="h-6 w-11 rounded-full bg-stone-300 transition peer-checked:bg-[#f97316] after:absolute after:left-0.5 after:top-0.5 after:h-5 after:w-5 after:rounded-full after:bg-white after:shadow after:transition peer-checked:after:translate-x-5" />
+                    <span className="h-6 w-11 rounded-full bg-stone-300 transition peer-checked:bg-[#FFB300] after:absolute after:left-0.5 after:top-0.5 after:h-5 after:w-5 after:rounded-full after:bg-white after:shadow after:transition peer-checked:after:translate-x-5" />
                   </label>
                 </div>
 
@@ -1424,7 +1424,7 @@ function SellerDashboardInner() {
                     <div className="flex flex-wrap items-center gap-3">
                       <button
                         type="submit"
-                        className="cursor-pointer rounded-full bg-[#f97316] px-5 py-2 text-sm font-semibold text-[#1c1917] transition hover:bg-[#ea580c]"
+                        className="cursor-pointer rounded-full bg-[#FFB300] px-5 py-2 text-sm font-semibold text-[#1c1917] transition hover:bg-[#F0A500]"
                       >
                         {apEnabled ? "Aktifkan Pencairan Otomatis" : "Simpan"}
                       </button>
@@ -1493,7 +1493,7 @@ function SellerDashboardInner() {
                           <p className="text-stone-500 dark:text-white/40">
                             Fee: {formatRupiah(w.fee)}
                           </p>
-                          <p className="font-semibold text-[#fb923c]">
+                          <p className="font-semibold text-[#FFC107]">
                             Diterima: {formatRupiah(w.netAmount)}
                           </p>
                         </div>
@@ -1511,7 +1511,7 @@ function SellerDashboardInner() {
               <div className="mb-5 flex flex-wrap items-center justify-between gap-3">
                 <div>
                   <h2 className="flex items-center gap-2 text-base font-semibold text-stone-900 dark:text-white">
-                    <BarChart3 className="h-4 w-4 text-[#f97316]" strokeWidth={1.75} />
+                    <BarChart3 className="h-4 w-4 text-[#FFB300]" strokeWidth={1.75} />
                     Laporan Penjualan
                   </h2>
                   <p className="mt-0.5 text-xs text-stone-500 dark:text-white/40">
@@ -1634,7 +1634,7 @@ function SellerDashboardInner() {
 
               <button
                 type="submit"
-                className="cursor-pointer rounded-full bg-[#f97316] px-6 py-2.5 text-sm font-semibold text-[#1c1917]"
+                className="cursor-pointer rounded-full bg-[#FFB300] px-6 py-2.5 text-sm font-semibold text-[#1c1917]"
               >
                 Simpan
               </button>

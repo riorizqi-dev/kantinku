@@ -1,4 +1,4 @@
-# Deploy KantinKu ke Vercel + Supabase + Bayar.gg QRIS
+# Deploy KantinKu ke Vercel + Supabase + WarungErik QRIS
 
 **Production URL:** https://kantinku-six.vercel.app
 
@@ -11,14 +11,9 @@
 | `NEXT_PUBLIC_APP_URL` | `https://kantinku-six.vercel.app` |
 | `NEXT_PUBLIC_SUPABASE_URL` | URL project Supabase |
 | `NEXT_PUBLIC_SUPABASE_ANON_KEY` | anon / publishable key |
-| `BAYAR_API_KEY` | API key Bayar.gg |
-| `BAYAR_BASE_URL` | `https://www.bayar.gg/api` |
-| `BAYAR_PAYMENT_METHOD` | `qris` |
-| `BAYAR_USE_QRIS_CONVERTER` | `true` |
-| `BAYAR_PAYMENT_URL` | `https://www.bayar.gg/pay` |
-| `NEXT_PUBLIC_BAYAR_*` | (sama, fallback browser) |
-
-**JANGAN** set `BAYAR_FORCE_IP` di Vercel.
+| `WARUNGERIK_API_KEY` | API key WarungErik Pay |
+| `WARUNGERIK_BASE_URL` | `https://pg.warungerik.com` |
+| `NEXT_PUBLIC_WARUNGERIK_*` | (sama, fallback browser opsional) |
 
 Push ulang dari `.env.local`:
 
@@ -29,11 +24,13 @@ npx vercel --prod
 
 ---
 
-## Webhook Bayar.gg
+## Webhook (opsional)
 
-Dashboard Bayar.gg → Settings → Webhook:
+Kalau WarungErik Pay menyediakan callback di dashboard, isi:
 
 - **Callback URL:** `https://kantinku-six.vercel.app/api/bayar/webhook`
+
+Status order juga disinkronkan lewat polling `/api/bayar/check`, jadi webhook tidak wajib.
 
 ---
 

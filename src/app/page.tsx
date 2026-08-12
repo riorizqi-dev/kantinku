@@ -145,7 +145,7 @@ function HomeContent() {
       </Suspense>
       {isSellerSession ? (
         <div className="flex min-h-[50vh] items-center justify-center">
-          <div className="h-8 w-8 animate-spin rounded-full border-2 border-orange-200 border-t-[#f97316]" />
+          <div className="h-8 w-8 animate-spin rounded-full border-2 border-amber-200 border-t-[#FFB300]" />
         </div>
       ) : (
         <>
@@ -168,7 +168,7 @@ function HomeContent() {
                         className={cn(
                           "flex h-12 w-12 items-center justify-center rounded-xl border transition sm:h-14 sm:w-14",
                           active
-                            ? "border-transparent bg-[#ee4d2d] text-white shadow-[inset_0_1px_0_rgba(255,255,255,0.2)]"
+                            ? "border-transparent bg-[#FFB300] text-white shadow-[inset_0_1px_0_rgba(255,255,255,0.2)]"
                             : "border-stone-200 bg-white text-stone-500 hover:border-stone-300 hover:text-stone-700 dark:border-white/10 dark:bg-white/[0.04] dark:text-white/50 dark:hover:border-white/20 dark:hover:text-white"
                         )}
                       >
@@ -178,7 +178,7 @@ function HomeContent() {
                         className={cn(
                           "text-xs",
                           active
-                            ? "font-semibold text-[#ee4d2d]"
+                            ? "font-semibold text-[#FFB300]"
                             : "text-stone-600 dark:text-white/60"
                         )}
                       >
@@ -201,7 +201,7 @@ function HomeContent() {
                   role="img"
                   aria-label="Kantin SMK Negeri 17 Jakarta"
                 />
-                <div className="absolute inset-0 bg-gradient-to-r from-[#ee4d2d]/90 via-[#ee4d2d]/60 to-[#ee4d2d]/10" />
+                <div className="absolute inset-0 bg-gradient-to-r from-[#FFB300]/90 via-[#FFB300]/60 to-[#FFB300]/10" />
                 <div className="relative flex h-full items-center px-5 sm:px-8">
                   <div className="max-w-md">
                     <p className="text-[11px] font-bold uppercase tracking-[0.14em] text-white/85">
@@ -212,7 +212,7 @@ function HomeContent() {
                     </h1>
                     <a
                       href="#menu"
-                      className="mt-3 inline-flex min-h-[38px] cursor-pointer items-center gap-1.5 rounded-md bg-white px-4 py-2 text-[13px] font-semibold text-[#ee4d2d] transition-colors hover:bg-orange-50"
+                      className="mt-3 inline-flex min-h-[38px] cursor-pointer items-center gap-1.5 rounded-md bg-white px-4 py-2 text-[13px] font-semibold text-[#FFB300] transition-colors hover:bg-amber-50"
                     >
                       Lihat Menu
                       <ArrowRight

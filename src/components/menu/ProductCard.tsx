@@ -41,7 +41,7 @@ export function ProductCard({
       {/* Gambar → halaman detail */}
       <Link
         href={detailHref}
-        className="relative block aspect-square overflow-hidden bg-stone-100 focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-[#ee4d2d] dark:bg-stone-800"
+        className="relative block aspect-square overflow-hidden bg-stone-100 focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-[#FFB300] dark:bg-stone-800"
         aria-label={`Lihat detail ${product.name}, ${formatRupiah(minPrice)}`}
       >
         <Image
@@ -81,7 +81,7 @@ export function ProductCard({
         <h3 className="line-clamp-2 break-words text-[12px] font-medium leading-snug text-stone-800 sm:text-[13px] dark:text-white">
           <Link
             href={detailHref}
-            className="transition-colors hover:text-[#f97316] dark:hover:text-[#fb923c]"
+            className="transition-colors hover:text-[#FFB300] dark:hover:text-[#FFC107]"
           >
             {product.name}
           </Link>

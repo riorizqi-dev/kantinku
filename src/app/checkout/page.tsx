@@ -17,7 +17,7 @@ import { useApp } from "@/context/AppContext";
 import { useStallColor } from "@/context/StallColorContext";
 import { formatRupiah, cn } from "@/lib/utils";
 import type { CheckoutPaymentMethod } from "@/lib/types";
-import { createBayarPaymentInBrowser } from "@/lib/bayar-browser";
+import { createWarungerikPaymentInBrowser } from "@/lib/warungerik-browser";
 import { PageTransition, Reveal } from "@/components/motion/Reveal";
 import {
   QrisPayModal,
@@ -148,9 +148,19 @@ export default function CheckoutPage() {
   async function onSubmit(e: FormEvent<HTMLFormElement>) {
     e.preventDefault();
     const fd = new FormData(e.currentTarget);
-    const buyerName = String(fd.get("buyerName") || "").trim();
-    const buyerClass = String(fd.get("buyerClass") || "").trim();
-    const buyerPhone = String(fd.get("buyerPhone") || "").trim();
+
+    // Sudah login → data diri otomatis dari akun, form hanya catatan
+    const buyerName = (
+      session?.name || String(fd.get("buyerName") || "")
+    ).trim();
+    const buyerClass = (
+      session?.kelas && session.kelas !== "-"
+        ? session.kelas
+        : String(fd.get("buyerClass") || "")
+    ).trim();
+    const buyerPhone = (
+      session?.phone || String(fd.get("buyerPhone") || "")
+    ).trim();
     const notes = String(fd.get("notes") || "").trim();
 
     if (buyerName.length < 2) {
@@ -186,7 +196,7 @@ export default function CheckoutPage() {
         return;
       }
 
-      // â€”â€”â€” Bayar Online (Bayar.gg / QRIS) â€” modal di halaman, tidak redirect â€”â€”â€”
+      // ————— Bayar Online (WarungErik Pay / QRIS) — modal di halaman, tidak redirect —————
       const desc = `Pesanan ${order.orderNumber} â€” ${order.items
         .map((i) => `${i.name} x${i.qty}`)
         .join(", ")}`.slice(0, 120);
@@ -194,6 +204,7 @@ export default function CheckoutPage() {
       let paymentUrl = "";
       let invoiceId = "";
       let qrisString = "";
+      let qrDataUrl = "";
       let finalAmount = order.total;
 
       try {
@@ -213,6 +224,7 @@ export default function CheckoutPage() {
           paymentUrl = data.paymentUrl as string;
           invoiceId = (data.invoiceId as string) || "";
           qrisString = (data.qrisString as string) || "";
+          qrDataUrl = (data.qrDataUrl as string) || "";
           if (data.finalAmount) finalAmount = Number(data.finalAmount);
         } else if (!res.ok) {
           console.warn("[checkout] bayar create", data?.error);
@@ -222,12 +234,12 @@ export default function CheckoutPage() {
       }
 
       if (!paymentUrl) {
-        const browserPay = await createBayarPaymentInBrowser({
+        const browserPay = await createWarungerikPaymentInBrowser({
+          orderId: order.orderNumber,
           amount: order.total,
-          description: desc,
           customerName: order.buyerName,
           customerPhone: order.buyerPhone || undefined,
-          redirectUrl: `${window.location.origin}/orders?paid=1&order=${encodeURIComponent(order.orderNumber)}`,
+          description: desc,
         });
 
         if (!browserPay.success) {
@@ -243,6 +255,7 @@ export default function CheckoutPage() {
         paymentUrl = browserPay.paymentUrl;
         invoiceId = browserPay.invoiceId;
         qrisString = browserPay.qrisString || "";
+        qrDataUrl = browserPay.qrDataUrl || "";
         if (browserPay.finalAmount) finalAmount = browserPay.finalAmount;
       }
 
@@ -267,14 +280,15 @@ export default function CheckoutPage() {
         invoiceId,
         paymentUrl,
         qrisString: qrisString || undefined,
+        qrDataUrl: qrDataUrl || undefined,
         amount: order.total,
         finalAmount,
       });
       setQrisOpen(true);
       toast(
-        qrisString
+        qrDataUrl || qrisString
           ? "Scan QRIS di bawah untuk bayar"
-          : "Invoice dibuat â€” tampilkan QRIS"
+          : "Invoice dibuat — tampilkan QRIS"
       );
       setLoading(false);
     } catch (err) {
@@ -308,64 +322,115 @@ export default function CheckoutPage() {
         <form onSubmit={onSubmit} className="mt-8 space-y-5">
           <Reveal delay={0.05}>
             <div className="rounded-2xl border border-stone-200/80 bg-white p-6 dark:border-stone-800 dark:bg-[#121a16]">
-              <h2 className="text-sm font-bold uppercase tracking-wide text-stone-500">
-                Data Pemesan
-              </h2>
-              <div className="mt-4 grid gap-4 sm:grid-cols-2">
-                <div>
-                  <label className="mb-1.5 block text-xs font-bold text-stone-600 dark:text-stone-400">
-                    Nama Lengkap
-                  </label>
-                  <input
-                    name="buyerName"
-                    required
-                    autoComplete="name"
-                    defaultValue={session?.name || ""}
-                    className={inputClass}
-                    placeholder="Nama siswa"
-                  />
+              <div className="flex items-center justify-between">
+                <h2 className="text-sm font-bold uppercase tracking-wide text-stone-500">
+                  Data Pemesan
+                </h2>
+                {session && (
+                  <span
+                    className="inline-flex items-center gap-1 rounded-full px-2.5 py-1 text-[11px] font-bold"
+                    style={{ backgroundColor: stallColor.bg, color: stallColor.text }}
+                  >
+                    <ShieldCheck className="h-3 w-3" />
+                    Dari akun
+                  </span>
+                )}
+              </div>
+
+              {session ? (
+                <div className="mt-4">
+                  <dl className="grid gap-3 sm:grid-cols-3">
+                    <div className="rounded-xl border border-stone-200/70 bg-stone-50/60 p-3.5 dark:border-stone-700 dark:bg-stone-800/40">
+                      <dt className="text-[11px] font-bold uppercase tracking-wide text-stone-400 dark:text-stone-500">
+                        Nama
+                      </dt>
+                      <dd className="mt-1 truncate text-sm font-semibold text-stone-900 dark:text-white">
+                        {session.name || "-"}
+                      </dd>
+                    </div>
+                    <div className="rounded-xl border border-stone-200/70 bg-stone-50/60 p-3.5 dark:border-stone-700 dark:bg-stone-800/40">
+                      <dt className="text-[11px] font-bold uppercase tracking-wide text-stone-400 dark:text-stone-500">
+                        Kelas
+                      </dt>
+                      <dd className="mt-1 truncate text-sm font-semibold text-stone-900 dark:text-white">
+                        {session.kelas && session.kelas !== "-"
+                          ? session.kelas
+                          : "-"}
+                      </dd>
+                    </div>
+                    <div className="rounded-xl border border-stone-200/70 bg-stone-50/60 p-3.5 dark:border-stone-700 dark:bg-stone-800/40">
+                      <dt className="text-[11px] font-bold uppercase tracking-wide text-stone-400 dark:text-stone-500">
+                        WhatsApp
+                      </dt>
+                      <dd className="mt-1 truncate text-sm font-semibold text-stone-900 dark:text-white">
+                        {session.phone || "-"}
+                      </dd>
+                    </div>
+                  </dl>
+                  <p className="mt-3 flex items-center gap-1.5 text-xs text-stone-500 dark:text-white/45">
+                    <ShieldCheck className="h-3.5 w-3.5" style={{ color: stallColor.text }} />
+                    Data terisi otomatis dari akun kamu. Ubah di menu
+                    <Link
+                      href="/dashboard/customer/profile"
+                      className="font-semibold hover:underline"
+                      style={{ color: stallColor.text }}
+                    >
+                      Profil
+                    </Link>
+                    .
+                  </p>
                 </div>
-                <div>
-                  <label className="mb-1.5 block text-xs font-bold text-stone-600 dark:text-stone-400">
-                    Kelas
-                  </label>
-                  <input
-                    name="buyerClass"
-                    required
-                    autoComplete="off"
-                    defaultValue={
-                      session?.kelas && session.kelas !== "-"
-                        ? session.kelas
-                        : ""
-                    }
-                    className={inputClass}
-                    placeholder="Contoh: XII IPA 2"
-                  />
+              ) : (
+                <div className="mt-4 grid gap-4 sm:grid-cols-2">
+                  <div>
+                    <label className="mb-1.5 block text-xs font-bold text-stone-600 dark:text-stone-400">
+                      Nama Lengkap
+                    </label>
+                    <input
+                      name="buyerName"
+                      required
+                      autoComplete="name"
+                      className={inputClass}
+                      placeholder="Nama siswa"
+                    />
+                  </div>
+                  <div>
+                    <label className="mb-1.5 block text-xs font-bold text-stone-600 dark:text-stone-400">
+                      Kelas
+                    </label>
+                    <input
+                      name="buyerClass"
+                      required
+                      autoComplete="off"
+                      className={inputClass}
+                      placeholder="Contoh: XII IPA 2"
+                    />
+                  </div>
+                  <div className="sm:col-span-2">
+                    <label className="mb-1.5 block text-xs font-bold text-stone-600 dark:text-stone-400">
+                      WhatsApp (untuk notifikasi)
+                    </label>
+                    <input
+                      name="buyerPhone"
+                      type="tel"
+                      autoComplete="tel"
+                      className={inputClass}
+                      placeholder="08xxxxxxxxxx"
+                    />
+                  </div>
                 </div>
-                <div className="sm:col-span-2">
-                  <label className="mb-1.5 block text-xs font-bold text-stone-600 dark:text-stone-400">
-                    WhatsApp (untuk notifikasi)
-                  </label>
-                  <input
-                    name="buyerPhone"
-                    type="tel"
-                    autoComplete="tel"
-                    defaultValue={session?.phone || ""}
-                    className={inputClass}
-                    placeholder="08xxxxxxxxxx"
-                  />
-                </div>
-                <div className="sm:col-span-2">
-                  <label className="mb-1.5 block text-xs font-bold text-stone-600 dark:text-stone-400">
-                    Catatan
-                  </label>
-                  <textarea
-                    name="notes"
-                    rows={2}
-                    className={cn(inputClass, "resize-none")}
-                    placeholder="Opsional: tidak pedas, tanpa es..."
-                  />
-                </div>
+              )}
+
+              <div className="mt-4">
+                <label className="mb-1.5 block text-xs font-bold text-stone-600 dark:text-stone-400">
+                  Catatan
+                </label>
+                <textarea
+                  name="notes"
+                  rows={2}
+                  className={cn(inputClass, "resize-none")}
+                  placeholder="Opsional: tidak pedas, tanpa es..."
+                />
               </div>
             </div>
           </Reveal>

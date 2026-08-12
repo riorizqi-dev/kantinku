@@ -1,5 +1,5 @@
-/**
- * KantinKu — Presentasi Alur Sistem + ERD + Screenshot
+﻿/**
+ * KantinKu â€” Presentasi Alur Sistem + ERD + Screenshot
  */
 import pptxgen from "pptxgenjs";
 import React from "react";
@@ -77,12 +77,12 @@ function softShadow() {
 const pres = new pptxgen();
 pres.layout = "LAYOUT_16x9";
 pres.author = "KantinKu";
-pres.title = "KantinKu — Alur Sistem, ERD & Screenshot";
+pres.title = "KantinKu â€” Alur Sistem, ERD & Screenshot";
 pres.subject = "Penjelasan alur aplikasi pemesanan kantin digital";
 
-// ── helpers ──
+// â”€â”€ helpers â”€â”€
 function addFooter(slide, page, total = 16, dark = false) {
-  slide.addText("KantinKu  ·  SMK Negeri 17", {
+  slide.addText("KantinKu  Â·  SMK Negeri 17", {
     x: 0.5,
     y: 5.28,
     w: 6,
@@ -143,9 +143,9 @@ async function main() {
     payments: await iconPng(MdPayments, "#06B6D4"),
   };
 
-  // ════════════════════════════════════════
-  // SLIDE 1 — Cover
-  // ════════════════════════════════════════
+  // â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•
+  // SLIDE 1 â€” Cover
+  // â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•
   {
     const s = pres.addSlide();
     s.background = { color: C.dark };
@@ -189,7 +189,7 @@ async function main() {
       margin: 0,
     });
     s.addText(
-      "Penjelasan alur yang mudah dipahami  ·  ERD database  ·  Screenshot aplikasi nyata",
+      "Penjelasan alur yang mudah dipahami  Â·  ERD database  Â·  Screenshot aplikasi nyata",
       {
         x: 0.7,
         y: 3.5,
@@ -209,7 +209,7 @@ async function main() {
       fill: { color: C.emerald },
       rectRadius: 0.1,
     });
-    s.addText("SMK Negeri 17  ·  Multi-lapak", {
+    s.addText("SMK Negeri 17  Â·  Multi-lapak", {
       x: 0.7,
       y: 4.2,
       w: 3.2,
@@ -224,9 +224,9 @@ async function main() {
     });
   }
 
-  // ════════════════════════════════════════
-  // SLIDE 2 — Apa itu KantinKu
-  // ════════════════════════════════════════
+  // â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•
+  // SLIDE 2 â€” Apa itu KantinKu
+  // â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•
   {
     const s = pres.addSlide();
     s.background = { color: C.cream };
@@ -243,7 +243,7 @@ async function main() {
       margin: 0,
     });
     s.addText(
-      "Aplikasi web untuk memesan makanan di kantin sekolah secara digital — multi-lapak, stok real-time, bayar QRIS/di tempat, dan dashboard per peran.",
+      "Aplikasi web untuk memesan makanan di kantin sekolah secara digital â€” multi-lapak, stok real-time, bayar QRIS/di tempat, dan dashboard per peran.",
       {
         x: 0.5,
         y: 1.2,
@@ -258,7 +258,7 @@ async function main() {
 
     const cards = [
       { icon: icons.menu, t: "Pesan online", d: "Lihat menu, pilih varian, masuk keranjang" },
-      { icon: icons.payments, t: "Bayar fleksibel", d: "QRIS (Bayar.gg) atau bayar di kantin" },
+      { icon: icons.payments, t: "Bayar fleksibel", d: "QRIS (WarungErik) atau bayar di kantin" },
       { icon: icons.store, t: "Multi-lapak", d: "Setiap gerai kelola produk & pesanan sendiri" },
       { icon: icons.chart, t: "Komisi platform", d: "Super Admin atur % komisi otomatis" },
     ];
@@ -309,9 +309,9 @@ async function main() {
     addFooter(s, 2);
   }
 
-  // ════════════════════════════════════════
-  // SLIDE 3 — Stack
-  // ════════════════════════════════════════
+  // â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•
+  // SLIDE 3 â€” Stack
+  // â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•
   {
     const s = pres.addSlide();
     s.background = { color: C.cream };
@@ -332,13 +332,13 @@ async function main() {
       ["Frontend", "Next.js 14 (App Router) + TypeScript + Tailwind"],
       ["Animasi", "Framer Motion + Lenis smooth scroll"],
       ["State", "AppContext + localStorage (MVP) / Supabase"],
-      ["Auth role", "superadmin · admin · seller · buyer"],
+      ["Auth role", "superadmin Â· admin Â· seller Â· buyer"],
     ];
     const right = [
-      ["Pembayaran", "Bayar.gg API (QRIS / e-wallet) + bayar di tempat"],
+      ["Pembayaran", "WarungErik Pay API (QRIS / e-wallet) + bayar di tempat"],
       ["Database", "Supabase Postgres (schema.sql)"],
       ["Notifikasi", "WhatsApp deep-link (wa.me)"],
-      ["Deploy", "Vercel + env Bayar.gg"],
+      ["Deploy", "Vercel + env WarungErik"],
     ];
 
     left.forEach((row, i) => {
@@ -425,9 +425,9 @@ async function main() {
     addFooter(s, 3);
   }
 
-  // ════════════════════════════════════════
-  // SLIDE 4 — 4 Peran
-  // ════════════════════════════════════════
+  // â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•
+  // SLIDE 4 â€” 4 Peran
+  // â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•
   {
     const s = pres.addSlide();
     s.background = { color: C.cream };
@@ -450,8 +450,8 @@ async function main() {
         color: "3B82F6",
         soft: "DBEAFE",
         title: "Customer (buyer)",
-        route: "/  ·  /cart  ·  /orders",
-        points: "Lihat menu · Keranjang · Checkout · Riwayat & rating",
+        route: "/  Â·  /cart  Â·  /orders",
+        points: "Lihat menu Â· Keranjang Â· Checkout Â· Riwayat & rating",
       },
       {
         icon: icons.store,
@@ -459,7 +459,7 @@ async function main() {
         soft: "D1FAE5",
         title: "Penjual (seller)",
         route: "/dashboard/seller",
-        points: "CRUD produk & stok · Update status pesanan · Omzet bersih",
+        points: "CRUD produk & stok Â· Update status pesanan Â· Omzet bersih",
       },
       {
         icon: icons.admin,
@@ -467,7 +467,7 @@ async function main() {
         soft: "FEF3C7",
         title: "Admin",
         route: "/dashboard/admin",
-        points: "Monitor pesanan · Lihat penjual · Laporan (bukan kelola menu)",
+        points: "Monitor pesanan Â· Lihat penjual Â· Laporan (bukan kelola menu)",
       },
       {
         icon: icons.super,
@@ -475,7 +475,7 @@ async function main() {
         soft: "EDE9FE",
         title: "Super Admin",
         route: "/dashboard/super",
-        points: "Komisi platform · Kelola akun · Monitoring global",
+        points: "Komisi platform Â· Kelola akun Â· Monitoring global",
       },
     ];
 
@@ -535,9 +535,9 @@ async function main() {
     addFooter(s, 4);
   }
 
-  // ════════════════════════════════════════
-  // SLIDE 5 — Big picture flow
-  // ════════════════════════════════════════
+  // â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•
+  // SLIDE 5 â€” Big picture flow
+  // â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•
   {
     const s = pres.addSlide();
     s.background = { color: C.dark };
@@ -595,7 +595,7 @@ async function main() {
         margin: 0,
       });
       if (i < steps.length - 1) {
-        s.addText("→", {
+        s.addText("â†’", {
           x: x + 1.55,
           y: 2.3,
           w: 0.4,
@@ -617,7 +617,7 @@ async function main() {
       rectRadius: 0.1,
     });
     s.addText(
-      "Intinya: siswa pesan lewat HP → bayar → lapak masak → ambil di kantin. Admin pantau, Super Admin atur komisi.",
+      "Intinya: siswa pesan lewat HP â†’ bayar â†’ lapak masak â†’ ambil di kantin. Admin pantau, Super Admin atur komisi.",
       {
         x: 0.7,
         y: 4.25,
@@ -632,9 +632,9 @@ async function main() {
     addFooter(s, 5, 16, true);
   }
 
-  // ════════════════════════════════════════
-  // SLIDE 6 — Alur customer detail (easy)
-  // ════════════════════════════════════════
+  // â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•
+  // SLIDE 6 â€” Alur customer detail (easy)
+  // â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•
   {
     const s = pres.addSlide();
     s.background = { color: C.cream };
@@ -653,11 +653,11 @@ async function main() {
 
     const flow = [
       { n: "1", t: "Buka beranda", d: "Lihat hero + daftar menu semua lapak (filter lapak/kategori/cari)" },
-      { n: "2", t: "Pilih produk", d: "Masuk detail → pilih varian (harga & stok berbeda) → Tambah keranjang" },
+      { n: "2", t: "Pilih produk", d: "Masuk detail â†’ pilih varian (harga & stok berbeda) â†’ Tambah keranjang" },
       { n: "3", t: "Keranjang", d: "Satu lapak per checkout. Atur qty, lanjut bayar" },
-      { n: "4", t: "Checkout", d: "Isi nama/kelas/WA · pilih Bayar di kantin atau QRIS online" },
-      { n: "5", t: "Bayar & pantau", d: "Jika QRIS → scan · status masuk /orders · ambil saat Siap" },
-      { n: "6", t: "Selesai", d: "Pesanan completed → boleh kasih rating & komentar ke lapak" },
+      { n: "4", t: "Checkout", d: "Isi nama/kelas/WA Â· pilih Bayar di kantin atau QRIS online" },
+      { n: "5", t: "Bayar & pantau", d: "Jika QRIS â†’ scan Â· status masuk /orders Â· ambil saat Siap" },
+      { n: "6", t: "Selesai", d: "Pesanan completed â†’ boleh kasih rating & komentar ke lapak" },
     ];
 
     flow.forEach((f, i) => {
@@ -719,13 +719,13 @@ async function main() {
     addFooter(s, 6);
   }
 
-  // ════════════════════════════════════════
-  // SLIDE 7 — Screenshot Home + Menu
-  // ════════════════════════════════════════
+  // â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•
+  // SLIDE 7 â€” Screenshot Home + Menu
+  // â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•
   {
     const s = pres.addSlide();
     s.background = { color: C.cream };
-    sectionLabel(s, "Screenshot · Customer", 0.4, 0.22);
+    sectionLabel(s, "Screenshot Â· Customer", 0.4, 0.22);
     s.addText("Beranda & daftar menu", {
       x: 0.4,
       y: 0.42,
@@ -785,7 +785,7 @@ async function main() {
       h: 2.81,
       sizing: { type: "cover", w: 4.25, h: 2.81 },
     });
-    s.addText("Filter lapak & kategori · kartu produk", {
+    s.addText("Filter lapak & kategori Â· kartu produk", {
       x: 5.3,
       y: 3.95,
       w: 4.25,
@@ -799,13 +799,13 @@ async function main() {
     addFooter(s, 7);
   }
 
-  // ════════════════════════════════════════
-  // SLIDE 8 — Product + Login
-  // ════════════════════════════════════════
+  // â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•
+  // SLIDE 8 â€” Product + Login
+  // â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•
   {
     const s = pres.addSlide();
     s.background = { color: C.cream };
-    sectionLabel(s, "Screenshot · Customer", 0.4, 0.22);
+    sectionLabel(s, "Screenshot Â· Customer", 0.4, 0.22);
     s.addText("Detail produk & halaman masuk", {
       x: 0.4,
       y: 0.42,
@@ -867,14 +867,14 @@ async function main() {
     addFooter(s, 8);
   }
 
-  // ════════════════════════════════════════
-  // SLIDE 9 — Alur pembayaran
-  // ════════════════════════════════════════
+  // â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•
+  // SLIDE 9 â€” Alur pembayaran
+  // â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•
   {
     const s = pres.addSlide();
     s.background = { color: C.cream };
     sectionLabel(s, "Alur pembayaran", 0.5, 0.25);
-    s.addText("Dua cara bayar — pilih saat checkout", {
+    s.addText("Dua cara bayar â€” pilih saat checkout", {
       x: 0.5,
       y: 0.48,
       w: 9,
@@ -916,7 +916,7 @@ async function main() {
     });
     s.addText(
       [
-        { text: "Checkout → metode canteen", options: { bullet: true, breakLine: true } },
+        { text: "Checkout â†’ metode canteen", options: { bullet: true, breakLine: true } },
         { text: "Order dibuat, status waiting", options: { bullet: true, breakLine: true } },
         { text: "paymentStatus: unpaid / pending", options: { bullet: true, breakLine: true } },
         { text: "Bayar tunai/QRIS gerai saat ambil", options: { bullet: true, breakLine: true } },
@@ -951,7 +951,7 @@ async function main() {
       h: 0.55,
       fill: { color: C.blue },
     });
-    s.addText("B. Online QRIS (Bayar.gg)", {
+    s.addText("B. Online QRIS (WarungErik)", {
       x: 5.3,
       y: 1.2,
       w: 4.2,
@@ -964,11 +964,11 @@ async function main() {
     });
     s.addText(
       [
-        { text: "POST /api/bayar/create → invoice", options: { bullet: true, breakLine: true } },
+        { text: "POST /api/bayar/create â†’ invoice", options: { bullet: true, breakLine: true } },
         { text: "User scan QRIS di modal/redirect", options: { bullet: true, breakLine: true } },
         { text: "Poll GET /api/bayar/check", options: { bullet: true, breakLine: true } },
         { text: "Webhook opsional konfirmasi paid", options: { bullet: true, breakLine: true } },
-        { text: "Stok berkurang · masuk dashboard penjual", options: { bullet: true } },
+        { text: "Stok berkurang Â· masuk dashboard penjual", options: { bullet: true } },
       ],
       {
         x: 5.4,
@@ -984,9 +984,9 @@ async function main() {
     addFooter(s, 9);
   }
 
-  // ════════════════════════════════════════
-  // SLIDE 10 — Alur penjual
-  // ════════════════════════════════════════
+  // â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•
+  // SLIDE 10 â€” Alur penjual
+  // â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•
   {
     const s = pres.addSlide();
     s.background = { color: C.cream };
@@ -1065,7 +1065,7 @@ async function main() {
         margin: 0,
       });
       if (i < statuses.length - 1 && i < 3) {
-        s.addText("→", {
+        s.addText("â†’", {
           x: x + 1.65,
           y: 1.9,
           w: 0.3,
@@ -1098,7 +1098,7 @@ async function main() {
       margin: 0,
     });
     s.addText(
-      "Tambah / edit / hapus produk & varian  ·  Atur stok  ·  Ubah status pesanan  ·  Lihat omzet kotor & pendapatan bersih (setelah komisi)  ·  Chat WA ke pembeli  ·  Tidak belanja di menu utama (auto-redirect ke dashboard)",
+      "Tambah / edit / hapus produk & varian  Â·  Atur stok  Â·  Ubah status pesanan  Â·  Lihat omzet kotor & pendapatan bersih (setelah komisi)  Â·  Chat WA ke pembeli  Â·  Tidak belanja di menu utama (auto-redirect ke dashboard)",
       {
         x: 0.7,
         y: 3.85,
@@ -1113,13 +1113,13 @@ async function main() {
     addFooter(s, 10);
   }
 
-  // ════════════════════════════════════════
-  // SLIDE 11 — Dashboard screenshots
-  // ════════════════════════════════════════
+  // â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•
+  // SLIDE 11 â€” Dashboard screenshots
+  // â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•
   {
     const s = pres.addSlide();
     s.background = { color: C.cream };
-    sectionLabel(s, "Screenshot · Dashboard", 0.35, 0.18);
+    sectionLabel(s, "Screenshot Â· Dashboard", 0.35, 0.18);
     s.addText("Tiga dashboard role", {
       x: 0.35,
       y: 0.38,
@@ -1133,7 +1133,7 @@ async function main() {
     });
 
     const dash = [
-      { file: "07-seller-dashboard.png", label: "Penjual — GERAI RPL" },
+      { file: "07-seller-dashboard.png", label: "Penjual â€” GERAI RPL" },
       { file: "08-admin-dashboard.png", label: "Admin platform" },
       { file: "09-super-dashboard.png", label: "Super Admin" },
     ];
@@ -1171,9 +1171,9 @@ async function main() {
     addFooter(s, 11);
   }
 
-  // ════════════════════════════════════════
-  // SLIDE 12 — Admin & Super
-  // ════════════════════════════════════════
+  // â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•
+  // SLIDE 12 â€” Admin & Super
+  // â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•
   {
     const s = pres.addSlide();
     s.background = { color: C.cream };
@@ -1286,13 +1286,13 @@ async function main() {
     addFooter(s, 12);
   }
 
-  // ════════════════════════════════════════
-  // SLIDE 13 — ERD full image
-  // ════════════════════════════════════════
+  // â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•
+  // SLIDE 13 â€” ERD full image
+  // â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•
   {
     const s = pres.addSlide();
     s.background = { color: C.dark };
-    s.addText("ERD — Entity Relationship Diagram", {
+    s.addText("ERD â€” Entity Relationship Diagram", {
       x: 0.4,
       y: 0.15,
       w: 9,
@@ -1313,9 +1313,9 @@ async function main() {
     });
   }
 
-  // ════════════════════════════════════════
-  // SLIDE 14 — ERD penjelasan mudah
-  // ════════════════════════════════════════
+  // â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•
+  // SLIDE 14 â€” ERD penjelasan mudah
+  // â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•
   {
     const s = pres.addSlide();
     s.background = { color: C.cream };
@@ -1335,27 +1335,27 @@ async function main() {
     const rels = [
       {
         t: "1 Lapak punya banyak Produk",
-        d: "sellers → products (seller_id). Tiap gerai hanya lihat & kelola menu miliknya.",
+        d: "sellers â†’ products (seller_id). Tiap gerai hanya lihat & kelola menu miliknya.",
       },
       {
         t: "1 Produk punya banyak Varian",
-        d: "products → product_variants. Harga & stok ada di varian (mis. Mie Goreng / Mie Kuah).",
+        d: "products â†’ product_variants. Harga & stok ada di varian (mis. Mie Goreng / Mie Kuah).",
       },
       {
         t: "1 Lapak punya banyak Pesanan",
-        d: "sellers → orders (seller_id). Isolasi: penjual A tidak lihat order penjual B.",
+        d: "sellers â†’ orders (seller_id). Isolasi: penjual A tidak lihat order penjual B.",
       },
       {
         t: "1 Pesanan punya banyak Item",
-        d: "orders → order_items. Tiap baris simpan product_id + variant_id + snapshot harga.",
+        d: "orders â†’ order_items. Tiap baris simpan product_id + variant_id + snapshot harga.",
       },
       {
         t: "Customer terhubung ke Order",
-        d: "users (buyer) → orders (buyer_id). Boleh null untuk guest (isi nama manual).",
+        d: "users (buyer) â†’ orders (buyer_id). Boleh null untuk guest (isi nama manual).",
       },
       {
         t: "Akun penjual menempel ke Lapak",
-        d: "users.seller_id → sellers.id. Role seller wajib punya sellerId.",
+        d: "users.seller_id â†’ sellers.id. Role seller wajib punya sellerId.",
       },
     ];
     rels.forEach((r, i) => {
@@ -1417,9 +1417,9 @@ async function main() {
     addFooter(s, 14);
   }
 
-  // ════════════════════════════════════════
-  // SLIDE 15 — Komisi & isolasi
-  // ════════════════════════════════════════
+  // â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•
+  // SLIDE 15 â€” Komisi & isolasi
+  // â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•
   {
     const s = pres.addSlide();
     s.background = { color: C.cream };
@@ -1456,7 +1456,7 @@ async function main() {
       margin: 0,
     });
     s.addText(
-      "subtotal  →  commission_amount = subtotal × rate%  →  seller_amount = subtotal − commission  →  total = subtotal",
+      "subtotal  â†’  commission_amount = subtotal Ã— rate%  â†’  seller_amount = subtotal âˆ’ commission  â†’  total = subtotal",
       {
         x: 0.7,
         y: 1.75,
@@ -1471,8 +1471,8 @@ async function main() {
 
     const boxes = [
       { t: "platform_settings", d: "1 baris global: school_name, commission_rate (7%), order_seq, WA platform" },
-      { t: "Isolasi query", d: "products.filter(sellerId) · orders.filter(sellerId) — penjual hanya data sendiri" },
-      { t: "Keranjang", d: "CartItem wajib 1 sellerId — tidak campur belanja multi-lapak dalam 1 checkout" },
+      { t: "Isolasi query", d: "products.filter(sellerId) Â· orders.filter(sellerId) â€” penjual hanya data sendiri" },
+      { t: "Keranjang", d: "CartItem wajib 1 sellerId â€” tidak campur belanja multi-lapak dalam 1 checkout" },
     ];
     boxes.forEach((b, i) => {
       const x = 0.45 + i * 3.15;
@@ -1510,9 +1510,9 @@ async function main() {
     addFooter(s, 15);
   }
 
-  // ════════════════════════════════════════
-  // SLIDE 16 — Ringkasan + closing
-  // ════════════════════════════════════════
+  // â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•
+  // SLIDE 16 â€” Ringkasan + closing
+  // â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•
   {
     const s = pres.addSlide();
     s.background = { color: C.dark };
@@ -1529,10 +1529,10 @@ async function main() {
     });
 
     const sum = [
-      { n: "1", t: "Customer pesan → bayar → ambil", d: "Menu · varian · keranjang · checkout · orders" },
-      { n: "2", t: "Penjual kelola lapak sendiri", d: "Produk, stok, status Menunggu→…→Selesai" },
-      { n: "3", t: "Admin pantau, Super atur komisi", d: "Bukan jualan harian — governance platform" },
-      { n: "4", t: "Data terisolasi per seller_id", d: "ERD: sellers → products/variants → orders/items" },
+      { n: "1", t: "Customer pesan â†’ bayar â†’ ambil", d: "Menu Â· varian Â· keranjang Â· checkout Â· orders" },
+      { n: "2", t: "Penjual kelola lapak sendiri", d: "Produk, stok, status Menungguâ†’â€¦â†’Selesai" },
+      { n: "3", t: "Admin pantau, Super atur komisi", d: "Bukan jualan harian â€” governance platform" },
+      { n: "4", t: "Data terisolasi per seller_id", d: "ERD: sellers â†’ products/variants â†’ orders/items" },
     ];
     sum.forEach((item, i) => {
       const y = 1.2 + i * 0.85;

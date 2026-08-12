@@ -22,7 +22,7 @@ export type OrderStatus =
 
 export type PaymentStatus = "unpaid" | "pending" | "paid" | "failed" | "expired";
 
-/** online = Bayar.gg/QRIS, canteen = bayar di kantin (COD) */
+/** online = QRIS online, canteen = bayar di kantin (COD) */
 export type CheckoutPaymentMethod = "online" | "canteen";
 /** Cara penyajian pesanan: ambil / makan di tempat / antar ke kelas */
 export type CheckoutPickupMethod = "takeaway" | "dinein" | "delivery";
@@ -182,13 +182,13 @@ export interface Order {
   notes?: string;
   status: OrderStatus;
   paymentStatus: PaymentStatus;
-  /** online = QRIS/Bayar.gg, canteen = bayar di tempat */
+  /** online = QRIS online, canteen = bayar di tempat */
   paymentMethod?: CheckoutPaymentMethod;
   /** Cara penyajian: takeaway / dinein / delivery (antar ke kelas) */
   pickupMethod?: CheckoutPickupMethod;
   /** Ongkos antar ke kelas (diisi saat pickupMethod=delivery) */
   deliveryFee?: number;
-  /** Bayar.gg invoice id (PAY-...) */
+  /** Invoice id dari payment gateway */
   bayarInvoiceId?: string;
   bayarPaymentUrl?: string;
   paidAt?: number;

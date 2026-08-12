@@ -74,7 +74,7 @@ export function ProfileForm({
 
   const ring =
     accent === "seller"
-      ? "ring-[#f97316]/40"
+      ? "ring-[#FFB300]/40"
       : "ring-stone-200 dark:ring-white/15";
 
   const softBtn =
@@ -102,9 +102,9 @@ export function ProfileForm({
           disabled={busy}
           onClick={() => fileRef.current?.click()}
           className={cn(
-            "group relative shrink-0 rounded-full ring-2 transition focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-[#f97316]",
+            "group relative shrink-0 rounded-full ring-2 transition focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-[#FFB300]",
             ring,
-            accent === "seller" && "ring-[#f97316]/55 hover:ring-[#f97316]"
+            accent === "seller" && "ring-[#FFB300]/55 hover:ring-[#FFB300]"
           )}
           aria-label="Ubah foto profil"
         >
@@ -131,7 +131,7 @@ export function ProfileForm({
           </span>
           {busy && (
             <div className="absolute inset-0 flex items-center justify-center rounded-full bg-black/50">
-              <Loader2 className="h-6 w-6 animate-spin text-[#f97316]" />
+              <Loader2 className="h-6 w-6 animate-spin text-[#FFB300]" />
             </div>
           )}
         </button>
@@ -205,7 +205,7 @@ export function ProfileForm({
           required
           minLength={2}
           maxLength={60}
-          className="w-full rounded-xl border border-stone-200 bg-white px-3.5 py-3 text-base font-medium text-stone-900 placeholder:text-stone-400 focus:border-[#f97316]/50 focus:ring-2 focus:ring-[#f97316]/15 dark:border-white/10 dark:bg-black/30 dark:text-white dark:placeholder:text-white/30 dark:focus:border-[#f97316]/40 dark:focus:ring-[#f97316]/15"
+          className="w-full rounded-xl border border-stone-200 bg-white px-3.5 py-3 text-base font-medium text-stone-900 placeholder:text-stone-400 focus:border-[#FFB300]/50 focus:ring-2 focus:ring-[#FFB300]/15 dark:border-white/10 dark:bg-black/30 dark:text-white dark:placeholder:text-white/30 dark:focus:border-[#FFB300]/40 dark:focus:ring-[#FFB300]/15"
           placeholder="Nama lengkap Anda"
         />
       </div>
@@ -217,7 +217,7 @@ export function ProfileForm({
       <button
         type="submit"
         disabled={busy}
-        className="inline-flex min-h-[52px] w-full cursor-pointer items-center justify-center gap-2 rounded-full bg-[#f97316] px-6 py-3.5 text-base font-bold text-[#1c1917] transition hover:bg-[#0ea572] disabled:opacity-60"
+        className="inline-flex min-h-[52px] w-full cursor-pointer items-center justify-center gap-2 rounded-full bg-[#FFB300] px-6 py-3.5 text-base font-bold text-[#1c1917] transition hover:bg-[#0ea572] disabled:opacity-60"
         style={{ boxShadow: "inset 0 1px 0 rgba(255,255,255,0.18)" }}
       >
         {busy ? (

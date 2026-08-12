@@ -91,7 +91,7 @@ export default function SuperAdminDashboardPage() {
   if (!ready || !session || session.role !== "superadmin") {
     return (
       <div className="flex min-h-[40vh] items-center justify-center">
-        <div className="h-8 w-8 animate-spin rounded-full border-2 border-orange-200 border-t-[#f97316]" />
+        <div className="h-8 w-8 animate-spin rounded-full border-2 border-amber-200 border-t-[#FFB300]" />
       </div>
     );
   }
@@ -214,7 +214,7 @@ export default function SuperAdminDashboardPage() {
                 <p className="text-[11px] font-semibold uppercase tracking-wide text-stone-500">
                   {s.label}
                 </p>
-                <s.icon className="h-4 w-4 shrink-0 text-[#f97316]" />
+                <s.icon className="h-4 w-4 shrink-0 text-[#FFB300]" />
               </div>
               <p className="mt-2 text-lg font-bold text-stone-900 sm:text-xl dark:text-white">
                 {s.value}
@@ -232,7 +232,7 @@ export default function SuperAdminDashboardPage() {
               className={cn(
                 "rounded-full px-4 py-2 text-sm font-semibold transition-all duration-200",
                 tab === t.id
-                  ? "bg-[#f97316] text-[#1c1917] shadow-sm"
+                  ? "bg-[#FFB300] text-[#1c1917] shadow-sm"
                   : "text-stone-600 hover:bg-stone-100 dark:text-stone-300 dark:hover:bg-white/[0.06]"
               )}
             >
@@ -248,7 +248,7 @@ export default function SuperAdminDashboardPage() {
               <h2 className="font-bold text-stone-900 dark:text-white">
                 Komisi platform
               </h2>
-              <p className="mt-2 text-4xl font-semibold text-[#ea580c] dark:text-[#fb923c]">
+              <p className="mt-2 text-4xl font-semibold text-[#F0A500] dark:text-[#FFC107]">
                 {state.settings.commissionRate}%
               </p>
               <p className="mt-2 text-sm leading-relaxed text-stone-500">
@@ -325,7 +325,7 @@ export default function SuperAdminDashboardPage() {
                       </p>
                     </div>
                     <div className="text-right text-sm sm:min-w-[160px]">
-                      <p className="font-bold text-[#ea580c] dark:text-[#fb923c]">
+                      <p className="font-bold text-[#F0A500] dark:text-[#FFC107]">
                         {formatRupiah(o.total)}
                       </p>
                       <p className="text-xs text-amber-600">
@@ -391,7 +391,7 @@ export default function SuperAdminDashboardPage() {
                   </div>
                   <button
                     type="submit"
-                    className="rounded-full bg-[#f97316] px-5 py-2.5 text-sm font-bold text-[#1c1917] transition hover:bg-[#ea580c]"
+                    className="rounded-full bg-[#FFB300] px-5 py-2.5 text-sm font-bold text-[#1c1917] transition hover:bg-[#F0A500]"
                   >
                     Simpan semua lapak
                   </button>
@@ -505,7 +505,7 @@ export default function SuperAdminDashboardPage() {
                   <div className="flex items-end sm:col-span-2 lg:col-span-1">
                     <button
                       type="submit"
-                      className="w-full rounded-full bg-[#f97316] py-2.5 text-sm font-bold text-[#1c1917] transition hover:bg-[#ea580c]"
+                      className="w-full rounded-full bg-[#FFB300] py-2.5 text-sm font-bold text-[#1c1917] transition hover:bg-[#F0A500]"
                     >
                       Simpan Penjual
                     </button>
@@ -557,7 +557,7 @@ export default function SuperAdminDashboardPage() {
             <form onSubmit={onAddAdmin} className="xl:col-span-2">
               <DashboardCard className="h-full">
                 <div className="flex items-center gap-2">
-                  <Users className="h-4 w-4 text-[#f97316]" />
+                  <Users className="h-4 w-4 text-[#FFB300]" />
                   <h2 className="font-bold text-stone-900 dark:text-white">
                     Tambah Admin
                   </h2>
@@ -591,7 +591,7 @@ export default function SuperAdminDashboardPage() {
                 </div>
                 <button
                   type="submit"
-                  className="mt-5 w-full rounded-full bg-[#f97316] py-2.5 text-sm font-bold text-[#1c1917] transition hover:bg-[#ea580c]"
+                  className="mt-5 w-full rounded-full bg-[#FFB300] py-2.5 text-sm font-bold text-[#1c1917] transition hover:bg-[#F0A500]"
                 >
                   Simpan Admin
                 </button>
@@ -606,7 +606,7 @@ export default function SuperAdminDashboardPage() {
             <form onSubmit={onCommission} className="lg:col-span-3">
               <DashboardCard>
                 <div className="flex items-center gap-2">
-                  <Percent className="h-4 w-4 text-[#f97316]" />
+                  <Percent className="h-4 w-4 text-[#FFB300]" />
                   <h2 className="font-bold text-stone-900 dark:text-white">
                     Pengaturan platform
                   </h2>
@@ -693,7 +693,7 @@ export default function SuperAdminDashboardPage() {
                 <div className="mt-6 flex flex-wrap gap-3">
                   <button
                     type="submit"
-                    className="rounded-full bg-[#f97316] px-6 py-2.5 text-sm font-bold text-[#1c1917] transition hover:bg-[#ea580c]"
+                    className="rounded-full bg-[#FFB300] px-6 py-2.5 text-sm font-bold text-[#1c1917] transition hover:bg-[#F0A500]"
                   >
                     Simpan Pengaturan
                   </button>
@@ -715,7 +715,7 @@ export default function SuperAdminDashboardPage() {
                   </div>
                   <div className="flex justify-between gap-3">
                     <dt className="text-stone-500">Terkumpul</dt>
-                    <dd className="font-bold text-[#ea580c] dark:text-[#fb923c]">
+                    <dd className="font-bold text-[#F0A500] dark:text-[#FFC107]">
                       {formatRupiah(stats.commission)}
                     </dd>
                   </div>

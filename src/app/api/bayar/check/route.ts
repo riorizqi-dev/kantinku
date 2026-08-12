@@ -1,9 +1,9 @@
 import { NextRequest, NextResponse } from "next/server";
-import { checkBayarPayment } from "@/lib/bayar";
+import { checkWarungerikPayment } from "@/lib/warungerik";
 
 /**
- * GET /api/bayar/check?invoice=PAY-xxx
- * Cek status pembayaran di Bayar.gg (untuk polling dari frontend)
+ * GET /api/bayar/check?invoice=INV-xxx
+ * Cek status pembayaran di WarungErik Pay (untuk polling dari frontend)
  */
 export async function GET(req: NextRequest) {
   const invoice = req.nextUrl.searchParams.get("invoice");
@@ -15,7 +15,7 @@ export async function GET(req: NextRequest) {
   }
 
   try {
-    const result = await checkBayarPayment(invoice);
+    const result = await checkWarungerikPayment(invoice);
     if (!result.success) {
       return NextResponse.json(
         { error: result.error || "Gagal cek status" },

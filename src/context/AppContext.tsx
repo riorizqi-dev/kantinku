@@ -31,7 +31,13 @@ import type {
 } from "@/lib/types";
 import { createInitialState, DEFAULT_SELLERS } from "@/lib/seed";
 import { loadState, resetState, saveState } from "@/lib/storage";
-import { loadLocalSlice, saveLocalSlice } from "@/lib/storage-local";
+import {
+  loadCartFor,
+  loadLocalSlice,
+  ownerKey,
+  saveCartFor,
+  saveLocalSlice,
+} from "@/lib/storage-local";
 import { isSupabaseConfigured } from "@/lib/supabase";
 import {
   loadRemoteBundle,
@@ -250,7 +256,7 @@ export function AppProvider({ children }: { children: React.ReactNode }) {
               ...remote,
               sellers,
               users,
-              cart: local.cart,
+              cart: loadCartFor(ownerKey(local.session)),
               session: local.session,
               reviews: ratingsFresh ? [] : local.reviews || [],
               autoPayouts: local.autoPayouts || {},
@@ -268,14 +274,15 @@ export function AppProvider({ children }: { children: React.ReactNode }) {
       // 2) Fallback localStorage v3
       if (!cancelled) {
         const legacy = loadState();
+        const savedSession = local.session ?? legacy.session;
         setState({
           ...legacy,
           reviews: legacy.reviews?.length
             ? legacy.reviews
             : local.reviews,
-          // prefer session/cart dari slice baru kalau ada
-          cart: local.cart.length ? local.cart : legacy.cart,
-          session: local.session ?? legacy.session,
+          // prefer session/cart per-owner dari slice baru kalau ada
+          cart: loadCartFor(ownerKey(savedSession)),
+          session: savedSession,
           autoPayouts: local.autoPayouts || legacy.autoPayouts || {},
         });
         setUseRemote(false);
@@ -293,8 +300,9 @@ export function AppProvider({ children }: { children: React.ReactNode }) {
   // Persist cart + session + reviews + autoPayouts di browser
   useEffect(() => {
     if (!hydrated) return;
+    const owner = ownerKey(state.session);
+    saveCartFor(owner, state.cart);
     saveLocalSlice({
-      cart: state.cart,
       session: state.session,
       reviews: state.reviews || [],
       autoPayouts: state.autoPayouts || {},
@@ -373,7 +381,12 @@ export function AppProvider({ children }: { children: React.ReactNode }) {
         sellerId: user.sellerId,
         avatar: user.avatar,
       };
-      setState((s) => ({ ...s, session }));
+      setState((s) => ({
+        ...s,
+        session,
+        // Cart per akun: ganti ke milik akun yang login, bukan cart guest/user lain
+        cart: loadCartFor(user.id),
+      }));
       toast(`Selamat datang, ${user.name}`);
       return user.role;
     },
@@ -422,6 +435,8 @@ export function AppProvider({ children }: { children: React.ReactNode }) {
         ...s,
         users: [...s.users, user],
         session,
+        // Akun baru → mulai dari keranjang kosong
+        cart: [],
       }));
       return null;
     },
@@ -476,7 +491,11 @@ export function AppProvider({ children }: { children: React.ReactNode }) {
   );
 
   const logout = useCallback(() => {
-    setState((s) => ({ ...s, session: null }));
+    setState((s) => {
+      // Simpan cart akun yang keluar, lalu kembali ke cart guest
+      saveCartFor(ownerKey(s.session), s.cart);
+      return { ...s, session: null, cart: loadCartFor("guest") };
+    });
     toast("Anda telah keluar", "info");
   }, [toast]);
 
@@ -1453,8 +1472,8 @@ export function AppProvider({ children }: { children: React.ReactNode }) {
               cart: [],
               session: state.session,
             });
+            saveCartFor(ownerKey(state.session), []);
             saveLocalSlice({
-              cart: [],
               session: state.session,
               reviews: [],
               autoPayouts: {},
@@ -1469,8 +1488,8 @@ export function AppProvider({ children }: { children: React.ReactNode }) {
       }
       const next = resetState();
       setState({ ...next, session: state.session, reviews: [], withdrawals: [] });
+      saveCartFor(ownerKey(state.session), []);
       saveLocalSlice({
-        cart: [],
         session: state.session,
         reviews: [],
         autoPayouts: {},

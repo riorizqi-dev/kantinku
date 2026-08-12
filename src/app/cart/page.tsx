@@ -2,8 +2,7 @@
 
 import Image from "next/image";
 import Link from "next/link";
-import { Minus, Plus, Trash2, ArrowRight, ShoppingBag, MessageSquare } from "lucide-react";
-import { useState } from "react";
+import { Minus, Plus, Trash2, ArrowRight, ShoppingBag } from "lucide-react";
 import { useApp } from "@/context/AppContext";
 import { useStallColor } from "@/context/StallColorContext";
 import { formatRupiah } from "@/lib/utils";
@@ -17,7 +16,6 @@ export default function CartPage() {
     removeFromCart,
     cartSubtotal,
   } = useApp();
-  const [orderNotes, setOrderNotes] = useState("");
   const { color: stallColor } = useStallColor();
 
   if (!ready) {
@@ -150,20 +148,6 @@ export default function CartPage() {
                   <span className="text-xl font-bold text-stone-900 dark:text-white">
                     {formatRupiah(cartSubtotal)}
                   </span>
-                </div>
-
-                <div className="mt-4">
-                  <label className="mb-1.5 flex items-center gap-1.5 text-xs font-bold text-stone-600 dark:text-stone-400">
-                    <MessageSquare className="h-3.5 w-3.5" />
-                    Catatan Pesanan (opsional)
-                  </label>
-                  <textarea
-                    value={orderNotes}
-                    onChange={(e) => setOrderNotes(e.target.value)}
-                    rows={2}
-                    className="w-full resize-none rounded-xl border border-stone-200 bg-stone-50 px-3.5 py-2.5 text-sm text-stone-900 placeholder:text-stone-400 transition focus:ring-2 dark:border-stone-700 dark:bg-stone-900 dark:text-stone-100 dark:placeholder:text-stone-500"
-                    placeholder="Contoh: Es batu sedikit, tidak pedas, extra sambal..."
-                  />
                 </div>
 
                 <p className="mt-3 text-xs text-stone-400">

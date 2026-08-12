@@ -26,28 +26,21 @@ function loadEnvLocal() {
 const local = loadEnvLocal();
 const PROD_URL = "https://kantinku-six.vercel.app";
 
-/** Env untuk Vercel — JANGAN include BAYAR_FORCE_IP */
+/** Env untuk Vercel */
 const vars = {
   NEXT_PUBLIC_APP_URL: PROD_URL,
 
   NEXT_PUBLIC_SUPABASE_URL: local.NEXT_PUBLIC_SUPABASE_URL,
   NEXT_PUBLIC_SUPABASE_ANON_KEY: local.NEXT_PUBLIC_SUPABASE_ANON_KEY,
 
-  BAYAR_API_KEY: local.BAYAR_API_KEY,
-  BAYAR_BASE_URL: local.BAYAR_BASE_URL || "https://www.bayar.gg/api",
-  BAYAR_PAYMENT_METHOD: local.BAYAR_PAYMENT_METHOD || "qris",
-  BAYAR_USE_QRIS_CONVERTER: local.BAYAR_USE_QRIS_CONVERTER || "true",
-  BAYAR_PAYMENT_URL: local.BAYAR_PAYMENT_URL || "https://www.bayar.gg/pay",
+  WARUNGERIK_API_KEY: local.WARUNGERIK_API_KEY,
+  WARUNGERIK_BASE_URL:
+    local.WARUNGERIK_BASE_URL || "https://pg.warungerik.com",
 
-  NEXT_PUBLIC_BAYAR_API_KEY: local.NEXT_PUBLIC_BAYAR_API_KEY || local.BAYAR_API_KEY,
-  NEXT_PUBLIC_BAYAR_BASE_URL:
-    local.NEXT_PUBLIC_BAYAR_BASE_URL || "https://www.bayar.gg/api",
-  NEXT_PUBLIC_BAYAR_PAYMENT_METHOD:
-    local.NEXT_PUBLIC_BAYAR_PAYMENT_METHOD || "qris",
-  NEXT_PUBLIC_BAYAR_USE_QRIS_CONVERTER:
-    local.NEXT_PUBLIC_BAYAR_USE_QRIS_CONVERTER || "true",
-  NEXT_PUBLIC_BAYAR_PAYMENT_URL:
-    local.NEXT_PUBLIC_BAYAR_PAYMENT_URL || "https://www.bayar.gg/pay",
+  NEXT_PUBLIC_WARUNGERIK_API_KEY:
+    local.NEXT_PUBLIC_WARUNGERIK_API_KEY || local.WARUNGERIK_API_KEY,
+  NEXT_PUBLIC_WARUNGERIK_BASE_URL:
+    local.NEXT_PUBLIC_WARUNGERIK_BASE_URL || "https://pg.warungerik.com",
 };
 
 const targets = ["production", "preview"];
@@ -106,5 +99,5 @@ console.log(`\nDone. ok=${ok} fail=${fail}`);
 console.log(`Production URL: ${PROD_URL}`);
 console.log("Redeploy: npx vercel --prod");
 console.log(
-  `Bayar.gg webhook callback: ${PROD_URL}/api/bayar/webhook`
+  `Webhook callback (opsional): ${PROD_URL}/api/bayar/webhook`
 );

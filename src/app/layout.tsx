@@ -16,8 +16,8 @@ export const metadata: Metadata = {
   description:
     "Pesan makanan dan minuman kantin sekolah dengan cepat. Pembayaran digital, stok real-time, notifikasi WhatsApp.",
   icons: {
-    icon: [{ url: "/icon.svg", type: "image/svg+xml" }],
-    apple: [{ url: "/apple-icon", type: "image/png", sizes: "180x180" }],
+    icon: [{ url: "/logo.png", type: "image/png" }],
+    apple: [{ url: "/logo.png", type: "image/png", sizes: "2000x2000" }],
   },
 };
 

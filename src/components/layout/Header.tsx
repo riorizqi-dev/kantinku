@@ -15,7 +15,6 @@ import {
   X,
 } from "lucide-react";
 import { AnimatePresence, motion } from "framer-motion";
-import { LogoMark } from "@/components/brand/Logo";
 import { Avatar } from "@/components/profile/Avatar";
 import { ContactAdmin } from "@/components/layout/ContactAdmin";
 import { useApp } from "@/context/AppContext";
@@ -23,7 +22,7 @@ import { useTheme } from "@/components/providers/ThemeProvider";
 import { cn } from "@/lib/utils";
 
 const iconStroke = 1.75;
-const HEADER_BG = "#ee4d2d";
+const HEADER_BG = "#FFB300";
 
 export function Header() {
   const { state, cartCount, logout, getSellerUnreadCount } = useApp();
@@ -85,12 +84,11 @@ export function Header() {
             className="flex shrink-0 cursor-pointer items-center gap-2"
             aria-label="KantinKu — Beranda"
           >
-            <span
-              className="flex h-8 w-8 items-center justify-center rounded-md bg-white text-[#ee4d2d]"
-              style={{ boxShadow: "inset 0 1px 0 rgba(0,0,0,0.06)" }}
-            >
-              <LogoMark className="h-[18px] w-[18px]" />
-            </span>
+            <img
+                src="/logo.png"
+                alt="KantinKu"
+                className="h-10 w-10 rounded-md object-contain"
+              />
             <span className="hidden flex-col justify-center leading-none sm:flex">
               <span className="text-[16px] font-bold tracking-[-0.02em] text-white">
                 KantinKu
@@ -117,7 +115,7 @@ export function Header() {
               />
               <button
                 type="submit"
-                className="flex h-9 w-12 cursor-pointer items-center justify-center rounded-r-md bg-[#d8451f] text-white transition-colors hover:bg-[#c73e1c]"
+                className="flex h-9 w-12 cursor-pointer items-center justify-center rounded-r-md bg-[#F0A500] text-white transition-colors hover:bg-[#E09500]"
                 aria-label="Cari"
               >
                 <Search className="h-[18px] w-[18px]" strokeWidth={iconStroke} />
@@ -152,7 +150,7 @@ export function Header() {
                 />
                 {cartCount > 0 && (
                   <span
-                    className="absolute right-0.5 top-0.5 flex h-[18px] min-w-[18px] items-center justify-center rounded-full bg-white px-1 text-[10px] font-bold leading-none text-[#ee4d2d]"
+                    className="absolute right-0.5 top-0.5 flex h-[18px] min-w-[18px] items-center justify-center rounded-full bg-white px-1 text-[10px] font-bold leading-none text-[#FFB300]"
                     aria-hidden
                   >
                     {cartCount > 99 ? "99+" : cartCount}
@@ -330,7 +328,7 @@ export function Header() {
               />
               <button
                 type="submit"
-                className="h-full shrink-0 cursor-pointer bg-[#d8451f] px-3 text-[13px] font-semibold text-white transition-colors hover:bg-[#c73e1c]"
+                className="h-full shrink-0 cursor-pointer bg-[#F0A500] px-3 text-[13px] font-semibold text-white transition-colors hover:bg-[#E09500]"
               >
                 Cari
               </button>
@@ -348,9 +346,9 @@ export function Header() {
               href={item.href}
               className={cn(
                 "-mb-px cursor-pointer border-b-2 px-3 py-2.5 text-[13px] font-medium transition-colors",
-                isActive(item.href)
-                  ? "border-[#ee4d2d] font-semibold text-[#ee4d2d]"
-                  : "border-transparent text-stone-600 hover:text-[#ee4d2d] dark:text-white/60 dark:hover:text-white"
+isActive(item.href)
+                    ? "border-[#FFB300] font-semibold text-[#FFB300]"
+                    : "border-transparent text-stone-600 hover:text-[#FFB300] dark:text-white/60 dark:hover:text-white"
               )}
             >
               {item.label}
@@ -361,9 +359,9 @@ export function Header() {
               href={dashHref}
               className={cn(
                 "-mb-px cursor-pointer border-b-2 px-3 py-2.5 text-[13px] font-medium transition-colors",
-                pathname.startsWith("/dashboard")
-                  ? "border-[#ee4d2d] font-semibold text-[#ee4d2d]"
-                  : "border-transparent text-stone-600 hover:text-[#ee4d2d] dark:text-white/60 dark:hover:text-white"
+pathname.startsWith("/dashboard")
+                    ? "border-[#FFB300] font-semibold text-[#FFB300]"
+                    : "border-transparent text-stone-600 hover:text-[#FFB300] dark:text-white/60 dark:hover:text-white"
               )}
             >
               Dashboard {unread > 0 ? `(${unread})` : ""}
@@ -392,8 +390,8 @@ export function Header() {
                 onClick={() => setOpen(false)}
                 className={cn(
                   "block cursor-pointer rounded-md px-3 py-2.5 text-[14px] font-medium transition-colors",
-                  isActive(item.href)
-                    ? "bg-orange-50 text-[#ee4d2d] dark:bg-white/[0.06] dark:text-orange-400"
+isActive(item.href)
+                      ? "bg-amber-50 text-[#FFB300] dark:bg-white/[0.06] dark:text-amber-400"
                     : "text-stone-600 hover:bg-stone-100 hover:text-stone-900 dark:text-white/70 dark:hover:bg-white/[0.04] dark:hover:text-white"
                 )}
               >

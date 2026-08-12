@@ -8,7 +8,7 @@ Sistem pemesanan kantin sekolah digital — multi-role, stok real-time, komisi p
 - Tailwind CSS
 - Framer Motion + Lenis
 - Lucide React (icon SVG)
-- **Bayar.gg** (QRIS / e-wallet payment)
+- **WarungErik Pay** (QRIS dinamis / e-wallet payment)
 - State: localStorage (siap diganti database nanti)
 
 ## Akun bawaan
@@ -26,41 +26,32 @@ Sistem pemesanan kantin sekolah digital — multi-role, stok real-time, komisi p
 cd kantinku
 npm install
 cp .env.example .env.local
-# isi BAYAR_API_KEY + BAYAR_BASE_URL di .env.local
+# isi WARUNGERIK_API_KEY di .env.local
 npm run dev
 ```
 
 Buka [http://localhost:3000](http://localhost:3000).
 
-## Bayar.gg — cara sambung API Key + Base URL
+## WarungErik Pay — cara sambung API Key
 
-1. Login [https://www.bayar.gg](https://www.bayar.gg)
-2. Ambil **API Key** di dashboard (Settings / API)
-3. Base URL standar: `https://www.bayar.gg/api`
+1. Login [https://pg.warungerik.com](https://pg.warungerik.com)
+2. Ambil **API Secret Key** di dashboard → API / Settings
+3. Base URL: `https://pg.warungerik.com`
 4. Isi `.env.local`:
 
 ```env
 NEXT_PUBLIC_APP_URL=http://localhost:3000
-BAYAR_API_KEY=isi_api_key_kamu
-BAYAR_BASE_URL=https://www.bayar.gg/api
-BAYAR_PAYMENT_METHOD=qris
-BAYAR_USE_QRIS_CONVERTER=true
-BAYAR_WEBHOOK_SECRET=isi_jika_ada
+WARUNGERIK_API_KEY=isi_api_key_kamu
+WARUNGERIK_BASE_URL=https://pg.warungerik.com
 ```
-
-5. Di Bayar.gg → **Settings → Webhook**:
-   - Callback URL: `https://domain-kamu.com/api/bayar/webhook`
-   - (lokal pakai ngrok/cloudflare tunnel supaya webhook bisa masuk)
 
 ### Alur pembayaran
 
-1. Checkout → `POST /api/bayar/create` → Bayar.gg `create-payment.php`
-2. User di-redirect ke `payment_url` (halaman bayar QRIS Bayar.gg)
-3. Setelah bayar → redirect ke `/orders?paid=1`
+1. Checkout → `POST /api/bayar/create` → WarungErik `POST /api/checkout`
+2. QRIS dinamis muncul di popup (scan langsung, tanpa redirect) — plus `paymentUrl` kalau mau buka halaman hosted
+3. Setelah bayar → `/orders?paid=1`
 4. Frontend poll `GET /api/bayar/check?invoice=...` → status `paid` → stok berkurang + masuk dashboard penjual
-5. Webhook `POST /api/bayar/webhook` menerima notifikasi (opsional, verifikasi signature)
-
-Metode: `qris`, `qris_user` (BRI), `gopay_qris`, `ovo` (atur via `BAYAR_PAYMENT_METHOD`).
+5. Webhook `POST /api/bayar/webhook` (opsional, jika dikonfigurasi dashboard WarungErik)
 
 ## Fitur utama
 
@@ -76,14 +67,10 @@ Metode: `qris`, `qris_user` (BRI), `gopay_qris`, `ovo` (atur via `BAYAR_PAYMENT_
 2. Import project di [vercel.com](https://vercel.com)
 3. Framework: Next.js (auto)
 4. Tambahkan Environment Variables:
-   - `BAYAR_API_KEY`
-   - `BAYAR_BASE_URL`
-   - `BAYAR_PAYMENT_METHOD`
-   - `BAYAR_USE_QRIS_CONVERTER`
-   - `BAYAR_WEBHOOK_SECRET` (opsional)
+   - `WARUNGERIK_API_KEY`
+   - `WARUNGERIK_BASE_URL`
    - `NEXT_PUBLIC_APP_URL` = URL Vercel (contoh `https://kantinku.vercel.app`)
 5. Deploy
-6. Set webhook Bayar.gg ke `https://your-app.vercel.app/api/bayar/webhook`
 
 ```bash
 # atau CLI

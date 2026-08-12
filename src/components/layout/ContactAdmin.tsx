@@ -34,7 +34,7 @@ export function ContactAdmin({
         aria-label="Hubungi Admin"
         title="Hubungi Admin"
         className={cn(
-          "inline-flex h-9 w-9 cursor-pointer items-center justify-center rounded-full text-[#f97316] transition-colors hover:bg-orange-50 dark:text-orange-400 dark:hover:bg-white/[0.06]",
+          "inline-flex h-9 w-9 cursor-pointer items-center justify-center rounded-full text-[#FFB300] transition-colors hover:bg-amber-50 dark:text-amber-400 dark:hover:bg-white/[0.06]",
           className
         )}
       >
@@ -50,7 +50,7 @@ export function ContactAdmin({
         target="_blank"
         rel="noopener noreferrer"
         className={cn(
-          "inline-flex min-h-[40px] cursor-pointer items-center justify-center gap-2 rounded-full bg-[#f97316] px-5 py-2 text-sm font-bold text-white transition hover:bg-[#ea580c]",
+          "inline-flex min-h-[40px] cursor-pointer items-center justify-center gap-2 rounded-full bg-[#FFB300] px-5 py-2 text-sm font-bold text-white transition hover:bg-[#F0A500]",
           className
         )}
       >
@@ -66,7 +66,7 @@ export function ContactAdmin({
       target="_blank"
       rel="noopener noreferrer"
       className={cn(
-        "inline-flex cursor-pointer items-center gap-1.5 text-xs font-semibold text-stone-400 transition-colors hover:text-[#f97316] dark:text-white/30 dark:hover:text-orange-400",
+        "inline-flex cursor-pointer items-center gap-1.5 text-xs font-semibold text-stone-400 transition-colors hover:text-[#FFB300] dark:text-white/30 dark:hover:text-amber-400",
         className
       )}
     >

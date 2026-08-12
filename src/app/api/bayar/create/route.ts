@@ -1,12 +1,12 @@
 import { NextRequest, NextResponse } from "next/server";
-import { createBayarPayment } from "@/lib/bayar";
+import { createWarungerikPayment } from "@/lib/warungerik";
 
 /**
  * POST /api/bayar/create
  *
- * Membuat invoice di Bayar.gg.
- * Auth: BAYAR_API_KEY (header X-API-Key ke Bayar.gg)
- * Base: BAYAR_BASE_URL (default https://www.bayar.gg/api)
+ * Membuat invoice QRIS di WarungErik Pay (pg.warungerik.com).
+ * Auth: WARUNGERIK_API_KEY (header X-API-KEY ke pg.warungerik.com)
+ * Base: WARUNGERIK_BASE_URL (default https://pg.warungerik.com)
  */
 export async function POST(req: NextRequest) {
   try {
@@ -32,26 +32,17 @@ export async function POST(req: NextRequest) {
       );
     }
 
-    const appUrl = (
-      process.env.NEXT_PUBLIC_APP_URL ||
-      req.nextUrl.origin ||
-      "http://localhost:3000"
-    ).replace(/\/$/, "");
-
-    const result = await createBayarPayment({
+    const result = await createWarungerikPayment({
+      orderId,
       amount: Math.round(amount),
-      description: (
-        description || `KantinKu ${orderId} — ${customerName}`
-      ).slice(0, 120),
       customerName: customerName.slice(0, 80),
       customerPhone: customerPhone || undefined,
-      callbackUrl: `${appUrl}/api/bayar/webhook`,
-      redirectUrl: `${appUrl}/orders?paid=1&order=${encodeURIComponent(orderId)}`,
+      description,
     });
 
     if (!result.success || !result.paymentUrl) {
       return NextResponse.json(
-        { error: result.error || "Gagal membuat pembayaran Bayar.gg" },
+        { error: result.error || "Gagal membuat pembayaran QRIS" },
         { status: 502 }
       );
     }
@@ -60,6 +51,7 @@ export async function POST(req: NextRequest) {
       invoiceId: result.invoiceId,
       paymentUrl: result.paymentUrl,
       qrisString: result.qrisString || null,
+      qrDataUrl: result.qrDataUrl || null,
       amount: result.amount,
       finalAmount: result.finalAmount,
       status: result.status,
@@ -70,7 +62,9 @@ export async function POST(req: NextRequest) {
     return NextResponse.json(
       {
         error:
-          err instanceof Error ? err.message : "Gagal menghubungi Bayar.gg",
+          err instanceof Error
+            ? err.message
+            : "Gagal menghubungi WarungErik Pay",
       },
       { status: 500 }
     );

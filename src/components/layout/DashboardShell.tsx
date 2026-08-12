@@ -53,4 +53,4 @@ export function DashboardCard({
 }
 
 export const dashInput =
-  "w-full rounded-xl border border-stone-200 bg-stone-50 px-3.5 py-2.5 text-sm font-medium text-stone-900 placeholder:text-stone-400 transition focus:border-[#f97316] focus:outline-none focus:ring-2 focus:ring-[#f97316]/15 dark:border-white/10 dark:bg-black/30 dark:text-white dark:placeholder:text-white/30";
+  "w-full rounded-xl border border-stone-200 bg-stone-50 px-3.5 py-2.5 text-sm font-medium text-stone-900 placeholder:text-stone-400 transition focus:border-[#FFB300] focus:outline-none focus:ring-2 focus:ring-[#FFB300]/15 dark:border-white/10 dark:bg-black/30 dark:text-white dark:placeholder:text-white/30";

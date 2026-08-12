@@ -135,25 +135,25 @@ export const STALL_COLORS: Record<string, StallColor> = {
 
 export const DEFAULT_STALL_COLOR: StallColor = {
   name: "KantinKu",
-  primary: "#f97316",
-  primaryHover: "#ea580c",
-  primaryLight: "rgba(249, 115, 22, 0.15)",
-  primaryDark: "rgba(249, 115, 22, 0.25)",
-  ring: "rgba(249, 115, 22, 0.4)",
-  text: "#c2410c",
-  textLight: "#fb923c",
-  bg: "rgba(249, 115, 22, 0.08)",
-  bgDark: "rgba(249, 115, 22, 0.15)",
-  border: "rgba(249, 115, 22, 0.3)",
-  badge: "#f97316",
+  primary: "#FFB300",
+  primaryHover: "#F0A500",
+  primaryLight: "rgba(255, 179, 0, 0.15)",
+  primaryDark: "rgba(255, 179, 0, 0.25)",
+  ring: "rgba(255, 179, 0, 0.4)",
+  text: "#996A00",
+  textLight: "#CC8E00",
+  bg: "rgba(255, 179, 0, 0.08)",
+  bgDark: "rgba(255, 179, 0, 0.15)",
+  border: "rgba(255, 179, 0, 0.3)",
+  badge: "#FFB300",
   badgeText: "#ffffff",
   css: `
-    --stall-primary: #f97316;
-    --stall-primary-hover: #ea580c;
-    --stall-primary-light: rgba(249, 115, 22, 0.15);
-    --stall-primary-dark: rgba(249, 115, 22, 0.25);
-    --stall-text: #c2410c;
-    --stall-text-light: #fb923c;
+    --stall-primary: #FFB300;
+    --stall-primary-hover: #F0A500;
+    --stall-primary-light: rgba(255, 179, 0, 0.15);
+    --stall-primary-dark: rgba(255, 179, 0, 0.25);
+    --stall-text: #996A00;
+    --stall-text-light: #CC8E00;
   `,
 };
 
