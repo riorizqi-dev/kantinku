@@ -8,6 +8,7 @@ import {
   Candy,
   GlassWater,
   LayoutGrid,
+  Megaphone,
   Tag,
   TrendingUp,
   Utensils,
@@ -18,26 +19,16 @@ import { useStallColor } from "@/context/StallColorContext";
 import { ProductCard } from "@/components/menu/ProductCard";
 import { StallProfileCard } from "@/components/stall/StallProfileCard";
 import { cn } from "@/lib/utils";
-import type { ProductCategory } from "@/lib/types";
 
-const CATS: Array<"Semua" | ProductCategory | "Promo"> = [
-  "Semua",
-  "Makanan",
-  "Minuman",
-  "Snack",
-  "Promo",
-];
-
-const CAT_META: Record<
-  (typeof CATS)[number],
-  { icon: LucideIcon }
-> = {
+const CAT_META: Record<string, { icon: LucideIcon }> = {
   Semua: { icon: LayoutGrid },
   Makanan: { icon: Utensils },
   Minuman: { icon: GlassWater },
   Snack: { icon: Candy },
   Promo: { icon: BadgePercent },
 };
+
+const CAT_FALLBACK: LucideIcon = Utensils;
 
 type SortMode = "default" | "harga" | "populer";
 
@@ -57,10 +48,24 @@ function HomeContent() {
   const { state } = useApp();
   const { color: stallColor, selectSeller } = useStallColor();
   const router = useRouter();
-  const [cat, setCat] = useState<"Semua" | ProductCategory | "Promo">("Semua");
+  const [cat, setCat] = useState<string>("Semua");
   const [sellerFilter, setSellerFilter] = useState<string>("all");
   const [q, setQ] = useState("");
   const [sortBy, setSortBy] = useState<SortMode>("default");
+
+  const cats = useMemo(() => {
+    const base: string[] = ["Semua"];
+    for (const c of state.settings.menuCategories || []) {
+      if (c && !base.includes(c)) base.push(c);
+    }
+    if (!base.includes("Promo")) base.push("Promo");
+    return base;
+  }, [state.settings.menuCategories]);
+
+  const announcements = useMemo(() => {
+    const list = state.settings.announcements || [];
+    return list.filter((a) => a.audience === "all" || a.audience === "buyers");
+  }, [state.settings.announcements]);
 
   useEffect(() => {
     if (state.session?.role === "seller") {
@@ -149,44 +154,69 @@ function HomeContent() {
         </div>
       ) : (
         <>
+          {/* Pengumuman — banner tipis */}
+          {announcements.length > 0 && (
+            <section className="border-b border-amber-200/60 bg-amber-50 dark:border-amber-400/10 dark:bg-[#1a1505]">
+              <div className={SHELL}>
+                <div className="flex flex-col gap-2 py-3 sm:py-3.5">
+                  {announcements.map((a) => (
+                    <div key={a.id} className="flex items-start gap-2.5">
+                      <Megaphone className="mt-0.5 h-4 w-4 shrink-0 text-[#F0A500]" />
+                      <div className="min-w-0">
+                        <p className="text-[13px] font-semibold text-stone-900 dark:text-white">
+                          {a.title}
+                        </p>
+                        <p className="text-xs leading-relaxed text-stone-600 dark:text-white/60">
+                          {a.body}
+                        </p>
+                      </div>
+                    </div>
+                  ))}
+                </div>
+              </div>
+            </section>
+          )}
+
           {/* Kategori — bar ikon ala marketplace */}
           <section className="border-b border-stone-200 bg-white dark:border-white/[0.08] dark:bg-[#141416]">
             <div className={SHELL}>
-              <div className="-mx-1 flex gap-5 overflow-x-auto px-1 py-3.5 [scrollbar-width:none] [&::-webkit-scrollbar]:hidden sm:gap-7 sm:py-4">
-                {CATS.map((c) => {
-                  const meta = CAT_META[c];
-                  const Icon = meta.icon;
-                  const active = cat === c;
-                  return (
-                    <button
-                      key={c}
-                      type="button"
-                      onClick={() => setCat(c)}
-                      className="flex shrink-0 cursor-pointer flex-col items-center gap-1.5"
-                    >
-                      <span
-                        className={cn(
-                          "flex h-12 w-12 items-center justify-center rounded-xl border transition sm:h-14 sm:w-14",
-                          active
-                            ? "border-transparent bg-[#FFB300] text-white shadow-[inset_0_1px_0_rgba(255,255,255,0.2)]"
-                            : "border-stone-200 bg-white text-stone-500 hover:border-stone-300 hover:text-stone-700 dark:border-white/10 dark:bg-white/[0.04] dark:text-white/50 dark:hover:border-white/20 dark:hover:text-white"
-                        )}
+              <div className="overflow-x-auto py-3.5 [scrollbar-width:none] [&::-webkit-scrollbar]:hidden sm:py-4">
+                <div className="mx-auto flex w-fit items-center gap-5 px-1 sm:gap-7">
+                  {cats.map((c) => {
+                    const meta = CAT_META[c] || { icon: CAT_FALLBACK };
+                    const Icon = meta.icon;
+                    const active = cat === c;
+                    return (
+                      <button
+                        key={c}
+                        type="button"
+                        onClick={() => setCat(c)}
+                        className="flex shrink-0 cursor-pointer flex-col items-center gap-1.5"
                       >
-                        <Icon className="h-6 w-6" strokeWidth={1.75} />
-                      </span>
-                      <span
-                        className={cn(
-                          "text-xs",
-                          active
-                            ? "font-semibold text-[#FFB300]"
-                            : "text-stone-600 dark:text-white/60"
-                        )}
-                      >
-                        {c}
-                      </span>
-                    </button>
-                  );
-                })}
+                        <span
+                          className={cn(
+                            "flex h-12 w-12 items-center justify-center rounded-xl border transition sm:h-14 sm:w-14",
+                            active
+                              ? "border-transparent bg-[#FFB300] text-white shadow-[inset_0_1px_0_rgba(255,255,255,0.2)]"
+                              : "border-stone-200 bg-white text-stone-500 hover:border-stone-300 hover:text-stone-700 dark:border-white/10 dark:bg-white/[0.04] dark:text-white/50 dark:hover:border-white/20 dark:hover:text-white"
+                          )}
+                        >
+                          <Icon className="h-6 w-6" strokeWidth={1.75} />
+                        </span>
+                        <span
+                          className={cn(
+                            "text-xs",
+                            active
+                              ? "font-semibold text-[#FFB300]"
+                              : "text-stone-600 dark:text-white/60"
+                          )}
+                        >
+                          {c}
+                        </span>
+                      </button>
+                    );
+                  })}
+                </div>
               </div>
             </div>
           </section>

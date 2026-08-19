@@ -35,6 +35,9 @@ yarn-error.log*
 .tmp_*.txt
 dev.log
 
+# supabase CLI temp
+supabase/.temp/
+
 # typescript
 *.tsbuildinfo
 next-env.d.ts

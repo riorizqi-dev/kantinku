@@ -183,33 +183,35 @@ export async function syncBundleToSupabase(
   const sb = getClient();
   if (!sb) return;
 
-  // sellers
-  {
+  // Tiap blok berjalan independen: kegagalan satu bagian (mis. kolom belum
+  // dimigrasi) tidak membatalkan sync bagian lain.
+  try {
     const rows = state.sellers.map(sellerToDb);
     if (rows.length) {
       const { error } = await sb.from("sellers").upsert(rows);
-      if (error) throw new Error(`sync sellers: ${error.message}`);
+      if (error) throw error;
     }
+  } catch (e) {
+    console.warn("[supabase sync sellers]", e);
   }
 
-  // users
-  {
+  try {
     const rows = state.users.map(userToDb);
     if (rows.length) {
       const { error } = await sb.from("users").upsert(rows);
-      if (error) throw new Error(`sync users: ${error.message}`);
+      if (error) throw error;
     }
+  } catch (e) {
+    console.warn("[supabase sync users]", e);
   }
 
-  // products + variants
-  {
+  try {
     const prows = state.products.map(productToDb);
     if (prows.length) {
       const { error } = await sb.from("products").upsert(prows);
-      if (error) throw new Error(`sync products: ${error.message}`);
+      if (error) throw error;
     }
 
-    // Hapus produk yang sudah tidak ada di state
     const keepProductIds = new Set(state.products.map((p) => p.id));
     const { data: remoteProducts } = await sb.from("products").select("id");
     const deadProducts = ((remoteProducts || []) as { id: string }[])
@@ -220,16 +222,14 @@ export async function syncBundleToSupabase(
       await sb.from("products").delete().in("id", deadProducts);
     }
 
-    // Replace variants per product set: upsert all current variants
     const vrows = state.products.flatMap((p) =>
       (p.variants || []).map((v) => variantToDb(v, p.id))
     );
     if (vrows.length) {
       const { error } = await sb.from("product_variants").upsert(vrows);
-      if (error) throw new Error(`sync variants: ${error.message}`);
+      if (error) throw error;
     }
 
-    // Delete variants that no longer exist
     const keepIds = new Set(vrows.map((v) => v.id));
     const productIds = state.products.map((p) => p.id);
     if (productIds.length) {
@@ -244,30 +244,35 @@ export async function syncBundleToSupabase(
         await sb.from("product_variants").delete().in("id", toDelete);
       }
     }
+  } catch (e) {
+    console.warn("[supabase sync products]", e);
   }
 
-  // settings
-  {
+  try {
     const { error } = await sb
       .from("platform_settings")
       .upsert(settingsToDb(state.settings, state.orderSeq));
-    if (error) throw new Error(`sync settings: ${error.message}`);
+    if (error) throw error;
+  } catch (e) {
+    console.warn("[supabase sync settings]", e);
   }
 
-  // orders + items
-  {
+  try {
     for (const o of state.orders) {
       await upsertOrder(sb, o);
     }
+  } catch (e) {
+    console.warn("[supabase sync orders]", e);
   }
 
-  // withdrawals
-  {
+  try {
     const rows = state.withdrawals.map(withdrawalToDb);
     if (rows.length) {
       const { error } = await sb.from("withdrawal_requests").upsert(rows);
-      if (error) throw new Error(`sync withdrawals: ${error.message}`);
+      if (error) throw error;
     }
+  } catch (e) {
+    console.warn("[supabase sync withdrawals]", e);
   }
 }
 

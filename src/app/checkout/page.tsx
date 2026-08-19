@@ -1,6 +1,6 @@
 "use client";
 
-import { FormEvent, useCallback, useState } from "react";
+import { FormEvent, useCallback, useEffect, useState } from "react";
 import Link from "next/link";
 import { useRouter } from "next/navigation";
 import {
@@ -70,6 +70,7 @@ export default function CheckoutPage() {
   } = useApp();
 
   const [loading, setLoading] = useState(false);
+  const [closedShown, setClosedShown] = useState(false);
   const [payMethod, setPayMethod] =
     useState<CheckoutPaymentMethod>("canteen");
   const [pickupMethod, setPickupMethod] = useState<"takeaway" | "dinein" | "delivery">("takeaway");
@@ -104,6 +105,44 @@ export default function CheckoutPage() {
       toast,
     ]
   );
+
+  // ——— Gating platform ———
+  const enabledMethods =
+    state.settings.enabledPaymentMethods?.length
+      ? state.settings.enabledPaymentMethods
+      : ["online", "canteen"];
+  const onlineEnabled = enabledMethods.includes("online");
+  const canteenEnabled = enabledMethods.includes("canteen");
+
+  const oh = state.settings.operatingHours;
+  const toMin = (t: string) => {
+    const [h, m] = (t || "00:00").split(":").map(Number);
+    return (h || 0) * 60 + (m || 0);
+  };
+  const nowDate = new Date();
+  const nowMin = nowDate.getHours() * 60 + nowDate.getMinutes();
+  const isOpenHour =
+    !oh?.enabled ||
+    (toMin(oh.openTime) <= nowMin && nowMin <= toMin(oh.closeTime));
+
+  // Jaga agar metode yang dipilih selalu aktif
+  useEffect(() => {
+    if (!onlineEnabled && payMethod === "online") setPayMethod("canteen");
+    if (!canteenEnabled && payMethod === "canteen") setPayMethod("online");
+  }, [onlineEnabled, canteenEnabled, payMethod]);
+
+  // ——— Tutup: beri tahu saat platform di luar jam operasional ———
+  useEffect(() => {
+    if (ready && state.cart.length && !isOpenHour && !closedShown) {
+      setClosedShown(true);
+      toast(
+        oh?.enabled
+          ? `Kantin buka ${oh.openTime} – ${oh.closeTime}. Pesanan di luar jam tidak diproses.`
+          : "Kantin sedang tutup.",
+        "warning"
+      );
+    }
+  }, [ready, state.cart.length, isOpenHour, closedShown, oh, toast]);
 
   if (!ready) {
     return (
@@ -147,6 +186,17 @@ export default function CheckoutPage() {
 
   async function onSubmit(e: FormEvent<HTMLFormElement>) {
     e.preventDefault();
+
+    if (!isOpenHour) {
+      toast(
+        oh?.enabled
+          ? `Kantin hanya buka ${oh.openTime} – ${oh.closeTime}.`
+          : "Kantin sedang tutup.",
+        "error"
+      );
+      return;
+    }
+
     const fd = new FormData(e.currentTarget);
 
     // Sudah login → data diri otomatis dari akun, form hanya catatan
@@ -187,7 +237,7 @@ export default function CheckoutPage() {
         return;
       }
 
-      // â€”â€”â€” Bayar di Kantin (COD) â€”â€”â€”
+      // ——— Bayar di Kantin (COD) ———
       if (payMethod === "canteen") {
         toast("Pesanan berhasil! Bayar saat ambil di kantin.");
         router.push(
@@ -197,7 +247,7 @@ export default function CheckoutPage() {
       }
 
       // ————— Bayar Online (WarungErik Pay / QRIS) — modal di halaman, tidak redirect —————
-      const desc = `Pesanan ${order.orderNumber} â€” ${order.items
+      const desc = `Pesanan ${order.orderNumber} — ${order.items
         .map((i) => `${i.name} x${i.qty}`)
         .join(", ")}`.slice(0, 120);
 
@@ -612,72 +662,81 @@ export default function CheckoutPage() {
               </h2>
 
               <div className="mt-4 grid gap-3 sm:grid-cols-2">
-                <label
-                  className={cn(
-                    "relative cursor-pointer rounded-2xl border-2 p-4 transition-all",
-                    payMethod === "canteen"
-                      ? "bg-white/80 dark:bg-white/5"
-                      : "border-stone-200 hover:border-stone-300 dark:border-stone-700 dark:hover:border-stone-600"
-                  )}
-                  style={payMethod === "canteen" ? { borderColor: stallColor.primary } : undefined}
-                >
-                  <input
-                    type="radio"
-                    name="paymentMethod"
-                    value="canteen"
-                    checked={payMethod === "canteen"}
-                    onChange={() => setPayMethod("canteen")}
-                    className="sr-only"
-                  />
-                  <div className="flex items-start gap-3">
-                    <span className="flex h-10 w-10 shrink-0 items-center justify-center rounded-xl bg-amber-100 text-amber-700 dark:bg-amber-900/40 dark:text-amber-300">
-                      <Store className="h-5 w-5" />
-                    </span>
-                    <div>
-                      <p className="text-sm font-bold text-stone-900 dark:text-white">
-                        Bayar di Kantin
-                      </p>
-                      <p className="mt-0.5 text-xs leading-relaxed text-stone-500">
-                        Pesanan masuk ke antrean. Bayar tunai/cash saat ambil
-                        makanan di counter.
-                      </p>
+                {canteenEnabled ? (
+                  <label
+                    className={cn(
+                      "relative cursor-pointer rounded-2xl border-2 p-4 transition-all",
+                      payMethod === "canteen"
+                        ? "bg-white/80 dark:bg-white/5"
+                        : "border-stone-200 hover:border-stone-300 dark:border-stone-700 dark:hover:border-stone-600"
+                    )}
+                    style={payMethod === "canteen" ? { borderColor: stallColor.primary } : undefined}
+                  >
+                    <input
+                      type="radio"
+                      name="paymentMethod"
+                      value="canteen"
+                      checked={payMethod === "canteen"}
+                      onChange={() => setPayMethod("canteen")}
+                      className="sr-only"
+                    />
+                    <div className="flex items-start gap-3">
+                      <span className="flex h-10 w-10 shrink-0 items-center justify-center rounded-xl bg-amber-100 text-amber-700 dark:bg-amber-900/40 dark:text-amber-300">
+                        <Store className="h-5 w-5" />
+                      </span>
+                      <div>
+                        <p className="text-sm font-bold text-stone-900 dark:text-white">
+                          Bayar di Kantin
+                        </p>
+                        <p className="mt-0.5 text-xs leading-relaxed text-stone-500">
+                          Pesanan masuk ke antrean. Bayar tunai/cash saat ambil
+                          makanan di counter.
+                        </p>
+                      </div>
                     </div>
-                  </div>
-                </label>
+                  </label>
+                ) : null}
 
-                <label
-                  className={cn(
-                    "relative cursor-pointer rounded-2xl border-2 p-4 transition-all",
-                    payMethod === "online"
-                      ? "bg-white/80 dark:bg-white/5"
-                      : "border-stone-200 hover:border-stone-300 dark:border-stone-700 dark:hover:border-stone-600"
-                  )}
-                  style={payMethod === "online" ? { borderColor: stallColor.primary } : undefined}
-                >
-                  <input
-                    type="radio"
-                    name="paymentMethod"
-                    value="online"
-                    checked={payMethod === "online"}
-                    onChange={() => setPayMethod("online")}
-                    className="sr-only"
-                  />
-                  <div className="flex items-start gap-3">
-                    <span className="flex h-10 w-10 shrink-0 items-center justify-center rounded-xl bg-purple-100 text-purple-700 dark:bg-purple-900/40 dark:text-purple-300">
-                      <QrCode className="h-5 w-5" />
-                    </span>
-                    <div>
-                      <p className="text-sm font-bold text-stone-900 dark:text-white">
-                        QRIS / Online
-                      </p>
-                      <p className="mt-0.5 text-xs leading-relaxed text-stone-500">
-                        QRIS muncul di sini — scan langsung tanpa pindah
-                        halaman.
-                      </p>
+                {onlineEnabled ? (
+                  <label
+                    className={cn(
+                      "relative cursor-pointer rounded-2xl border-2 p-4 transition-all",
+                      payMethod === "online"
+                        ? "bg-white/80 dark:bg-white/5"
+                        : "border-stone-200 hover:border-stone-300 dark:border-stone-700 dark:hover:border-stone-600"
+                    )}
+                    style={payMethod === "online" ? { borderColor: stallColor.primary } : undefined}
+                  >
+                    <input
+                      type="radio"
+                      name="paymentMethod"
+                      value="online"
+                      checked={payMethod === "online"}
+                      onChange={() => setPayMethod("online")}
+                      className="sr-only"
+                    />
+                    <div className="flex items-start gap-3">
+                      <span className="flex h-10 w-10 shrink-0 items-center justify-center rounded-xl bg-purple-100 text-purple-700 dark:bg-purple-900/40 dark:text-purple-300">
+                        <QrCode className="h-5 w-5" />
+                      </span>
+                      <div>
+                        <p className="text-sm font-bold text-stone-900 dark:text-white">
+                          QRIS / Online
+                        </p>
+                        <p className="mt-0.5 text-xs leading-relaxed text-stone-500">
+                          QRIS muncul di sini — scan langsung tanpa pindah
+                          halaman.
+                        </p>
+                      </div>
                     </div>
-                  </div>
-                </label>
+                  </label>
+                ) : null}
               </div>
+              {(!canteenEnabled || !onlineEnabled) && (
+                <p className="mt-3 text-xs text-stone-500 dark:text-white/45">
+                  Metode yang dinonaktifkan Super Admin tidak ditampilkan.
+                </p>
+              )}
             </div>
           </Reveal>
 
@@ -769,15 +828,37 @@ export default function CheckoutPage() {
             </Reveal>
           )}
 
+          {!isOpenHour && (
+            <Reveal delay={0.14}>
+              <div className="rounded-2xl border border-red-200 bg-red-50 p-5 dark:border-red-900/50 dark:bg-red-950/20">
+                <div className="flex items-start gap-3">
+                  <Clock className="mt-0.5 h-5 w-5 shrink-0 text-red-600" />
+                  <div>
+                    <p className="text-sm font-semibold text-red-800 dark:text-red-300">
+                      Kantin tutup saat ini
+                    </p>
+                    <p className="mt-1 text-xs leading-relaxed text-red-700/80 dark:text-red-400/80">
+                      {oh?.enabled
+                        ? `Jam operasional ${oh.openTime} – ${oh.closeTime}. Pesanan di luar jam tidak diproses.`
+                        : "Silakan coba lagi nanti."}
+                    </p>
+                  </div>
+                </div>
+              </div>
+            </Reveal>
+          )}
+
           <Reveal delay={0.15}>
             <button
               type="submit"
-              disabled={loading || !sellerIsOpen}
+              disabled={loading || !sellerIsOpen || !isOpenHour}
               className="flex w-full items-center justify-center gap-2 rounded-full py-4 text-sm font-bold text-white shadow-soft transition-all duration-300 hover:scale-[1.01] active:scale-[0.99] disabled:cursor-not-allowed disabled:opacity-60"
               style={{ backgroundColor: stallColor.primary }}
             >
               {!sellerIsOpen ? (
                 "Gerai Sedang Tutup"
+              ) : !isOpenHour ? (
+                "Kantin Tutup — Coba di Jam Operasional"
               ) : loading ? (
                 <>
                   <Loader2 className="h-4 w-4 animate-spin" /> Memproses...

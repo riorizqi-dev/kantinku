@@ -339,7 +339,7 @@ export function Header() {
 
       {/* Nav sekunder — putih */}
       <div className="hidden border-b border-stone-200 bg-white md:block dark:border-white/[0.08] dark:bg-[#111113]">
-        <nav className="mx-auto flex w-full max-w-[1280px] items-center justify-center gap-1 px-5">
+        <nav className="relative mx-auto flex w-full max-w-[1280px] items-center justify-center gap-1 px-5">
           {nav.map((item) => (
             <Link
               key={item.href}
@@ -367,7 +367,7 @@ pathname.startsWith("/dashboard")
               Dashboard {unread > 0 ? `(${unread})` : ""}
             </Link>
           )}
-          <div className="ml-auto flex items-center gap-1">
+          <div className="absolute right-5 top-0 flex h-full items-center">
             <ContactAdmin variant="icon" />
           </div>
         </nav>

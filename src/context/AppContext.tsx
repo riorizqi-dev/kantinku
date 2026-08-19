@@ -157,6 +157,20 @@ interface AppContextValue {
     password: string;
     phone?: string;
   }) => string | null;
+  /** Suspend/aktifkan akun (Super Admin) */
+  setUserActive: (userId: string, active: boolean) => void;
+  /** Hapus akun non-seed (Super Admin) */
+  deleteUser: (userId: string) => void;
+  /** Tambah pengumuman (Admin/Super Admin) */
+  addAnnouncement: (data: { title: string; body: string; audience: "all" | "sellers" | "buyers" }) => void;
+  /** Hapus pengumuman */
+  removeAnnouncement: (id: string) => void;
+  /** Kelola kategori menu (Super Admin) */
+  updateMenuCategories: (categories: string[]) => void;
+  /** Atur jam operasional (Super Admin) */
+  updateOperatingHours: (config: { enabled: boolean; openTime: string; closeTime: string }) => void;
+  /** Atur metode pembayaran aktif (Super Admin) */
+  updatePaymentMethods: (methods: CheckoutPaymentMethod[]) => void;
   /** Update profil (nama + avatar) user yang sedang login */
   updateProfile: (data: {
     name: string;
@@ -360,6 +374,18 @@ export function AppProvider({ children }: { children: React.ReactNode }) {
     setToasts((t) => t.filter((x) => x.id !== id));
   }, []);
 
+  const logActivity = useCallback(
+    (actor: string, action: string, detail?: string) => {
+      setState((s) => {
+        const log = s.settings.activityLog || [];
+        const entry = { id: uid("act"), actor, action, detail, createdAt: Date.now() };
+        const next = [entry, ...log].slice(0, 200);
+        return { ...s, settings: { ...s.settings, activityLog: next } };
+      });
+    },
+    []
+  );
+
   const login = useCallback(
     (username: string, password: string): UserRole | null => {
       const user = state.users.find(
@@ -369,6 +395,10 @@ export function AppProvider({ children }: { children: React.ReactNode }) {
       );
       if (!user) {
         toast("Username atau password salah", "error");
+        return null;
+      }
+      if (user.isActive === false) {
+        toast("Akun ini dinonaktifkan. Hubungi Super Admin.", "error");
         return null;
       }
       const session: SessionUser = {
@@ -384,13 +414,13 @@ export function AppProvider({ children }: { children: React.ReactNode }) {
       setState((s) => ({
         ...s,
         session,
-        // Cart per akun: ganti ke milik akun yang login, bukan cart guest/user lain
         cart: loadCartFor(user.id),
       }));
+      logActivity(user.name, "LOGIN", `Role: ${user.role}`);
       toast(`Selamat datang, ${user.name}`);
       return user.role;
     },
-    [state.users, toast]
+    [state.users, toast, logActivity]
   );
 
   const register = useCallback(
@@ -1352,9 +1382,10 @@ export function AppProvider({ children }: { children: React.ReactNode }) {
         ...s,
         settings: { ...s.settings, ...patch },
       }));
+      logActivity(state.session.name, "PENGATURAN", "Update pengaturan platform");
       toast("Pengaturan disimpan");
     },
-    [state.session, toast]
+    [state.session, toast, logActivity]
   );
 
   const updateSeller = useCallback(
@@ -1373,8 +1404,9 @@ export function AppProvider({ children }: { children: React.ReactNode }) {
         sellers: s.sellers.map((x) => (x.id === id ? { ...x, ...patch } : x)),
       }));
       if (!opts?.silent) toast("Data penjual diperbarui");
+      logActivity(session.name, "UPDATE_PENJUAL", `Lapak ${id}`);
     },
-    [state.session, toast]
+    [state.session, toast, logActivity]
   );
 
   const addSellerUser = useCallback(
@@ -1417,10 +1449,11 @@ export function AppProvider({ children }: { children: React.ReactNode }) {
         sellers: [...s.sellers, seller],
         users: [...s.users, user],
       }));
+      logActivity(state.session!.name, "TAMBAH_PENJUAL", seller.name);
       toast("Penjual baru ditambahkan");
       return null;
     },
-    [state.users, state.session, toast]
+    [state.users, state.session, toast, logActivity]
   );
 
   const addAdminUser = useCallback(
@@ -1448,10 +1481,193 @@ export function AppProvider({ children }: { children: React.ReactNode }) {
         createdAt: Date.now(),
       };
       setState((s) => ({ ...s, users: [...s.users, user] }));
+      logActivity(state.session!.name, "TAMBAH_ADMIN", user.name);
       toast("Admin baru ditambahkan");
       return null;
     },
-    [state.users, state.session, toast]
+    [state.users, state.session, toast, logActivity]
+  );
+
+  /** Suspend / aktifkan akun (Super Admin). Tidak bisa suspend diri sendiri. */
+  const setUserActive = useCallback(
+    (userId: string, active: boolean) => {
+      if (state.session?.role !== "superadmin") {
+        toast("Hanya Super Admin", "error");
+        return;
+      }
+      if (userId === state.session.id) {
+        toast("Tidak bisa mengubah akun sendiri", "error");
+        return;
+      }
+      const target = state.users.find((u) => u.id === userId);
+      if (!target) return;
+      setState((s) => ({
+        ...s,
+        users: s.users.map((u) =>
+          u.id === userId ? { ...u, isActive: active } : u
+        ),
+      }));
+      logActivity(
+        state.session.name,
+        active ? "AKTIFKAN_AKUN" : "SUSPEND_AKUN",
+        `${target.name} (@${target.username})`
+      );
+      toast(active ? "Akun diaktifkan" : "Akun disuspend");
+    },
+    [state.session, state.users, toast, logActivity]
+  );
+
+  /** Hapus akun non-seed (Super Admin). Akun seller ikut menghapus lapaknya. */
+  const deleteUser = useCallback(
+    (userId: string) => {
+      if (state.session?.role !== "superadmin") {
+        toast("Hanya Super Admin", "error");
+        return;
+      }
+      if (userId === state.session.id) {
+        toast("Tidak bisa menghapus akun sendiri", "error");
+        return;
+      }
+      const target = state.users.find((u) => u.id === userId);
+      if (!target) return;
+      setState((s) => {
+        let sellers = s.sellers;
+        const users = s.users.filter((u) => u.id !== userId);
+        // Jika seller dihapus, hapus juga lapaknya (produknya ikut dibiarkan nonaktif)
+        if (target.role === "seller" && target.sellerId) {
+          sellers = s.sellers.map((x) =>
+            x.id === target.sellerId ? { ...x, isActive: false } : x
+          );
+        }
+        return { ...s, users, sellers };
+      });
+      logActivity(
+        state.session.name,
+        "HAPUS_AKUN",
+        `${target.name} (@${target.username}, ${target.role})`
+      );
+      toast("Akun dihapus");
+    },
+    [state.session, state.users, toast, logActivity]
+  );
+
+  /** Tambah pengumuman (Super Admin atau Admin) */
+  const addAnnouncement = useCallback(
+    (data: { title: string; body: string; audience: "all" | "sellers" | "buyers" }) => {
+      const session = state.session;
+      if (session?.role !== "superadmin" && session?.role !== "admin") {
+        toast("Hanya Admin / Super Admin", "error");
+        return;
+      }
+      const title = data.title.trim();
+      const body = data.body.trim();
+      if (!title || !body) {
+        toast("Judul & isi pengumuman wajib diisi", "error");
+        return;
+      }
+      const ann = {
+        id: uid("ann"),
+        title,
+        body,
+        audience: data.audience,
+        author: session.name,
+        createdAt: Date.now(),
+      };
+      setState((s) => ({
+        ...s,
+        settings: {
+          ...s.settings,
+          announcements: [ann, ...(s.settings.announcements || [])].slice(0, 20),
+        },
+      }));
+      logActivity(session.name, "PENGUMUMAN", title);
+      toast("Pengumuman disiarkan");
+    },
+    [state.session, toast, logActivity]
+  );
+
+  /** Hapus pengumuman (Super Admin atau Admin) */
+  const removeAnnouncement = useCallback(
+    (id: string) => {
+      const session = state.session;
+      if (session?.role !== "superadmin" && session?.role !== "admin") {
+        toast("Hanya Admin / Super Admin", "error");
+        return;
+      }
+      setState((s) => ({
+        ...s,
+        settings: {
+          ...s.settings,
+          announcements: (s.settings.announcements || []).filter((a) => a.id !== id),
+        },
+      }));
+      toast("Pengumuman dihapus");
+    },
+    [state.session, toast]
+  );
+
+  /** Kelola kategori menu (Super Admin) */
+  const updateMenuCategories = useCallback(
+    (categories: string[]) => {
+      if (state.session?.role !== "superadmin") {
+        toast("Hanya Super Admin", "error");
+        return;
+      }
+      const cleaned = Array.from(new Set(categories.map((c) => c.trim()).filter(Boolean)));
+      if (!cleaned.length) {
+        toast("Minimal 1 kategori", "error");
+        return;
+      }
+      setState((s) => ({
+        ...s,
+        settings: { ...s.settings, menuCategories: cleaned },
+      }));
+      logActivity(state.session.name, "KATEGORI_MENU", cleaned.join(", "));
+      toast("Kategori diperbarui");
+    },
+    [state.session, toast, logActivity]
+  );
+
+  /** Atur jam operasional (Super Admin) */
+  const updateOperatingHours = useCallback(
+    (config: { enabled: boolean; openTime: string; closeTime: string }) => {
+      if (state.session?.role !== "superadmin") {
+        toast("Hanya Super Admin", "error");
+        return;
+      }
+      setState((s) => ({
+        ...s,
+        settings: { ...s.settings, operatingHours: config },
+      }));
+      logActivity(
+        state.session.name,
+        "JAM_OPERASIONAL",
+        config.enabled ? `${config.openTime}–${config.closeTime}` : "nonaktif"
+      );
+      toast("Jam operasional disimpan");
+    },
+    [state.session, toast, logActivity]
+  );
+
+  /** Atur metode pembayaran yang diaktifkan (Super Admin) */
+  const updatePaymentMethods = useCallback(
+    (methods: CheckoutPaymentMethod[]) => {
+      if (state.session?.role !== "superadmin") {
+        toast("Hanya Super Admin", "error");
+        return;
+      }
+      if (!methods.length) {
+        toast("Minimal 1 metode pembayaran", "error");
+        return;
+      }
+      setState((s) => ({
+        ...s,
+        settings: { ...s.settings, enabledPaymentMethods: methods },
+      }));
+      logActivity(state.session.name, "METODE_BAYAR", methods.join(", "));
+      toast("Metode pembayaran disimpan");
+    },
+    [state.session, toast, logActivity]
   );
 
   const resetAllData = useCallback(() => {
@@ -1637,9 +1853,10 @@ export function AppProvider({ children }: { children: React.ReactNode }) {
             : w
         ),
       }));
+      logActivity(session.name, "PENCAIRAN_DISETUJUI", target.sellerName);
       toast("Pencairan disetujui. Tandai selesai setelah transfer.");
     },
-    [state.session, state.withdrawals, getSellerBalance, toast]
+    [state.session, state.withdrawals, getSellerBalance, toast, logActivity]
   );
 
   const completeWithdrawal = useCallback(
@@ -1658,9 +1875,10 @@ export function AppProvider({ children }: { children: React.ReactNode }) {
             : w
         ),
       }));
+      logActivity(session.name, "PENCAIRAN_SELESAI", withdrawalId);
       toast("Pencairan ditandai selesai");
     },
-    [state.session, toast]
+    [state.session, toast, logActivity]
   );
 
   const setAutoPayout = useCallback(
@@ -1790,6 +2008,13 @@ export function AppProvider({ children }: { children: React.ReactNode }) {
     updateSeller,
     addSellerUser,
     addAdminUser,
+    setUserActive,
+    deleteUser,
+    addAnnouncement,
+    removeAnnouncement,
+    updateMenuCategories,
+    updateOperatingHours,
+    updatePaymentMethods,
     updateProfile,
     resetAllData,
     getSellerBalance,

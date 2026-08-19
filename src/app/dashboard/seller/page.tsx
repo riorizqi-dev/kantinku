@@ -18,6 +18,7 @@ import {
   BarChart3,
   Sparkles,
   Zap,
+  Printer,
 } from "lucide-react";
 import { RequireRole } from "@/components/auth/RequireRole";
 import { ImageUploadField } from "@/components/products/ImageUploadField";
@@ -290,6 +291,46 @@ function SellerDashboardInner() {
     } catch (e) {
       toast(e instanceof Error ? e.message : "Gagal buka WhatsApp", "error");
     }
+  }
+
+  function printReceipt(order: (typeof state.orders)[number]) {
+    const w = window.open("", "_blank", "width=420,height=640");
+    if (!w) {
+      toast("Browser memblokir pop-up. Izinkan pop-up lalu coba lagi.", "warning");
+      return;
+    }
+    const items = order.items
+      .map(
+        (it) =>
+          `<tr><td style="padding:4px 8px;font-size:12px">${it.name}</td><td style="padding:4px 8px;font-size:12px;text-align:center">${it.qty}</td><td style="padding:4px 8px;font-size:12px;text-align:right">${formatRupiah(
+            it.price * it.qty
+          )}</td></tr>`
+      )
+      .join("");
+    w.document.write(`<!doctype html>
+<html>
+<head><meta charset="utf-8"><title>Struk ${order.orderNumber}</title></head>
+<body style="font-family:monospace;max-width:360px;margin:0 auto;padding:16px;color:#111">
+  <h2 style="text-align:center;margin:0 0 4px;font-size:18px">KantinKu — ${state.settings.schoolName}</h2>
+  <p style="text-align:center;margin:0 0 12px;font-size:11px">${seller?.booth ? `Lapak ${seller.booth} · ` : ""}${order.sellerName}</p>
+  <hr/>
+  <p style="font-size:12px;margin:6px 0"><strong>No. Antrian:</strong> #${order.orderNumber}</p>
+  <p style="font-size:12px;margin:6px 0"><strong>Pembeli:</strong> ${order.buyerName} (${order.buyerClass})</p>
+  <p style="font-size:12px;margin:6px 0"><strong>Waktu:</strong> ${formatDate(order.createdAt)}</p>
+  <hr/>
+  <table style="width:100%;border-collapse:collapse">
+    <tr><th style="text-align:left;font-size:11px;padding:4px 8px">Item</th><th style="font-size:11px;padding:4px 8px">Qty</th><th style="text-align:right;font-size:11px;padding:4px 8px">Subtotal</th></tr>
+    ${items}
+  </table>
+  <hr/>
+  <p style="font-size:12px;margin:6px 0;display:flex;justify-content:space-between"><span>Subtotal</span><span>${formatRupiah(order.subtotal)}</span></p>
+  <p style="font-size:12px;margin:6px 0;display:flex;justify-content:space-between"><span>Total</span><span><strong>${formatRupiah(order.total)}</strong></span></p>
+  <hr/>
+  <p style="font-size:11px;text-align:center;margin:10px 0 0">Terima kasih — ambil pesanan di counter.</p>
+  <script>window.onload = function(){ window.print(); }</script>
+</body>
+</html>`);
+    w.document.close();
   }
 
   function onSaveProduct(e: FormEvent<HTMLFormElement>) {
@@ -757,6 +798,16 @@ function SellerDashboardInner() {
                             </button>
                           ))}
                         </div>
+
+                        <button
+                          type="button"
+                          onClick={() => printReceipt(o)}
+                          className="inline-flex cursor-pointer items-center gap-1 rounded-lg bg-stone-100 px-2.5 py-1.5 text-[11px] font-semibold text-stone-700 transition hover:bg-stone-200 dark:bg-white/[0.06] dark:text-white/80 dark:hover:bg-white/10"
+                          title="Cetak struk / nomor antrian"
+                        >
+                          <Printer className="h-3 w-3" strokeWidth={1.75} />
+                          Cetak Struk
+                        </button>
                       </div>
                     </article>
                   ))}

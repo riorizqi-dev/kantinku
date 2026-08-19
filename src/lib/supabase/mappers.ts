@@ -46,6 +46,7 @@ export type DbUser = {
   phone: string | null;
   seller_id: string | null;
   avatar: string | null;
+  is_active: boolean;
   created_at: string;
 };
 
@@ -80,6 +81,11 @@ export type DbSettings = {
   order_seq: number;
   withdrawal_fee_type: WithdrawalFeeType;
   withdrawal_fee_value: number;
+  menu_categories: unknown;
+  announcements: unknown;
+  operating_hours: unknown;
+  enabled_payment_methods: unknown;
+  activity_log: unknown;
   updated_at: string;
 };
 
@@ -204,6 +210,7 @@ export function userToDb(u: User): DbUser {
     phone: u.phone || null,
     seller_id: u.sellerId || null,
     avatar: u.avatar || null,
+    is_active: u.isActive !== false,
     created_at: ts(u.createdAt) || new Date().toISOString(),
   };
 }
@@ -219,6 +226,7 @@ export function userFromDb(r: DbUser): User {
     phone: r.phone || undefined,
     sellerId: r.seller_id || undefined,
     avatar: r.avatar || undefined,
+    isActive: r.is_active !== false,
     createdAt: ms(r.created_at),
   };
 }
@@ -288,6 +296,13 @@ export function settingsToDb(
     order_seq: orderSeq,
     withdrawal_fee_type: s.withdrawalFeeType || "percent",
     withdrawal_fee_value: s.withdrawalFeeValue ?? 3,
+    menu_categories: s.menuCategories?.length ? s.menuCategories : ["Makanan", "Minuman", "Snack"],
+    announcements: s.announcements ?? [],
+    operating_hours: s.operatingHours ?? { enabled: false, openTime: "06:30", closeTime: "16:00" },
+    enabled_payment_methods: s.enabledPaymentMethods?.length
+      ? s.enabledPaymentMethods
+      : ["online", "canteen"],
+    activity_log: s.activityLog ?? [],
     updated_at: new Date().toISOString(),
   };
 }
@@ -303,6 +318,23 @@ export function settingsFromDb(r: DbSettings): {
       platformWhatsapp: r.platform_whatsapp || "",
       withdrawalFeeType: (r.withdrawal_fee_type as WithdrawalFeeType) || "percent",
       withdrawalFeeValue: Number(r.withdrawal_fee_value) || 3,
+      menuCategories: Array.isArray(r.menu_categories) && r.menu_categories.length
+        ? (r.menu_categories as string[])
+        : ["Makanan", "Minuman", "Snack"],
+      announcements: Array.isArray(r.announcements)
+        ? (r.announcements as PlatformSettings["announcements"])
+        : [],
+      operatingHours:
+        r.operating_hours && typeof r.operating_hours === "object"
+          ? { enabled: false, openTime: "06:30", closeTime: "16:00", ...(r.operating_hours as Record<string, unknown>) }
+          : { enabled: false, openTime: "06:30", closeTime: "16:00" },
+      enabledPaymentMethods: Array.isArray(r.enabled_payment_methods) &&
+        (r.enabled_payment_methods as string[]).length
+        ? (r.enabled_payment_methods as PlatformSettings["enabledPaymentMethods"])
+        : ["online", "canteen"],
+      activityLog: Array.isArray(r.activity_log)
+        ? (r.activity_log as PlatformSettings["activityLog"])
+        : [],
     },
     orderSeq: r.order_seq || 0,
   };

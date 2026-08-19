@@ -11,6 +11,16 @@ import {
   Shield,
   AlertTriangle,
   Landmark,
+  Megaphone,
+  ScrollText,
+  Plus,
+  Trash2,
+  Clock,
+  CreditCard,
+  Ban,
+  CheckCircle2,
+  Tag,
+  X,
 } from "lucide-react";
 import { useApp } from "@/context/AppContext";
 import {
@@ -21,22 +31,29 @@ import {
   paymentStatusLabel,
 } from "@/lib/utils";
 import { roleLabel } from "@/lib/roles";
+import { DEFAULT_USERS } from "@/lib/seed";
 import { PageTransition } from "@/components/motion/Reveal";
 import {
   DashboardCard,
   DashboardShell,
   dashInput,
 } from "@/components/layout/DashboardShell";
+import type { CheckoutPaymentMethod } from "@/lib/types";
 
 type Tab =
   | "overview"
   | "orders"
   | "sellers"
   | "accounts"
+  | "pengumuman"
+  | "log"
   | "settings";
 
+/** ID akun seed (demo) — dilindungi dari suspend/hapus */
+const SEED_USER_IDS = new Set(DEFAULT_USERS.map((u) => u.id));
+
 /**
- * Dashboard Super Admin â€” layout full-width seimbang
+ * Dashboard Super Admin — layout full-width seimbang
  */
 export default function SuperAdminDashboardPage() {
   const router = useRouter();
@@ -47,6 +64,13 @@ export default function SuperAdminDashboardPage() {
     addSellerUser,
     addAdminUser,
     updateSeller,
+    setUserActive,
+    deleteUser,
+    addAnnouncement,
+    removeAnnouncement,
+    updateMenuCategories,
+    updateOperatingHours,
+    updatePaymentMethods,
     resetAllData,
     toast,
   } = useApp();
@@ -54,12 +78,43 @@ export default function SuperAdminDashboardPage() {
   const [tab, setTab] = useState<Tab>("overview");
   const session = state.session;
 
+  // Form pengumuman
+  const [annTitle, setAnnTitle] = useState("");
+  const [annBody, setAnnBody] = useState("");
+  const [annAudience, setAnnAudience] = useState<
+    "all" | "sellers" | "buyers"
+  >("all");
+
+  // Kelola kategori menu
+  const [catInput, setCatInput] = useState("");
+  const [catDrafts, setCatDrafts] = useState<string[]>([]);
+
+  // Jam operasional
+  const [ohEnabled, setOhEnabled] = useState(false);
+  const [ohOpen, setOhOpen] = useState("06:30");
+  const [ohClose, setOhClose] = useState("16:00");
+
+  // Metode pembayaran
+  const [pmOnline, setPmOnline] = useState(true);
+  const [pmCanteen, setPmCanteen] = useState(true);
+
   useEffect(() => {
     if (!ready) return;
     if (!session || session.role !== "superadmin") {
       router.replace("/login");
     }
   }, [ready, session, router]);
+
+  // Sinkronkan state form dari settings (saat data dimuat / berubah)
+  useEffect(() => {
+    const s = state.settings;
+    setCatDrafts(s.menuCategories?.length ? [...s.menuCategories] : []);
+    setOhEnabled(s.operatingHours?.enabled ?? false);
+    setOhOpen(s.operatingHours?.openTime || "06:30");
+    setOhClose(s.operatingHours?.closeTime || "16:00");
+    setPmOnline((s.enabledPaymentMethods ?? ["online", "canteen"]).includes("online"));
+    setPmCanteen((s.enabledPaymentMethods ?? ["online", "canteen"]).includes("canteen"));
+  }, [state.settings]);
 
   const paidOrders = useMemo(
     () =>
@@ -101,7 +156,7 @@ export default function SuperAdminDashboardPage() {
     const fd = new FormData(e.currentTarget);
     const rate = Number(fd.get("commissionRate"));
     if (isNaN(rate) || rate < 0 || rate > 50) {
-      toast("Komisi harus 0â€“50%", "error");
+      toast("Komisi harus 0“50%", "error");
       return;
     }
     const withdrawalFeeValue = Number(fd.get("withdrawalFeeValue"));
@@ -114,11 +169,11 @@ export default function SuperAdminDashboardPage() {
       return;
     }
     if (withdrawalFeeType === "percent" && (isNaN(withdrawalFeeValue) || withdrawalFeeValue < 0 || withdrawalFeeValue > 50)) {
-      toast("Fee pencairan (%) harus 0â€“50", "error");
+      toast("Fee pencairan (%) harus 0“50", "error");
       return;
     }
     if (withdrawalFeeType === "flat" && (isNaN(withdrawalFeeValue) || withdrawalFeeValue < 0)) {
-      toast("Fee pencairan (flat) harus â‰¥ 0", "error");
+      toast("Fee pencairan (flat) harus ≥ 0", "error");
       return;
     }
     updateSettings({
@@ -162,6 +217,8 @@ export default function SuperAdminDashboardPage() {
     { id: "orders", label: "Transaksi" },
     { id: "sellers", label: "Penjual" },
     { id: "accounts", label: "Akun" },
+    { id: "pengumuman", label: "Pengumuman" },
+    { id: "log", label: "Log Aktivitas" },
     { id: "settings", label: "Komisi & Settings" },
   ];
 
@@ -241,7 +298,7 @@ export default function SuperAdminDashboardPage() {
           ))}
         </div>
 
-        {/* â€”â€”â€” OVERVIEW â€”â€”â€” */}
+        {/* ——— OVERVIEW ——— */}
         {tab === "overview" && (
           <div className="mt-6 grid gap-4 md:grid-cols-2 xl:grid-cols-3">
             <DashboardCard className="md:col-span-1">
@@ -288,10 +345,10 @@ export default function SuperAdminDashboardPage() {
                 Akses Super Admin
               </h2>
               <ul className="mt-3 space-y-1.5 text-sm text-stone-600 dark:text-stone-300">
-                <li>Â· Atur komisi & nama sekolah</li>
-                <li>Â· Kelola semua nama lapak</li>
-                <li>Â· Tambah admin & penjual</li>
-                <li>Â· Monitoring transaksi</li>
+                <li>· Atur komisi & nama sekolah</li>
+                <li>· Kelola semua nama lapak</li>
+                <li>· Tambah admin & penjual</li>
+                <li>· Monitoring transaksi</li>
               </ul>
               <p className="mt-4 text-xs font-semibold text-amber-700 dark:text-amber-400">
                 Produk & stok = wewenang Penjual, bukan Super Admin.
@@ -300,7 +357,7 @@ export default function SuperAdminDashboardPage() {
           </div>
         )}
 
-        {/* â€”â€”â€” ORDERS â€”â€”â€” */}
+        {/* ——— ORDERS ——— */}
         {tab === "orders" && (
           <div className="mt-6 space-y-3">
             {!state.orders.length ? (
@@ -318,7 +375,7 @@ export default function SuperAdminDashboardPage() {
                         {o.orderNumber}
                       </p>
                       <p className="text-xs text-stone-500">
-                        {formatDate(o.createdAt)} Â· {o.sellerName}
+                        {formatDate(o.createdAt)} · {o.sellerName}
                       </p>
                       <p className="mt-1 text-sm">
                         {o.buyerName} ({o.buyerClass})
@@ -336,7 +393,7 @@ export default function SuperAdminDashboardPage() {
                         Penjual: {formatRupiah(o.sellerAmount)}
                       </p>
                       <p className="mt-1 text-xs text-stone-500">
-                        {paymentStatusLabel(o.paymentStatus)} Â·{" "}
+                        {paymentStatusLabel(o.paymentStatus)} ·{" "}
                         {orderStatusLabel(o.status)}
                       </p>
                     </div>
@@ -347,7 +404,7 @@ export default function SuperAdminDashboardPage() {
           </div>
         )}
 
-        {/* â€”â€”â€” SELLERS â€”â€”â€” */}
+        {/* ——— SELLERS ——— */}
         {tab === "sellers" && (
           <div className="mt-6 space-y-6">
             <form
@@ -385,7 +442,7 @@ export default function SuperAdminDashboardPage() {
                       Edit nama semua lapak
                     </h2>
                     <p className="mt-0.5 text-xs text-stone-500">
-                      Ubah sekalian di sini â€” tidak perlu login ke tiap akun
+                      Ubah sekalian di sini — tidak perlu login ke tiap akun
                       penjual.
                     </p>
                   </div>
@@ -420,10 +477,10 @@ export default function SuperAdminDashboardPage() {
                           <tr key={s.id}>
                             <td className="px-3 py-3 align-middle">
                               <p className="font-semibold text-stone-800 dark:text-white/90">
-                                {owner?.name || "â€”"}
+                                {owner?.name || "—"}
                               </p>
                               <p className="text-[11px] text-stone-400">
-                                @{owner?.username || "â€”"}
+                                @{owner?.username || "—"}
                               </p>
                             </td>
                             <td className="px-3 py-3">
@@ -462,7 +519,7 @@ export default function SuperAdminDashboardPage() {
               </DashboardCard>
             </form>
 
-            {/* Form tambah penjual â€” full width, field 2 kolom */}
+            {/* Form tambah penjual — full width, field 2 kolom */}
             <form onSubmit={onAddSeller}>
               <DashboardCard>
                 <h2 className="font-bold text-stone-900 dark:text-white">
@@ -516,7 +573,7 @@ export default function SuperAdminDashboardPage() {
           </div>
         )}
 
-        {/* â€”â€”â€” ACCOUNTS â€”â€”â€” */}
+        {/* ——— ACCOUNTS ——— */}
         {tab === "accounts" && (
           <div className="mt-6 grid gap-6 xl:grid-cols-5">
             <DashboardCard className="!p-0 overflow-hidden xl:col-span-3">
@@ -524,31 +581,101 @@ export default function SuperAdminDashboardPage() {
                 <h2 className="font-bold text-stone-900 dark:text-white">
                   Semua pengguna
                 </h2>
+                <p className="mt-0.5 text-xs text-stone-500">
+                  Suspend / aktifkan / hapus akun non-demo
+                </p>
               </div>
               <div className="overflow-x-auto">
-                <table className="w-full min-w-[360px] text-left text-sm">
+                <table className="w-full min-w-[560px] text-left text-sm">
                   <thead className="bg-stone-50 text-xs font-bold uppercase text-stone-500 dark:bg-white/[0.03]">
                     <tr>
                       <th className="px-5 py-3">Pengguna</th>
                       <th className="px-5 py-3">Role</th>
+                      <th className="px-5 py-3">Status</th>
+                      <th className="px-5 py-3 text-right">Aksi</th>
                     </tr>
                   </thead>
                   <tbody className="divide-y divide-stone-100 dark:divide-white/[0.05]">
-                    {state.users.map((u) => (
-                      <tr key={u.id}>
-                        <td className="px-5 py-3">
-                          <p className="font-semibold">{u.name}</p>
-                          <p className="text-xs text-stone-400">
-                            @{u.username}
-                          </p>
-                        </td>
-                        <td className="px-5 py-3">
-                          <span className="rounded-full bg-stone-100 px-2.5 py-0.5 text-[11px] font-bold dark:bg-white/10">
-                            {roleLabel(u.role)}
-                          </span>
-                        </td>
-                      </tr>
-                    ))}
+                    {state.users.map((u) => {
+                      const isSeed = SEED_USER_IDS.has(u.id);
+                      const isSelf = u.id === session.id;
+                      const isSuper = u.role === "superadmin";
+                      const canManage = !isSeed && !isSelf && !isSuper;
+                      const suspended = u.isActive === false;
+                      return (
+                        <tr key={u.id}>
+                          <td className="px-5 py-3">
+                            <p className="font-semibold">{u.name}</p>
+                            <p className="text-xs text-stone-400">
+                              @{u.username}
+                            </p>
+                          </td>
+                          <td className="px-5 py-3">
+                            <span className="rounded-full bg-stone-100 px-2.5 py-0.5 text-[11px] font-bold dark:bg-white/10">
+                              {roleLabel(u.role)}
+                            </span>
+                          </td>
+                          <td className="px-5 py-3">
+                            <span
+                              className={cn(
+                                "rounded-full px-2.5 py-0.5 text-[11px] font-bold",
+                                suspended
+                                  ? "bg-red-100 text-red-600 dark:bg-red-900/30 dark:text-red-400"
+                                  : "bg-green-100 text-green-700 dark:bg-green-900/30 dark:text-green-400"
+                              )}
+                            >
+                              {suspended ? "Suspend" : "Aktif"}
+                            </span>
+                          </td>
+                          <td className="px-5 py-3">
+                            <div className="flex justify-end gap-1.5">
+                              {canManage ? (
+                                <>
+                                  <button
+                                    type="button"
+                                    onClick={() => setUserActive(u.id, suspended)}
+                                    className={cn(
+                                      "inline-flex cursor-pointer items-center gap-1 rounded-lg px-2.5 py-1.5 text-[11px] font-semibold transition",
+                                      suspended
+                                        ? "bg-green-100 text-green-700 hover:bg-green-200 dark:bg-green-900/30 dark:text-green-400"
+                                        : "bg-amber-100 text-amber-700 hover:bg-amber-200 dark:bg-amber-900/30 dark:text-amber-400"
+                                    )}
+                                    title={suspended ? "Aktifkan akun" : "Suspend akun"}
+                                  >
+                                    {suspended ? (
+                                      <CheckCircle2 className="h-3.5 w-3.5" />
+                                    ) : (
+                                      <Ban className="h-3.5 w-3.5" />
+                                    )}
+                                    {suspended ? "Aktifkan" : "Suspend"}
+                                  </button>
+                                  <button
+                                    type="button"
+                                    onClick={() => {
+                                      if (
+                                        confirm(
+                                          `Hapus akun ${u.name} (@${u.username})?`
+                                        )
+                                      )
+                                        deleteUser(u.id);
+                                    }}
+                                    className="inline-flex cursor-pointer items-center gap-1 rounded-lg bg-red-50 px-2.5 py-1.5 text-[11px] font-semibold text-red-600 transition hover:bg-red-100 dark:bg-red-950/30 dark:text-red-400"
+                                    title="Hapus akun"
+                                  >
+                                    <Trash2 className="h-3.5 w-3.5" />
+                                    Hapus
+                                  </button>
+                                </>
+                              ) : (
+                                <span className="text-[11px] text-stone-400">
+                                  {isSelf ? "Anda" : isSuper ? "—" : "Demo"}
+                                </span>
+                              )}
+                            </div>
+                          </td>
+                        </tr>
+                      );
+                    })}
                   </tbody>
                 </table>
               </div>
@@ -600,7 +727,185 @@ export default function SuperAdminDashboardPage() {
           </div>
         )}
 
-        {/* â€”â€”â€” SETTINGS (prioritas full-width) â€”â€”â€” */}
+        {/* ——— PENGUMUMAN ——— */}
+        {tab === "pengumuman" && (
+          <div className="mt-6 grid gap-6 lg:grid-cols-5">
+            <DashboardCard className="lg:col-span-2">
+              <div className="flex items-center gap-2">
+                <Megaphone className="h-4 w-4 text-[#FFB300]" />
+                <h2 className="font-bold text-stone-900 dark:text-white">
+                  Siarkan Pengumuman
+                </h2>
+              </div>
+              <p className="mt-1 text-xs text-stone-500">
+                Broadcast ke semua user, penjual, atau pembeli.
+              </p>
+              <div className="mt-5 space-y-3">
+                <div>
+                  <label className="mb-1.5 block text-xs font-bold text-stone-500">
+                    Judul
+                  </label>
+                  <input
+                    value={annTitle}
+                    onChange={(e) => setAnnTitle(e.target.value)}
+                    placeholder="Contoh: Kantin tutup saat upacara"
+                    className={dashInput}
+                  />
+                </div>
+                <div>
+                  <label className="mb-1.5 block text-xs font-bold text-stone-500">
+                    Isi
+                  </label>
+                  <textarea
+                    value={annBody}
+                    onChange={(e) => setAnnBody(e.target.value.slice(0, 500))}
+                    rows={3}
+                    placeholder="Detail pengumuman…"
+                    className={cn(dashInput, "resize-none")}
+                  />
+                </div>
+                <div>
+                  <label className="mb-1.5 block text-xs font-bold text-stone-500">
+                    Ditujukan ke
+                  </label>
+                  <select
+                    value={annAudience}
+                    onChange={(e) =>
+                      setAnnAudience(
+                        e.target.value as "all" | "sellers" | "buyers"
+                      )
+                    }
+                    className={dashInput}
+                  >
+                    <option value="all">Semua (siswa & pedagang)</option>
+                    <option value="buyers">Pembeli / Siswa</option>
+                    <option value="sellers">Penjual / Pedagang</option>
+                  </select>
+                </div>
+                <button
+                  type="button"
+                  onClick={() => {
+                    addAnnouncement({
+                      title: annTitle,
+                      body: annBody,
+                      audience: annAudience,
+                    });
+                    if (annTitle.trim() && annBody.trim()) {
+                      setAnnTitle("");
+                      setAnnBody("");
+                    }
+                  }}
+                  className="inline-flex cursor-pointer items-center gap-1.5 rounded-full bg-[#FFB300] px-5 py-2.5 text-sm font-bold text-[#1c1917] transition hover:bg-[#F0A500]"
+                >
+                  <Plus className="h-4 w-4" strokeWidth={1.75} />
+                  Siarkan
+                </button>
+              </div>
+            </DashboardCard>
+
+            <div className="space-y-3 lg:col-span-3">
+              {!state.settings.announcements?.length ? (
+                <DashboardCard>
+                  <p className="py-10 text-center text-sm text-stone-500">
+                    Belum ada pengumuman
+                  </p>
+                </DashboardCard>
+              ) : (
+                state.settings.announcements.map((a) => (
+                  <DashboardCard key={a.id} className="!p-5">
+                    <div className="flex items-start justify-between gap-3">
+                      <div className="min-w-0">
+                        <p className="font-bold text-stone-900 dark:text-white">
+                          {a.title}
+                        </p>
+                        <p className="mt-0.5 text-xs text-stone-400">
+                          {a.author} · {formatDate(a.createdAt)}
+                        </p>
+                        <p className="mt-2 text-sm leading-relaxed text-stone-600 dark:text-white/70">
+                          {a.body}
+                        </p>
+                        <span className="mt-2 inline-block rounded-full bg-stone-100 px-2.5 py-0.5 text-[10px] font-bold uppercase tracking-wide text-stone-500 dark:bg-white/10 dark:text-white/50">
+                          {a.audience === "all"
+                            ? "Semua"
+                            : a.audience === "buyers"
+                              ? "Pembeli"
+                              : "Penjual"}
+                        </span>
+                      </div>
+                      <button
+                        type="button"
+                        onClick={() => removeAnnouncement(a.id)}
+                        className="shrink-0 cursor-pointer rounded-lg p-1.5 text-red-400 transition hover:bg-red-500/10"
+                        title="Hapus pengumuman"
+                      >
+                        <Trash2 className="h-4 w-4" strokeWidth={1.5} />
+                      </button>
+                    </div>
+                  </DashboardCard>
+                ))
+              )}
+            </div>
+          </div>
+        )}
+
+        {/* ——— LOG AKTIVITAS ——— */}
+        {tab === "log" && (
+          <div className="mt-6">
+            <DashboardCard className="!p-0 overflow-hidden">
+              <div className="border-b border-stone-100 px-5 py-4 dark:border-white/[0.06]">
+                <div className="flex items-center gap-2">
+                  <ScrollText className="h-4 w-4 text-[#FFB300]" />
+                  <h2 className="font-bold text-stone-900 dark:text-white">
+                    Log Aktivitas (audit trail)
+                  </h2>
+                </div>
+                <p className="mt-0.5 text-xs text-stone-500">
+                  Riwayat login, pesanan, pencairan, akun & pengaturan.
+                </p>
+              </div>
+              {!state.settings.activityLog?.length ? (
+                <p className="py-12 text-center text-sm text-stone-500">
+                  Belum ada aktivitas tercatat
+                </p>
+              ) : (
+                <div className="overflow-x-auto">
+                  <table className="w-full min-w-[520px] text-left text-sm">
+                    <thead className="bg-stone-50 text-xs font-bold uppercase text-stone-500 dark:bg-white/[0.03]">
+                      <tr>
+                        <th className="px-5 py-3">Waktu</th>
+                        <th className="px-5 py-3">Pelaku</th>
+                        <th className="px-5 py-3">Aksi</th>
+                        <th className="px-5 py-3">Detail</th>
+                      </tr>
+                    </thead>
+                    <tbody className="divide-y divide-stone-100 dark:divide-white/[0.05]">
+                      {state.settings.activityLog.map((e) => (
+                        <tr key={e.id}>
+                          <td className="px-5 py-2.5 whitespace-nowrap text-xs text-stone-400">
+                            {formatDate(e.createdAt)}
+                          </td>
+                          <td className="px-5 py-2.5 font-semibold">
+                            {e.actor}
+                          </td>
+                          <td className="px-5 py-2.5">
+                            <span className="rounded-full bg-stone-100 px-2.5 py-0.5 text-[11px] font-bold dark:bg-white/10">
+                              {e.action}
+                            </span>
+                          </td>
+                          <td className="px-5 py-2.5 text-stone-600 dark:text-white/60">
+                            {e.detail || "—"}
+                          </td>
+                        </tr>
+                      ))}
+                    </tbody>
+                  </table>
+                </div>
+              )}
+            </DashboardCard>
+          </div>
+        )}
+
+        {/* ——— SETTINGS (prioritas full-width) ——— */}
         {tab === "settings" && (
           <div className="mt-6 grid gap-6 lg:grid-cols-5">
             <form onSubmit={onCommission} className="lg:col-span-3">
@@ -640,7 +945,7 @@ export default function SuperAdminDashboardPage() {
                       className={dashInput}
                     />
                     <p className="mt-1 text-[11px] text-stone-400">
-                      0â€“50%. Saat ini {state.settings.commissionRate}%.
+                      0“50%. Saat ini {state.settings.commissionRate}%.
                     </p>
                   </div>
                   <div>
@@ -752,6 +1057,235 @@ export default function SuperAdminDashboardPage() {
                 </div>
               </div>
             </div>
+
+            {/* ——— Kategori Menu ——— */}
+            <DashboardCard>
+              <div className="flex items-center gap-2">
+                <Tag className="h-4 w-4 text-[#FFB300]" />
+                <h2 className="font-bold text-stone-900 dark:text-white">
+                  Kategori Menu
+                </h2>
+              </div>
+              <p className="mt-1 text-xs text-stone-500">
+                Kategori yang dipakai filter menu & form produk penjual.
+              </p>
+              <div className="mt-4 flex flex-wrap gap-2">
+                {catDrafts.map((c) => (
+                  <span
+                    key={c}
+                    className="inline-flex items-center gap-1.5 rounded-full bg-stone-100 px-3 py-1.5 text-xs font-semibold text-stone-700 dark:bg-white/10 dark:text-white/80"
+                  >
+                    {c}
+                    <button
+                      type="button"
+                      onClick={() =>
+                        setCatDrafts((list) => list.filter((x) => x !== c))
+                      }
+                      className="cursor-pointer text-stone-400 hover:text-red-500"
+                      title="Hapus kategori"
+                    >
+                      <X className="h-3.5 w-3.5" strokeWidth={2} />
+                    </button>
+                  </span>
+                ))}
+              </div>
+              <div className="mt-4 flex gap-2">
+                <input
+                  value={catInput}
+                  onChange={(e) => setCatInput(e.target.value)}
+                  onKeyDown={(e) => {
+                    if (e.key === "Enter") {
+                      e.preventDefault();
+                      const v = catInput.trim();
+                      if (v && !catDrafts.includes(v)) {
+                        setCatDrafts((list) => [...list, v]);
+                        setCatInput("");
+                      }
+                    }
+                  }}
+                  placeholder="Tambah kategori…"
+                  className={dashInput}
+                />
+                <button
+                  type="button"
+                  onClick={() => {
+                    const v = catInput.trim();
+                    if (v && !catDrafts.includes(v)) {
+                      setCatDrafts((list) => [...list, v]);
+                      setCatInput("");
+                    }
+                  }}
+                  className="shrink-0 cursor-pointer rounded-full bg-[#FFB300] px-4 py-2 text-sm font-bold text-[#1c1917] transition hover:bg-[#F0A500]"
+                >
+                  Tambah
+                </button>
+              </div>
+              <button
+                type="button"
+                onClick={() => updateMenuCategories(catDrafts)}
+                className="mt-4 cursor-pointer rounded-full bg-[#FFB300] px-6 py-2.5 text-sm font-bold text-[#1c1917] transition hover:bg-[#F0A500]"
+              >
+                Simpan Kategori
+              </button>
+            </DashboardCard>
+
+            {/* ——— Jam Operasional ——— */}
+            <DashboardCard>
+              <div className="flex items-center gap-2">
+                <Clock className="h-4 w-4 text-[#FFB300]" />
+                <h2 className="font-bold text-stone-900 dark:text-white">
+                  Jam Operasional
+                </h2>
+              </div>
+              <p className="mt-1 text-xs text-stone-500">
+                Jika aktif, pemesanan diblokir di luar jam buka.
+              </p>
+              <div className="mt-4 flex items-center justify-between rounded-xl border border-stone-200 bg-stone-50 p-4 dark:border-white/10 dark:bg-black/30">
+                <div>
+                  <p className="text-sm font-semibold text-stone-900 dark:text-white">
+                    Aktifkan batas jam
+                  </p>
+                  <p className="text-[11px] text-stone-500 dark:text-white/40">
+                    {ohEnabled
+                      ? `Buka ${ohOpen} – ${ohClose}`
+                      : "Platform buka 24 jam"}
+                  </p>
+                </div>
+                <button
+                  type="button"
+                  onClick={() => setOhEnabled((v) => !v)}
+                  className={cn(
+                    "relative inline-flex h-6 w-11 shrink-0 cursor-pointer items-center rounded-full transition-colors",
+                    ohEnabled
+                      ? "bg-[#FFB300]"
+                      : "bg-stone-300 dark:bg-stone-600"
+                  )}
+                >
+                  <span
+                    className={cn(
+                      "inline-block h-4 w-4 rounded-full bg-white shadow transition-transform",
+                      ohEnabled ? "translate-x-6" : "translate-x-1"
+                    )}
+                  />
+                </button>
+              </div>
+              <div className="mt-4 grid grid-cols-2 gap-3">
+                <div>
+                  <label className="mb-1.5 block text-xs font-bold text-stone-500">
+                    Jam buka
+                  </label>
+                  <input
+                    type="time"
+                    value={ohOpen}
+                    onChange={(e) => setOhOpen(e.target.value)}
+                    className={dashInput}
+                  />
+                </div>
+                <div>
+                  <label className="mb-1.5 block text-xs font-bold text-stone-500">
+                    Jam tutup
+                  </label>
+                  <input
+                    type="time"
+                    value={ohClose}
+                    onChange={(e) => setOhClose(e.target.value)}
+                    className={dashInput}
+                  />
+                </div>
+              </div>
+              <button
+                type="button"
+                onClick={() =>
+                  updateOperatingHours({
+                    enabled: ohEnabled,
+                    openTime: ohOpen,
+                    closeTime: ohClose,
+                  })
+                }
+                className="mt-4 cursor-pointer rounded-full bg-[#FFB300] px-6 py-2.5 text-sm font-bold text-[#1c1917] transition hover:bg-[#F0A500]"
+              >
+                Simpan Jam Operasional
+              </button>
+            </DashboardCard>
+
+            {/* ——— Metode Pembayaran ——— */}
+            <DashboardCard>
+              <div className="flex items-center gap-2">
+                <CreditCard className="h-4 w-4 text-[#FFB300]" />
+                <h2 className="font-bold text-stone-900 dark:text-white">
+                  Metode Pembayaran
+                </h2>
+              </div>
+              <p className="mt-1 text-xs text-stone-500">
+                Metode yang ditawarkan saat checkout.
+              </p>
+              <div className="mt-4 space-y-3">
+                {(
+                  [
+                    [
+                      "online",
+                      "QRIS Online (WarungErik Pay)",
+                      "Bayar via QRIS / e-wallet setelah checkout",
+                    ],
+                    [
+                      "canteen",
+                      "Bayar di Kantin (COD)",
+                      "Tandai lunas langsung di lapak",
+                    ],
+                  ] as const
+                ).map(([id, label, desc]) => {
+                  const checked = id === "online" ? pmOnline : pmCanteen;
+                  return (
+                    <div
+                      key={id}
+                      className="flex items-center justify-between rounded-xl border border-stone-200 bg-stone-50 p-4 dark:border-white/10 dark:bg-black/30"
+                    >
+                      <div>
+                        <p className="text-sm font-semibold text-stone-900 dark:text-white">
+                          {label}
+                        </p>
+                        <p className="text-[11px] text-stone-500 dark:text-white/40">
+                          {desc}
+                        </p>
+                      </div>
+                      <button
+                        type="button"
+                        onClick={() =>
+                          id === "online"
+                            ? setPmOnline((v) => !v)
+                            : setPmCanteen((v) => !v)
+                        }
+                        className={cn(
+                          "relative inline-flex h-6 w-11 shrink-0 cursor-pointer items-center rounded-full transition-colors",
+                          checked
+                            ? "bg-emerald-500"
+                            : "bg-stone-300 dark:bg-stone-600"
+                        )}
+                      >
+                        <span
+                          className={cn(
+                            "inline-block h-4 w-4 rounded-full bg-white shadow transition-transform",
+                            checked ? "translate-x-6" : "translate-x-1"
+                          )}
+                        />
+                      </button>
+                    </div>
+                  );
+                })}
+              </div>
+              <button
+                type="button"
+                onClick={() => {
+                  const methods: CheckoutPaymentMethod[] = [];
+                  if (pmOnline) methods.push("online");
+                  if (pmCanteen) methods.push("canteen");
+                  updatePaymentMethods(methods);
+                }}
+                className="mt-4 cursor-pointer rounded-full bg-[#FFB300] px-6 py-2.5 text-sm font-bold text-[#1c1917] transition hover:bg-[#F0A500]"
+              >
+                Simpan Metode Pembayaran
+              </button>
+            </DashboardCard>
           </div>
         )}
       </DashboardShell>

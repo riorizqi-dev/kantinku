@@ -12,6 +12,9 @@ import {
   CheckCircle,
   XCircle,
   Send,
+  Megaphone,
+  Plus,
+  Trash2,
 } from "lucide-react";
 import { useApp } from "@/context/AppContext";
 import {
@@ -26,7 +29,7 @@ import {
 import { PageTransition } from "@/components/motion/Reveal";
 import { DashboardShell } from "@/components/layout/DashboardShell";
 
-type Tab = "overview" | "orders" | "sellers" | "reports" | "pencairan";
+type Tab = "overview" | "orders" | "sellers" | "reports" | "pencairan" | "pengumuman";
 
 /**
  * Dashboard Admin Platform
@@ -37,9 +40,12 @@ type Tab = "overview" | "orders" | "sellers" | "reports" | "pencairan";
  */
 export default function AdminDashboardPage() {
   const router = useRouter();
-  const { ready, state, processWithdrawal, completeWithdrawal } = useApp();
+  const { ready, state, processWithdrawal, completeWithdrawal, addAnnouncement, removeAnnouncement } = useApp();
   const [tab, setTab] = useState<Tab>("overview");
   const session = state.session;
+  const [annTitle, setAnnTitle] = useState("");
+  const [annBody, setAnnBody] = useState("");
+  const [annAudience, setAnnAudience] = useState<"all" | "sellers" | "buyers">("all");
 
   useEffect(() => {
     if (!ready) return;
@@ -111,6 +117,7 @@ export default function AdminDashboardPage() {
     { id: "sellers", label: "Penjual" },
     { id: "reports", label: "Laporan" },
     { id: "pencairan", label: "Pencairan" },
+    { id: "pengumuman", label: "Pengumuman" },
   ];
 
   return (
@@ -241,7 +248,7 @@ export default function AdminDashboardPage() {
                 {formatRupiah(stats.commission)}
               </p>
               <p className="mt-2 text-sm text-stone-500">
-                Dari {stats.orders} transaksi lunas Â· rate{" "}
+                Dari {stats.orders} transaksi lunas · rate{" "}
                 {state.settings.commissionRate}%
               </p>
             </div>
@@ -264,7 +271,7 @@ export default function AdminDashboardPage() {
                     <div>
                       <p className="font-bold">{o.orderNumber}</p>
                       <p className="text-xs text-stone-500">
-                        {formatDate(o.createdAt)} Â· {o.sellerName}
+                        {formatDate(o.createdAt)} · {o.sellerName}
                       </p>
                       <p className="mt-1 text-sm">
                         {o.buyerName} ({o.buyerClass})
@@ -282,11 +289,11 @@ export default function AdminDashboardPage() {
                         {formatRupiah(o.total)}
                       </p>
                       <p className="text-xs text-stone-400">
-                        Komisi: {formatRupiah(o.commissionAmount)} Â· Penjual:{" "}
+                        Komisi: {formatRupiah(o.commissionAmount)} · Penjual:{" "}
                         {formatRupiah(o.sellerAmount)}
                       </p>
                       <p className="mt-1 text-xs text-stone-500">
-                        {paymentStatusLabel(o.paymentStatus)} Â·{" "}
+                        {paymentStatusLabel(o.paymentStatus)} ·{" "}
                         {orderStatusLabel(o.status)}
                       </p>
                     </div>
@@ -312,8 +319,8 @@ export default function AdminDashboardPage() {
                         {s.name}
                       </p>
                       <p className="text-xs text-stone-500">
-                        {s.booth ? `Booth ${s.booth} Â· ` : ""}
-                        WA: {s.phone || "â€”"} Â·{" "}
+                        {s.booth ? `Booth ${s.booth} · ` : ""}
+                        WA: {s.phone || "—"} ·{" "}
                         {s.isActive ? "Aktif" : "Nonaktif"}
                       </p>
                     </div>
@@ -472,11 +479,11 @@ export default function AdminDashboardPage() {
                             </span>
                           </div>
                           <p className="mt-1 text-xs text-stone-500">
-                            {formatDate(w.createdAt)} Â·{" "}
+                            {formatDate(w.createdAt)} ·{" "}
                             {withdrawalMethodLabel(w.method)}
                           </p>
                           <p className="mt-1 text-xs text-stone-500">
-                            {w.accountNumber} Â· {w.accountName}
+                            {w.accountNumber} · {w.accountName}
                           </p>
                           {w.rejectReason && (
                             <p className="mt-1 text-xs text-red-500">
@@ -535,6 +542,107 @@ export default function AdminDashboardPage() {
                       )}
                     </div>
                   ))
+              )}
+            </div>
+          </div>
+        )}
+
+        {tab === "pengumuman" && (
+          <div className="mt-6 grid gap-6 lg:grid-cols-5">
+            <div className="rounded-2xl border border-stone-200 bg-white p-5 sm:p-6 dark:border-stone-800 dark:bg-[#121214] lg:col-span-2">
+              <div className="flex items-center gap-2">
+                <Megaphone className="h-4 w-4 text-[#FFB300]" />
+                <h2 className="font-bold text-stone-900 dark:text-white">
+                  Broadcast Pengumuman
+                </h2>
+              </div>
+              <p className="mt-1 text-xs text-stone-500">
+                Kirim pengumuman ke siswa & pedagang.
+              </p>
+              <div className="mt-5 space-y-3">
+                <input
+                  value={annTitle}
+                  onChange={(e) => setAnnTitle(e.target.value)}
+                  placeholder="Judul pengumuman"
+                  className="w-full rounded-xl border border-stone-200 bg-stone-50 px-3.5 py-2.5 text-sm text-stone-900 placeholder:text-stone-400 dark:border-white/10 dark:bg-black/30 dark:text-white dark:placeholder:text-white/30"
+                />
+                <textarea
+                  value={annBody}
+                  onChange={(e) => setAnnBody(e.target.value.slice(0, 500))}
+                  rows={3}
+                  placeholder="Isi pengumuman…"
+                  className="w-full resize-none rounded-xl border border-stone-200 bg-stone-50 px-3.5 py-2.5 text-sm text-stone-900 placeholder:text-stone-400 dark:border-white/10 dark:bg-black/30 dark:text-white dark:placeholder:text-white/30"
+                />
+                <select
+                  value={annAudience}
+                  onChange={(e) =>
+                    setAnnAudience(e.target.value as "all" | "sellers" | "buyers")
+                  }
+                  className="w-full rounded-xl border border-stone-200 bg-white px-3 py-2.5 text-sm text-stone-900 dark:border-white/10 dark:bg-[#1a1a1c] dark:text-white"
+                >
+                  <option value="all">Semua (siswa & pedagang)</option>
+                  <option value="buyers">Pembeli / Siswa</option>
+                  <option value="sellers">Penjual / Pedagang</option>
+                </select>
+                <button
+                  type="button"
+                  onClick={() => {
+                    addAnnouncement({ title: annTitle, body: annBody, audience: annAudience });
+                    if (annTitle.trim() && annBody.trim()) {
+                      setAnnTitle("");
+                      setAnnBody("");
+                    }
+                  }}
+                  className="inline-flex cursor-pointer items-center gap-1.5 rounded-full bg-[#FFB300] px-5 py-2.5 text-sm font-bold text-[#1c1917] transition hover:bg-[#F0A500]"
+                >
+                  <Plus className="h-4 w-4" strokeWidth={1.75} />
+                  Siarkan
+                </button>
+              </div>
+            </div>
+
+            <div className="space-y-3 lg:col-span-3">
+              {!state.settings.announcements?.length ? (
+                <div className="rounded-2xl border border-dashed border-stone-200 py-12 text-center dark:border-stone-800">
+                  <Megaphone className="mx-auto h-7 w-7 text-stone-500" />
+                  <p className="mt-2 text-sm text-stone-500">
+                    Belum ada pengumuman
+                  </p>
+                </div>
+              ) : (
+                state.settings.announcements.map((a) => (
+                  <div
+                    key={a.id}
+                    className="rounded-2xl border border-stone-200 bg-white p-5 dark:border-stone-800 dark:bg-[#121214]"
+                  >
+                    <div className="flex items-start justify-between gap-3">
+                      <div className="min-w-0">
+                        <p className="font-bold text-stone-900 dark:text-white">{a.title}</p>
+                        <p className="mt-0.5 text-xs text-stone-400">
+                          {a.author} · {formatDate(a.createdAt)}
+                        </p>
+                        <p className="mt-2 text-sm leading-relaxed text-stone-600 dark:text-white/70">
+                          {a.body}
+                        </p>
+                        <span className="mt-2 inline-block rounded-full bg-stone-100 px-2.5 py-0.5 text-[10px] font-bold uppercase tracking-wide text-stone-500 dark:bg-white/10 dark:text-white/50">
+                          {a.audience === "all"
+                            ? "Semua"
+                            : a.audience === "buyers"
+                              ? "Pembeli"
+                              : "Penjual"}
+                        </span>
+                      </div>
+                      <button
+                        type="button"
+                        onClick={() => removeAnnouncement(a.id)}
+                        className="shrink-0 cursor-pointer rounded-lg p-1.5 text-red-400 transition hover:bg-red-500/10"
+                        title="Hapus pengumuman"
+                      >
+                        <Trash2 className="h-4 w-4" strokeWidth={1.5} />
+                      </button>
+                    </div>
+                  </div>
+                ))
               )}
             </div>
           </div>

@@ -38,6 +38,8 @@ export interface User {
   sellerId?: string;
   /** data URL base64 foto profil */
   avatar?: string;
+  /** false = akun disuspend oleh Super Admin (tidak bisa login) */
+  isActive?: boolean;
   createdAt: number;
 }
 
@@ -203,6 +205,27 @@ export interface Order {
   ratedAt?: number;
 }
 
+/** Pengumuman yang disiarkan Super Admin / Admin ke semua user */
+export interface Announcement {
+  id: string;
+  title: string;
+  body: string;
+  /** target: semua / penjual / pembeli */
+  audience: "all" | "sellers" | "buyers";
+  /** penulis (nama pengguna) */
+  author: string;
+  createdAt: number;
+}
+
+/** Entri log aktivitas / audit trail (dibatasi 200 entri terakhir) */
+export interface ActivityEntry {
+  id: string;
+  actor: string;
+  action: string;
+  detail?: string;
+  createdAt: number;
+}
+
 export interface PlatformSettings {
   schoolName: string;
   commissionRate: number;
@@ -211,6 +234,20 @@ export interface PlatformSettings {
   withdrawalFeeType: WithdrawalFeeType;
   /** Nilai fee pencairan (persen atau nominal) */
   withdrawalFeeValue: number;
+  /** Kategori menu yang dikelola Super Admin (default: Makanan, Minuman, Snack) */
+  menuCategories: string[];
+  /** Pengumuman / broadcast */
+  announcements: Announcement[];
+  /** Jam operasional platform (opsional, dinonaktifkan = buka 24 jam) */
+  operatingHours: {
+    enabled: boolean;
+    openTime: string;
+    closeTime: string;
+  };
+  /** Metode pembayaran yang diaktifkan platform */
+  enabledPaymentMethods: CheckoutPaymentMethod[];
+  /** Log aktivitas / audit trail */
+  activityLog: ActivityEntry[];
 }
 
 export interface SessionUser {

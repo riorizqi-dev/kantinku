@@ -86,6 +86,49 @@ export function SellerReport({
       { count: 0, subtotal: 0, commission: 0, net: 0, qty: 0 }
     );
 
+    // Status pesanan (selesai vs dibatalkan) pada periode
+    const allPaidInPeriod = orders.filter(
+      (o) => o.paymentStatus === "paid" && o.createdAt >= start
+    );
+    const statusBreakdown = {
+      completed: allPaidInPeriod.filter(
+        (o) => o.status !== "cancelled"
+      ).length,
+      cancelled: allPaidInPeriod.filter((o) => o.status === "cancelled").length,
+    };
+
+    // Metode pembayaran
+    const paymentMap = new Map<
+      string,
+      { count: number; total: number }
+    >();
+    for (const o of list) {
+      const m = o.paymentMethod || "unknown";
+      const cur = paymentMap.get(m) || { count: 0, total: 0 };
+      cur.count += 1;
+      cur.total += o.subtotal;
+      paymentMap.set(m, cur);
+    }
+    const paymentBreakdown = Array.from(paymentMap.entries())
+      .map(([method, v]) => ({ method, ...v }))
+      .sort((a, b) => b.total - a.total);
+
+    // Perbandingan periode sebelumnya (durasi sama)
+    const now = Date.now();
+    const duration = now - start;
+    const prevStart = start - duration;
+    const prevList = orders.filter(
+      (o) =>
+        o.paymentStatus === "paid" &&
+        o.status !== "cancelled" &&
+        o.createdAt >= prevStart &&
+        o.createdAt < start
+    );
+    const prevSubtotal = prevList.reduce((n, o) => n + o.subtotal, 0);
+    const prevCount = prevList.length;
+    const deltaSubtotal = summary.subtotal - prevSubtotal;
+    const deltaCount = summary.count - prevCount;
+
     const byDay = new Map<
       string,
       { label: string; count: number; subtotal: number; commission: number; net: number }
@@ -130,7 +173,19 @@ export function SellerReport({
       .sort((a, b) => b.qty - a.qty)
       .slice(0, 10);
 
-    return { list, summary, days, topItems, start };
+    return {
+      list,
+      summary,
+      days,
+      topItems,
+      start,
+      statusBreakdown,
+      paymentBreakdown,
+      prevSubtotal,
+      prevCount,
+      deltaSubtotal,
+      deltaCount,
+    };
   }, [orders, period]);
 
   const periodLabel =
@@ -318,6 +373,35 @@ export function SellerReport({
           ))}
         </div>
 
+        {/* Perbandingan periode */}
+        <div className="mt-4 flex flex-wrap items-center gap-x-6 gap-y-2 rounded-xl border border-stone-200 bg-white px-4 py-3 dark:border-white/[0.07] dark:bg-[#121214]">
+          <p className="text-xs font-semibold uppercase tracking-wide text-stone-400 dark:text-white/35">
+            vs. periode sebelumnya
+          </p>
+          <p
+            className={cn(
+              "text-xs font-semibold",
+              data.deltaSubtotal >= 0 ? "text-emerald-600 dark:text-emerald-400" : "text-red-600 dark:text-red-400"
+            )}
+          >
+            Omzet{" "}
+            {data.deltaSubtotal >= 0 ? "▲" : "▼"}{" "}
+            {formatRupiah(Math.abs(data.deltaSubtotal))}
+          </p>
+          <p className="text-xs text-stone-500 dark:text-white/40">
+            {formatRupiah(data.prevSubtotal)} → {formatRupiah(data.summary.subtotal)}
+          </p>
+          <p
+            className={cn(
+              "text-xs font-semibold",
+              data.deltaCount >= 0 ? "text-emerald-600 dark:text-emerald-400" : "text-red-600 dark:text-red-400"
+            )}
+          >
+            {data.deltaCount >= 0 ? "+" : ""}
+            {data.deltaCount} pesanan
+          </p>
+        </div>
+
         {/* Rincian per hari */}
         <div className="mt-6 overflow-hidden rounded-xl border border-stone-200 dark:border-white/[0.07]">
           <div className="border-b border-stone-200 bg-stone-50 px-4 py-2.5 text-xs font-semibold uppercase tracking-wide text-stone-500 dark:border-white/[0.06] dark:bg-white/[0.03] dark:text-white/40">
@@ -356,6 +440,63 @@ export function SellerReport({
                 )}
               </tbody>
             </table>
+          </div>
+        </div>
+
+        {/* Status & metode pembayaran */}
+        <div className="mt-6 grid gap-4 sm:grid-cols-2">
+          <div className="overflow-hidden rounded-xl border border-stone-200 dark:border-white/[0.07]">
+            <div className="border-b border-stone-200 bg-stone-50 px-4 py-2.5 text-xs font-semibold uppercase tracking-wide text-stone-500 dark:border-white/[0.06] dark:bg-white/[0.03] dark:text-white/40">
+              Status pesanan (lunas)
+            </div>
+            <div className="grid grid-cols-2 divide-x divide-stone-100 dark:divide-white/[0.04]">
+              <div className="p-4">
+                <p className="text-2xl font-bold text-emerald-600 dark:text-emerald-400">
+                  {data.statusBreakdown.completed}
+                </p>
+                <p className="mt-0.5 text-xs text-stone-500 dark:text-white/40">
+                  Selesai / diproses
+                </p>
+              </div>
+              <div className="p-4">
+                <p className="text-2xl font-bold text-red-600 dark:text-red-400">
+                  {data.statusBreakdown.cancelled}
+                </p>
+                <p className="mt-0.5 text-xs text-stone-500 dark:text-white/40">
+                  Dibatalkan (lunas/refund)
+                </p>
+              </div>
+            </div>
+          </div>
+
+          <div className="overflow-hidden rounded-xl border border-stone-200 dark:border-white/[0.07]">
+            <div className="border-b border-stone-200 bg-stone-50 px-4 py-2.5 text-xs font-semibold uppercase tracking-wide text-stone-500 dark:border-white/[0.06] dark:bg-white/[0.03] dark:text-white/40">
+              Metode pembayaran
+            </div>
+            {data.paymentBreakdown.length === 0 ? (
+              <p className="px-4 py-6 text-center text-xs text-stone-400 dark:text-white/30">
+                Belum ada transaksi
+              </p>
+            ) : (
+              <div className="divide-y divide-stone-100 dark:divide-white/[0.04]">
+                {data.paymentBreakdown.map((p) => (
+                  <div
+                    key={p.method}
+                    className="flex items-center justify-between gap-3 px-4 py-3"
+                  >
+                    <p className="text-sm text-stone-700 dark:text-white/75">
+                      {paymentMethodLabel(p.method)}
+                    </p>
+                    <p className="text-sm text-stone-500 dark:text-white/40">
+                      {p.count} pesanan ·{" "}
+                      <span className="font-semibold text-stone-800 dark:text-white/80">
+                        {formatRupiah(p.total)}
+                      </span>
+                    </p>
+                  </div>
+                ))}
+              </div>
+            )}
           </div>
         </div>
 

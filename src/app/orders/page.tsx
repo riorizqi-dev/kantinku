@@ -103,7 +103,7 @@ function StoreRatingBlock({
         </div>
         {order.ratingComment && (
           <p className="mt-1.5 text-xs leading-relaxed text-amber-900/70 dark:text-amber-100/60">
-            â€œ{order.ratingComment}â€
+            “{order.ratingComment}”
           </p>
         )}
       </div>
@@ -366,7 +366,7 @@ export default function OrdersPage() {
                           {o.orderNumber}
                         </p>
                         <p className="mt-0.5 text-xs text-stone-500 dark:text-white/45">
-                          {formatDate(o.createdAt)} Â·{" "}
+                          {formatDate(o.createdAt)} ·{" "}
                           <span className="font-semibold text-stone-700 dark:text-white/75">
                             {o.sellerName}
                           </span>
