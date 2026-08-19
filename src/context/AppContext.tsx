@@ -137,6 +137,7 @@ interface AppContextValue {
     id?: string
   ) => void;
   deleteProduct: (id: string) => void;
+  setProductActive: (id: string, active: boolean) => void;
   // Settings / admin
   updateSettings: (patch: Partial<PlatformSettings>) => void;
   updateSeller: (
@@ -1369,6 +1370,33 @@ export function AppProvider({ children }: { children: React.ReactNode }) {
     [state.session, toast]
   );
 
+  const setProductActive = useCallback(
+    (id: string, active: boolean) => {
+      const session = state.session;
+      if (!session || session.role !== "seller" || !session.sellerId) {
+        toast("Hanya penjual yang dapat mengubah produk", "error");
+        return;
+      }
+      setState((s) => {
+        const product = s.products.find((p) => p.id === id);
+        if (!product || product.sellerId !== session.sellerId) {
+          return s;
+        }
+        return {
+          ...s,
+          products: s.products.map((p) =>
+            p.id === id ? { ...p, isActive: active } : p
+          ),
+          cart: active
+            ? s.cart
+            : s.cart.filter((c) => c.productId !== id),
+        };
+      });
+      toast(active ? "Produk diaktifkan" : "Produk dinonaktifkan", "info");
+    },
+    [state.session, toast]
+  );
+
   const updateSettings = useCallback(
     (patch: Partial<PlatformSettings>) => {
       if (state.session?.role !== "superadmin") {
@@ -2004,6 +2032,7 @@ export function AppProvider({ children }: { children: React.ReactNode }) {
     getSellerUnreadCount,
     saveProduct,
     deleteProduct,
+    setProductActive,
     updateSettings,
     updateSeller,
     addSellerUser,

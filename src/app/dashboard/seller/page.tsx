@@ -144,6 +144,7 @@ function SellerDashboardInner() {
     getSellerUnreadCount,
     saveProduct,
     deleteProduct,
+    setProductActive,
     updateSeller,
     markCanteenPaid,
     getSellerBalance,
@@ -1115,6 +1116,7 @@ function SellerDashboardInner() {
                       <th className="px-4 py-3">Varian</th>
                       <th className="px-4 py-3">Harga</th>
                       <th className="px-4 py-3">Stok total</th>
+                      <th className="px-4 py-3">Status</th>
                       <th className="px-4 py-3 text-right">Aksi</th>
                     </tr>
                   </thead>
@@ -1186,6 +1188,42 @@ function SellerDashboardInner() {
                             >
                               {totalStock}
                             </span>
+                          </td>
+                          <td className="px-4 py-3">
+                            <div className="flex items-center gap-2">
+                              <button
+                                type="button"
+                                onClick={() => setProductActive(p.id, !p.isActive)}
+                                className={cn(
+                                  "relative inline-flex h-6 w-11 shrink-0 cursor-pointer items-center rounded-full transition-colors",
+                                  p.isActive
+                                    ? "bg-emerald-500"
+                                    : "bg-stone-300 dark:bg-stone-600"
+                                )}
+                                title={
+                                  p.isActive
+                                    ? "Nonaktifkan produk"
+                                    : "Aktifkan produk"
+                                }
+                              >
+                                <span
+                                  className={cn(
+                                    "inline-block h-4 w-4 rounded-full bg-white shadow transition-transform",
+                                    p.isActive ? "translate-x-6" : "translate-x-1"
+                                  )}
+                                />
+                              </button>
+                              <span
+                                className={cn(
+                                  "text-[11px] font-semibold",
+                                  p.isActive
+                                    ? "text-emerald-600 dark:text-emerald-400"
+                                    : "text-stone-400 dark:text-white/35"
+                                )}
+                              >
+                                {p.isActive ? "Aktif" : "Nonaktif"}
+                              </span>
+                            </div>
                           </td>
                           <td className="px-4 py-3">
                             <div className="flex justify-end gap-1">
