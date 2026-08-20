@@ -314,7 +314,7 @@ export function SellerReport({
               className={cn(
                 "cursor-pointer rounded-md border px-3 py-1.5 text-xs font-medium transition-colors",
                 period === id
-                  ? "border-transparent bg-[#FFB300] text-white"
+                  ? "border-transparent bg-[#059669] text-white"
                   : "border-stone-200 bg-white text-stone-600 hover:border-stone-300 dark:border-white/10 dark:bg-white/[0.04] dark:text-white/60 dark:hover:text-white"
               )}
             >
@@ -361,7 +361,7 @@ export function SellerReport({
                 <p className="text-[11px] font-medium uppercase tracking-wide text-stone-500 dark:text-white/35">
                   {s.label}
                 </p>
-                <s.icon className="h-4 w-4 text-[#FFB300]" strokeWidth={1.5} />
+                <s.icon className="h-4 w-4 text-[#059669]" strokeWidth={1.5} />
               </div>
               <p className="mt-1.5 text-lg font-bold text-stone-900 dark:text-white">
                 {s.value}
@@ -432,7 +432,7 @@ export function SellerReport({
                       <td className="px-4 py-2">{d.count}</td>
                       <td className="px-4 py-2 tabular-nums">{formatRupiah(d.subtotal)}</td>
                       <td className="px-4 py-2 tabular-nums">{formatRupiah(d.commission)}</td>
-                      <td className="px-4 py-2 font-semibold tabular-nums text-[#FFB300]">
+                      <td className="px-4 py-2 font-semibold tabular-nums text-[#059669]">
                         {formatRupiah(d.net)}
                       </td>
                     </tr>
@@ -565,7 +565,7 @@ export function SellerReport({
                       </td>
                       <td className="px-4 py-2 tabular-nums">{formatRupiah(o.subtotal)}</td>
                       <td className="px-4 py-2 tabular-nums">{formatRupiah(o.commissionAmount)}</td>
-                      <td className="px-4 py-2 font-semibold tabular-nums text-[#FFB300]">
+                      <td className="px-4 py-2 font-semibold tabular-nums text-[#059669]">
                         {formatRupiah(o.sellerAmount)}
                       </td>
                       <td className="px-4 py-2 text-xs">{orderStatusLabel(o.status)}</td>
@@ -584,7 +584,7 @@ export function SellerReport({
           <p className="text-stone-500 dark:text-white/40">
             Periode: <strong>{periodLabel}</strong> · dari {formatDate(data.start)}
           </p>
-          <p className="inline-flex items-center gap-1.5 font-semibold text-[#FFB300]">
+          <p className="inline-flex items-center gap-1.5 font-semibold text-[#059669]">
             <Package className="h-4 w-4" strokeWidth={1.75} />
             Laba bersih: {formatRupiah(data.summary.net)}
           </p>

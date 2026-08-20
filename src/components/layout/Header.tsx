@@ -22,7 +22,7 @@ import { useTheme } from "@/components/providers/ThemeProvider";
 import { cn } from "@/lib/utils";
 
 const iconStroke = 1.75;
-const HEADER_BG = "#FFB300";
+const HEADER_BG = "#059669";
 
 export function Header() {
   const { state, cartCount, logout, getSellerUnreadCount } = useApp();
@@ -57,7 +57,9 @@ export function Header() {
           ? "/dashboard/seller"
           : session?.role === "buyer"
             ? "/dashboard/customer"
-            : null;
+            : session?.role === "bendahara"
+              ? "/dashboard/bendahara"
+              : null;
 
   const isActive = (href: string) =>
     href === "/" ? pathname === "/" : pathname.startsWith(href);
@@ -115,7 +117,7 @@ export function Header() {
               />
               <button
                 type="submit"
-                className="flex h-9 w-12 cursor-pointer items-center justify-center rounded-r-md bg-[#F0A500] text-white transition-colors hover:bg-[#E09500]"
+                className="flex h-9 w-12 cursor-pointer items-center justify-center rounded-r-md bg-[#047857] text-white transition-colors hover:bg-[#065f46]"
                 aria-label="Cari"
               >
                 <Search className="h-[18px] w-[18px]" strokeWidth={iconStroke} />
@@ -150,7 +152,7 @@ export function Header() {
                 />
                 {cartCount > 0 && (
                   <span
-                    className="absolute right-0.5 top-0.5 flex h-[18px] min-w-[18px] items-center justify-center rounded-full bg-white px-1 text-[10px] font-bold leading-none text-[#FFB300]"
+                    className="absolute right-0.5 top-0.5 flex h-[18px] min-w-[18px] items-center justify-center rounded-full bg-white px-1 text-[10px] font-bold leading-none text-[#059669]"
                     aria-hidden
                   >
                     {cartCount > 99 ? "99+" : cartCount}
@@ -328,7 +330,7 @@ export function Header() {
               />
               <button
                 type="submit"
-                className="h-full shrink-0 cursor-pointer bg-[#F0A500] px-3 text-[13px] font-semibold text-white transition-colors hover:bg-[#E09500]"
+                className="h-full shrink-0 cursor-pointer bg-[#047857] px-3 text-[13px] font-semibold text-white transition-colors hover:bg-[#065f46]"
               >
                 Cari
               </button>
@@ -347,8 +349,8 @@ export function Header() {
               className={cn(
                 "-mb-px cursor-pointer border-b-2 px-3 py-2.5 text-[13px] font-medium transition-colors",
 isActive(item.href)
-                    ? "border-[#FFB300] font-semibold text-[#FFB300]"
-                    : "border-transparent text-stone-600 hover:text-[#FFB300] dark:text-white/60 dark:hover:text-white"
+                    ? "border-[#059669] font-semibold text-[#059669]"
+                    : "border-transparent text-stone-600 hover:text-[#059669] dark:text-white/60 dark:hover:text-white"
               )}
             >
               {item.label}
@@ -360,8 +362,8 @@ isActive(item.href)
               className={cn(
                 "-mb-px cursor-pointer border-b-2 px-3 py-2.5 text-[13px] font-medium transition-colors",
 pathname.startsWith("/dashboard")
-                    ? "border-[#FFB300] font-semibold text-[#FFB300]"
-                    : "border-transparent text-stone-600 hover:text-[#FFB300] dark:text-white/60 dark:hover:text-white"
+                    ? "border-[#059669] font-semibold text-[#059669]"
+                    : "border-transparent text-stone-600 hover:text-[#059669] dark:text-white/60 dark:hover:text-white"
               )}
             >
               Dashboard {unread > 0 ? `(${unread})` : ""}
@@ -391,7 +393,7 @@ pathname.startsWith("/dashboard")
                 className={cn(
                   "block cursor-pointer rounded-md px-3 py-2.5 text-[14px] font-medium transition-colors",
 isActive(item.href)
-                      ? "bg-amber-50 text-[#FFB300] dark:bg-white/[0.06] dark:text-amber-400"
+                      ? "bg-amber-50 text-[#059669] dark:bg-white/[0.06] dark:text-amber-400"
                     : "text-stone-600 hover:bg-stone-100 hover:text-stone-900 dark:text-white/70 dark:hover:bg-white/[0.04] dark:hover:text-white"
                 )}
               >

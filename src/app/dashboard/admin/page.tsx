@@ -15,6 +15,7 @@ import {
   Megaphone,
   Plus,
   Trash2,
+  Power,
 } from "lucide-react";
 import { useApp } from "@/context/AppContext";
 import {
@@ -40,7 +41,7 @@ type Tab = "overview" | "orders" | "sellers" | "reports" | "pencairan" | "pengum
  */
 export default function AdminDashboardPage() {
   const router = useRouter();
-  const { ready, state, processWithdrawal, completeWithdrawal, addAnnouncement, removeAnnouncement } = useApp();
+  const { ready, state, processWithdrawal, completeWithdrawal, addAnnouncement, removeAnnouncement, updateSeller, toast } = useApp();
   const [tab, setTab] = useState<Tab>("overview");
   const session = state.session;
   const [annTitle, setAnnTitle] = useState("");
@@ -106,7 +107,7 @@ export default function AdminDashboardPage() {
   if (!ready || !session || session.role !== "admin") {
     return (
       <div className="flex min-h-[40vh] items-center justify-center">
-        <div className="h-8 w-8 animate-spin rounded-full border-2 border-amber-200 border-t-[#FFB300]" />
+        <div className="h-8 w-8 animate-spin rounded-full border-2 border-amber-200 border-t-[#059669]" />
       </div>
     );
   }
@@ -165,7 +166,7 @@ export default function AdminDashboardPage() {
                 <p className="text-xs font-semibold uppercase tracking-wide text-stone-500">
                   {s.label}
                 </p>
-                <s.icon className="h-4 w-4 text-[#FFB300]" />
+                <s.icon className="h-4 w-4 text-[#059669]" />
               </div>
               <p className="mt-2 text-xl font-bold text-stone-900 dark:text-white">
                 {s.value}
@@ -183,7 +184,7 @@ export default function AdminDashboardPage() {
               className={cn(
                 "rounded-full px-4 py-2 text-sm font-semibold transition-all duration-300",
                 tab === t.id
-                  ? "bg-[#FFB300] text-[#1c1917] shadow-soft"
+                  ? "bg-[#059669] text-[#1c1917] shadow-soft"
                   : "text-stone-600 hover:bg-stone-100 dark:text-stone-300 dark:hover:bg-stone-800"
               )}
             >
@@ -226,7 +227,7 @@ export default function AdminDashboardPage() {
             </div>
             <div className="rounded-2xl border border-stone-200 bg-white p-5 sm:p-6 dark:border-stone-800 dark:bg-[#121214]">
               <div className="flex items-center gap-2">
-                <Wallet className="h-4 w-4 text-[#FFB300]" />
+                <Wallet className="h-4 w-4 text-[#059669]" />
                 <h2 className="font-bold text-stone-900 dark:text-white">
                   Akses Anda
                 </h2>
@@ -244,7 +245,7 @@ export default function AdminDashboardPage() {
               <h2 className="font-bold text-stone-900 dark:text-white">
                 Komisi platform
               </h2>
-              <p className="mt-2 text-3xl font-semibold text-[#F0A500] dark:text-[#FFC107]">
+              <p className="mt-2 text-3xl font-semibold text-[#047857] dark:text-[#10b981]">
                 {formatRupiah(stats.commission)}
               </p>
               <p className="mt-2 text-sm text-stone-500">
@@ -285,7 +286,7 @@ export default function AdminDashboardPage() {
                       </ul>
                     </div>
                     <div className="text-right text-sm">
-                      <p className="font-bold text-[#F0A500] dark:text-[#FFC107]">
+                      <p className="font-bold text-[#047857] dark:text-[#10b981]">
                         {formatRupiah(o.total)}
                       </p>
                       <p className="text-xs text-stone-400">
@@ -333,6 +334,54 @@ export default function AdminDashboardPage() {
                       </p>
                     </div>
                   </div>
+                  <div className="mt-4 flex items-center justify-between rounded-xl border border-stone-200 bg-stone-50 px-3 py-2.5 dark:border-stone-800 dark:bg-black/30">
+                    <div className="flex items-center gap-2">
+                      <Power
+                        className={cn(
+                          "h-3.5 w-3.5",
+                          s.isOpen !== false
+                            ? "text-emerald-600 dark:text-emerald-400"
+                            : "text-stone-400"
+                        )}
+                        strokeWidth={1.75}
+                      />
+                      <div>
+                        <p className="text-xs font-semibold text-stone-700 dark:text-white/70">
+                          {s.isOpen !== false ? "Gerai buka" : "Gerai tutup"}
+                        </p>
+                        <p className="text-[10px] text-stone-400 dark:text-white/30">
+                          Admin mengontrol status gerai
+                        </p>
+                      </div>
+                    </div>
+                    <button
+                      type="button"
+                      aria-label={s.isOpen !== false ? "Tutup gerai" : "Buka gerai"}
+                      onClick={() => {
+                        const next = s.isOpen !== false ? false : true;
+                        updateSeller(s.id, { isOpen: next });
+                        toast(
+                          next
+                            ? `Gerai ${s.name} dibuka`
+                            : `Gerai ${s.name} ditutup`,
+                          next ? "success" : "info"
+                        );
+                      }}
+                      className={cn(
+                        "relative inline-flex h-6 w-11 shrink-0 cursor-pointer items-center rounded-full transition-colors",
+                        s.isOpen !== false
+                          ? "bg-emerald-500"
+                          : "bg-stone-300 dark:bg-stone-600"
+                      )}
+                    >
+                      <span
+                        className={cn(
+                          "inline-block h-4 w-4 rounded-full bg-white shadow transition-transform",
+                          s.isOpen !== false ? "translate-x-6" : "translate-x-1"
+                        )}
+                      />
+                    </button>
+                  </div>
                 </div>
               );
             })}
@@ -366,7 +415,7 @@ export default function AdminDashboardPage() {
                       <td className="px-4 py-3 text-amber-700 dark:text-amber-400">
                         {formatRupiah(r.commission)}
                       </td>
-                      <td className="px-4 py-3 font-bold text-[#F0A500] dark:text-[#FFC107]">
+                      <td className="px-4 py-3 font-bold text-[#047857] dark:text-[#10b981]">
                         {formatRupiah(r.net)}
                       </td>
                     </tr>
@@ -410,7 +459,7 @@ export default function AdminDashboardPage() {
                       .reduce((n, w) => n + w.fee, 0)
                   ),
                   icon: Wallet,
-                  color: "text-[#FFB300]",
+                  color: "text-[#059669]",
                 },
                 {
                   label: "Total dicairkan",
@@ -498,7 +547,7 @@ export default function AdminDashboardPage() {
                           <p className="text-xs text-stone-500">
                             Fee: {formatRupiah(w.fee)}
                           </p>
-                          <p className="text-xs font-bold text-[#F0A500] dark:text-[#FFC107]">
+                          <p className="text-xs font-bold text-[#047857] dark:text-[#10b981]">
                             Diterima: {formatRupiah(w.netAmount)}
                           </p>
                         </div>
@@ -510,7 +559,7 @@ export default function AdminDashboardPage() {
                           <button
                             type="button"
                             onClick={() => processWithdrawal(w.id, "approved")}
-                            className="inline-flex items-center gap-1.5 rounded-full bg-[#FFB300] px-4 py-2 text-xs font-bold text-[#1c1917] transition hover:bg-[#F0A500]"
+                            className="inline-flex items-center gap-1.5 rounded-full bg-[#059669] px-4 py-2 text-xs font-bold text-[#1c1917] transition hover:bg-[#047857]"
                           >
                             <CheckCircle className="h-3.5 w-3.5" />
                             Setujui
@@ -551,7 +600,7 @@ export default function AdminDashboardPage() {
           <div className="mt-6 grid gap-6 lg:grid-cols-5">
             <div className="rounded-2xl border border-stone-200 bg-white p-5 sm:p-6 dark:border-stone-800 dark:bg-[#121214] lg:col-span-2">
               <div className="flex items-center gap-2">
-                <Megaphone className="h-4 w-4 text-[#FFB300]" />
+                <Megaphone className="h-4 w-4 text-[#059669]" />
                 <h2 className="font-bold text-stone-900 dark:text-white">
                   Broadcast Pengumuman
                 </h2>
@@ -593,7 +642,7 @@ export default function AdminDashboardPage() {
                       setAnnBody("");
                     }
                   }}
-                  className="inline-flex cursor-pointer items-center gap-1.5 rounded-full bg-[#FFB300] px-5 py-2.5 text-sm font-bold text-[#1c1917] transition hover:bg-[#F0A500]"
+                  className="inline-flex cursor-pointer items-center gap-1.5 rounded-full bg-[#059669] px-5 py-2.5 text-sm font-bold text-[#1c1917] transition hover:bg-[#047857]"
                 >
                   <Plus className="h-4 w-4" strokeWidth={1.75} />
                   Siarkan

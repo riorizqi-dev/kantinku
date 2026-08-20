@@ -15,9 +15,13 @@ export function canManagePlatform(session: SessionUser | null): boolean {
   return session?.role === "superadmin";
 }
 
-/** Laporan penjualan (admin + superadmin) */
+/** Laporan penjualan (admin + superadmin + bendahara) */
 export function canViewReports(session: SessionUser | null): boolean {
-  return session?.role === "admin" || session?.role === "superadmin";
+  return (
+    session?.role === "admin" ||
+    session?.role === "superadmin" ||
+    session?.role === "bendahara"
+  );
 }
 
 export function dashboardPath(role: UserRole | undefined): string | null {
@@ -30,6 +34,8 @@ export function dashboardPath(role: UserRole | undefined): string | null {
       return "/dashboard/super";
     case "buyer":
       return "/dashboard/customer";
+    case "bendahara":
+      return "/dashboard/bendahara";
     default:
       return null;
   }
@@ -41,6 +47,7 @@ export function roleLabel(role: UserRole): string {
     admin: "Admin",
     seller: "Penjual",
     buyer: "Customer",
+    bendahara: "Bendahara",
   };
   return map[role];
 }

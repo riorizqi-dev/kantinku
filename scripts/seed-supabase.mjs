@@ -125,6 +125,18 @@ const users = [
     kelas: null,
     created_at: now,
   },
+  {
+    id: "user_bendahara",
+    username: "bendahara",
+    password: "bendahara123",
+    name: "Bendahara Sekolah",
+    role: "bendahara",
+    phone: "",
+    seller_id: null,
+    avatar: null,
+    kelas: null,
+    created_at: now,
+  },
   ...PEDAGANG.map((p) => ({
     id: p.userId,
     username: p.username,

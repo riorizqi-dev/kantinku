@@ -28,6 +28,7 @@ import type {
   UserRole,
   WithdrawalRequest,
   WithdrawalMethod,
+  SalesReportItem,
 } from "@/lib/types";
 import { createInitialState, DEFAULT_SELLERS } from "@/lib/seed";
 import { loadState, resetState, saveState } from "@/lib/storage";
@@ -44,7 +45,7 @@ import {
   seedIfEmpty,
   syncBundleToSupabase,
 } from "@/lib/supabase/repo";
-import { calcCommission, uid } from "@/lib/utils";
+import { calcCommission, formatRupiah, uid } from "@/lib/utils";
 import {
   deductVariantStock,
   findVariant,
@@ -204,6 +205,16 @@ interface AppContextValue {
     sellerId: string,
     config: AutoPayoutConfig | null
   ) => void;
+  // Setor laporan penjualan
+  /** Pedagang submit/update laporan harian (1 per tanggal) */
+  submitSalesReport: (data: {
+    date: string;
+    items: SalesReportItem[];
+    totalRevenue: number;
+    notes?: string;
+  }) => string | null;
+  /** Bendahara verifikasi laporan */
+  verifySalesReport: (reportId: string) => void;
 }
 
 const AppContext = createContext<AppContextValue | null>(null);
@@ -342,6 +353,7 @@ export function AppProvider({ children }: { children: React.ReactNode }) {
         settings: state.settings,
         orderSeq: state.orderSeq,
         withdrawals: state.withdrawals,
+        salesReports: state.salesReports,
       }).catch((err) => {
         console.warn("[supabase sync]", err);
       });
@@ -358,6 +370,7 @@ export function AppProvider({ children }: { children: React.ReactNode }) {
     state.settings,
     state.orderSeq,
     state.withdrawals,
+    state.salesReports,
   ]);
 
   const toast = useCallback(
@@ -2004,6 +2017,114 @@ export function AppProvider({ children }: { children: React.ReactNode }) {
     }
   }, [state.autoPayouts, state.orders, state.withdrawals, hydrated]);
 
+  const submitSalesReport = useCallback(
+    (data: {
+      date: string;
+      items: SalesReportItem[];
+      totalRevenue: number;
+      notes?: string;
+    }): string | null => {
+      const session = state.session;
+      if (!session || session.role !== "seller" || !session.sellerId) {
+        toast("Hanya pedagang yang dapat menyetor laporan", "error");
+        return null;
+      }
+      const date = String(data.date || "").trim();
+      if (!/^\d{4}-\d{2}-\d{2}$/.test(date)) {
+        toast("Tanggal laporan tidak valid", "error");
+        return null;
+      }
+      const items = (data.items || []).filter((i) => i.name.trim());
+      if (!items.length || items.reduce((n, i) => n + (Number(i.qty) || 0), 0) <= 0) {
+        toast("Isi minimal 1 item terjual", "error");
+        return null;
+      }
+      const totalRevenue = Math.max(0, Math.round(Number(data.totalRevenue) || 0));
+      const seller = state.sellers.find((s) => s.id === session.sellerId);
+
+      const id = uid("srep");
+      const hadExisting = state.salesReports.some(
+        (r) => r.sellerId === session.sellerId && r.date === date
+      );
+      setState((s) => {
+        const existing = s.salesReports.find(
+          (r) => r.sellerId === session.sellerId && r.date === date
+        );
+        const report = {
+          id: existing?.id || id,
+          sellerId: session.sellerId!,
+          sellerName: seller?.name || session.name,
+          booth: seller?.booth,
+          date,
+          items,
+          totalRevenue,
+          notes: data.notes?.trim() || "",
+          status: "submitted" as const,
+          verifiedBy: undefined,
+          verifiedAt: undefined,
+          createdAt: existing?.createdAt || Date.now(),
+          updatedAt: Date.now(),
+        };
+        return {
+          ...s,
+          salesReports: existing
+            ? s.salesReports.map((r) =>
+                r.id === existing.id ? report : r
+              )
+            : [report, ...s.salesReports],
+        };
+      });
+      logActivity(
+        session.name,
+        "SETOR_LAPORAN",
+        `Laporan ${date} · ${formatRupiah(totalRevenue)}`
+      );
+      toast(
+        hadExisting ? "Laporan diperbarui" : "Laporan disetor",
+        "success"
+      );
+      return hadExisting
+        ? state.salesReports.find(
+            (r) => r.sellerId === session.sellerId && r.date === date
+          )?.id || id
+        : id;
+    },
+    [state.session, state.sellers, state.salesReports, toast, logActivity]
+  );
+
+  const verifySalesReport = useCallback(
+    (reportId: string) => {
+      const session = state.session;
+      if (!session || session.role !== "bendahara") {
+        toast("Hanya bendahara yang dapat memverifikasi", "error");
+        return;
+      }
+      setState((s) => ({
+        ...s,
+        salesReports: s.salesReports.map((r) =>
+          r.id === reportId
+            ? {
+                ...r,
+                status: "verified" as const,
+                verifiedBy: session.name,
+                verifiedAt: Date.now(),
+              }
+            : r
+        ),
+      }));
+      const report = state.salesReports.find((r) => r.id === reportId);
+      logActivity(
+        session.name,
+        "VERIFIKASI_LAPORAN",
+        report
+          ? `${report.sellerName} · ${report.date} · ${formatRupiah(report.totalRevenue)}`
+          : reportId
+      );
+      toast("Laporan diverifikasi", "success");
+    },
+    [state.session, state.salesReports, toast, logActivity]
+  );
+
   const value: AppContextValue = {
     ready,
     state,
@@ -2051,6 +2172,8 @@ export function AppProvider({ children }: { children: React.ReactNode }) {
     processWithdrawal,
     completeWithdrawal,
     setAutoPayout,
+    submitSalesReport,
+    verifySalesReport,
   };
 
   return <AppContext.Provider value={value}>{children}</AppContext.Provider>;

@@ -1,4 +1,9 @@
-export type UserRole = "superadmin" | "admin" | "seller" | "buyer";
+export type UserRole =
+  | "superadmin"
+  | "admin"
+  | "seller"
+  | "buyer"
+  | "bendahara";
 
 export type WithdrawalMethod = "bank" | "dana" | "ovo" | "gopay";
 
@@ -271,6 +276,33 @@ export interface AutoPayoutConfig {
   accountName: string;
 }
 
+/** Item dalam laporan penjualan harian (menu + jumlah terjual) */
+export interface SalesReportItem {
+  id: string;
+  name: string;
+  qty: number;
+}
+
+export type SalesReportStatus = "submitted" | "verified";
+
+/** Setor laporan penjualan harian dari pedagang → bendahara */
+export interface SalesReport {
+  id: string;
+  sellerId: string;
+  sellerName: string;
+  booth?: string;
+  /** Tanggal laporan (YYYY-MM-DD) */
+  date: string;
+  items: SalesReportItem[];
+  totalRevenue: number;
+  notes?: string;
+  status: SalesReportStatus;
+  verifiedBy?: string;
+  verifiedAt?: number;
+  createdAt: number;
+  updatedAt?: number;
+}
+
 export interface AppState {
   users: User[];
   sellers: Seller[];
@@ -286,4 +318,6 @@ export interface AppState {
   withdrawals: WithdrawalRequest[];
   /** Konfigurasi pencairan otomatis per penjual (lokal, seperti reviews) */
   autoPayouts: Record<string, AutoPayoutConfig>;
+  /** Laporan setoran penjualan harian (penjual → bendahara) */
+  salesReports: SalesReport[];
 }

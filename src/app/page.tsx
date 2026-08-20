@@ -150,7 +150,7 @@ function HomeContent() {
       </Suspense>
       {isSellerSession ? (
         <div className="flex min-h-[50vh] items-center justify-center">
-          <div className="h-8 w-8 animate-spin rounded-full border-2 border-amber-200 border-t-[#FFB300]" />
+          <div className="h-8 w-8 animate-spin rounded-full border-2 border-amber-200 border-t-[#059669]" />
         </div>
       ) : (
         <>
@@ -161,7 +161,7 @@ function HomeContent() {
                 <div className="flex flex-col gap-2 py-3 sm:py-3.5">
                   {announcements.map((a) => (
                     <div key={a.id} className="flex items-start gap-2.5">
-                      <Megaphone className="mt-0.5 h-4 w-4 shrink-0 text-[#F0A500]" />
+                      <Megaphone className="mt-0.5 h-4 w-4 shrink-0 text-[#047857]" />
                       <div className="min-w-0">
                         <p className="text-[13px] font-semibold text-stone-900 dark:text-white">
                           {a.title}
@@ -197,7 +197,7 @@ function HomeContent() {
                           className={cn(
                             "flex h-12 w-12 items-center justify-center rounded-xl border transition sm:h-14 sm:w-14",
                             active
-                              ? "border-transparent bg-[#FFB300] text-white shadow-[inset_0_1px_0_rgba(255,255,255,0.2)]"
+                              ? "border-transparent bg-[#059669] text-white shadow-[inset_0_1px_0_rgba(255,255,255,0.2)]"
                               : "border-stone-200 bg-white text-stone-500 hover:border-stone-300 hover:text-stone-700 dark:border-white/10 dark:bg-white/[0.04] dark:text-white/50 dark:hover:border-white/20 dark:hover:text-white"
                           )}
                         >
@@ -207,7 +207,7 @@ function HomeContent() {
                           className={cn(
                             "text-xs",
                             active
-                              ? "font-semibold text-[#FFB300]"
+                              ? "font-semibold text-[#059669]"
                               : "text-stone-600 dark:text-white/60"
                           )}
                         >
@@ -231,7 +231,7 @@ function HomeContent() {
                   role="img"
                   aria-label="Kantin SMK Negeri 17 Jakarta"
                 />
-                <div className="absolute inset-0 bg-gradient-to-r from-[#FFB300]/90 via-[#FFB300]/60 to-[#FFB300]/10" />
+                <div className="absolute inset-0 bg-gradient-to-r from-[#059669]/90 via-[#059669]/60 to-[#059669]/10" />
                 <div className="relative flex h-full items-center px-5 sm:px-8">
                   <div className="max-w-md">
                     <p className="text-[11px] font-bold uppercase tracking-[0.14em] text-white/85">
@@ -242,7 +242,7 @@ function HomeContent() {
                     </h1>
                     <a
                       href="#menu"
-                      className="mt-3 inline-flex min-h-[38px] cursor-pointer items-center gap-1.5 rounded-md bg-white px-4 py-2 text-[13px] font-semibold text-[#FFB300] transition-colors hover:bg-amber-50"
+                      className="mt-3 inline-flex min-h-[38px] cursor-pointer items-center gap-1.5 rounded-md bg-white px-4 py-2 text-[13px] font-semibold text-[#059669] transition-colors hover:bg-amber-50"
                     >
                       Lihat Menu
                       <ArrowRight

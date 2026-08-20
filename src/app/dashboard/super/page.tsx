@@ -146,7 +146,7 @@ export default function SuperAdminDashboardPage() {
   if (!ready || !session || session.role !== "superadmin") {
     return (
       <div className="flex min-h-[40vh] items-center justify-center">
-        <div className="h-8 w-8 animate-spin rounded-full border-2 border-amber-200 border-t-[#FFB300]" />
+        <div className="h-8 w-8 animate-spin rounded-full border-2 border-amber-200 border-t-[#059669]" />
       </div>
     );
   }
@@ -271,7 +271,7 @@ export default function SuperAdminDashboardPage() {
                 <p className="text-[11px] font-semibold uppercase tracking-wide text-stone-500">
                   {s.label}
                 </p>
-                <s.icon className="h-4 w-4 shrink-0 text-[#FFB300]" />
+                <s.icon className="h-4 w-4 shrink-0 text-[#059669]" />
               </div>
               <p className="mt-2 text-lg font-bold text-stone-900 sm:text-xl dark:text-white">
                 {s.value}
@@ -289,7 +289,7 @@ export default function SuperAdminDashboardPage() {
               className={cn(
                 "rounded-full px-4 py-2 text-sm font-semibold transition-all duration-200",
                 tab === t.id
-                  ? "bg-[#FFB300] text-[#1c1917] shadow-sm"
+                  ? "bg-[#059669] text-[#1c1917] shadow-sm"
                   : "text-stone-600 hover:bg-stone-100 dark:text-stone-300 dark:hover:bg-white/[0.06]"
               )}
             >
@@ -305,7 +305,7 @@ export default function SuperAdminDashboardPage() {
               <h2 className="font-bold text-stone-900 dark:text-white">
                 Komisi platform
               </h2>
-              <p className="mt-2 text-4xl font-semibold text-[#F0A500] dark:text-[#FFC107]">
+              <p className="mt-2 text-4xl font-semibold text-[#047857] dark:text-[#10b981]">
                 {state.settings.commissionRate}%
               </p>
               <p className="mt-2 text-sm leading-relaxed text-stone-500">
@@ -382,7 +382,7 @@ export default function SuperAdminDashboardPage() {
                       </p>
                     </div>
                     <div className="text-right text-sm sm:min-w-[160px]">
-                      <p className="font-bold text-[#F0A500] dark:text-[#FFC107]">
+                      <p className="font-bold text-[#047857] dark:text-[#10b981]">
                         {formatRupiah(o.total)}
                       </p>
                       <p className="text-xs text-amber-600">
@@ -448,7 +448,7 @@ export default function SuperAdminDashboardPage() {
                   </div>
                   <button
                     type="submit"
-                    className="rounded-full bg-[#FFB300] px-5 py-2.5 text-sm font-bold text-[#1c1917] transition hover:bg-[#F0A500]"
+                    className="rounded-full bg-[#059669] px-5 py-2.5 text-sm font-bold text-[#1c1917] transition hover:bg-[#047857]"
                   >
                     Simpan semua lapak
                   </button>
@@ -562,7 +562,7 @@ export default function SuperAdminDashboardPage() {
                   <div className="flex items-end sm:col-span-2 lg:col-span-1">
                     <button
                       type="submit"
-                      className="w-full rounded-full bg-[#FFB300] py-2.5 text-sm font-bold text-[#1c1917] transition hover:bg-[#F0A500]"
+                      className="w-full rounded-full bg-[#059669] py-2.5 text-sm font-bold text-[#1c1917] transition hover:bg-[#047857]"
                     >
                       Simpan Penjual
                     </button>
@@ -684,7 +684,7 @@ export default function SuperAdminDashboardPage() {
             <form onSubmit={onAddAdmin} className="xl:col-span-2">
               <DashboardCard className="h-full">
                 <div className="flex items-center gap-2">
-                  <Users className="h-4 w-4 text-[#FFB300]" />
+                  <Users className="h-4 w-4 text-[#059669]" />
                   <h2 className="font-bold text-stone-900 dark:text-white">
                     Tambah Admin
                   </h2>
@@ -718,7 +718,7 @@ export default function SuperAdminDashboardPage() {
                 </div>
                 <button
                   type="submit"
-                  className="mt-5 w-full rounded-full bg-[#FFB300] py-2.5 text-sm font-bold text-[#1c1917] transition hover:bg-[#F0A500]"
+                  className="mt-5 w-full rounded-full bg-[#059669] py-2.5 text-sm font-bold text-[#1c1917] transition hover:bg-[#047857]"
                 >
                   Simpan Admin
                 </button>
@@ -732,7 +732,7 @@ export default function SuperAdminDashboardPage() {
           <div className="mt-6 grid gap-6 lg:grid-cols-5">
             <DashboardCard className="lg:col-span-2">
               <div className="flex items-center gap-2">
-                <Megaphone className="h-4 w-4 text-[#FFB300]" />
+                <Megaphone className="h-4 w-4 text-[#059669]" />
                 <h2 className="font-bold text-stone-900 dark:text-white">
                   Siarkan Pengumuman
                 </h2>
@@ -795,7 +795,7 @@ export default function SuperAdminDashboardPage() {
                       setAnnBody("");
                     }
                   }}
-                  className="inline-flex cursor-pointer items-center gap-1.5 rounded-full bg-[#FFB300] px-5 py-2.5 text-sm font-bold text-[#1c1917] transition hover:bg-[#F0A500]"
+                  className="inline-flex cursor-pointer items-center gap-1.5 rounded-full bg-[#059669] px-5 py-2.5 text-sm font-bold text-[#1c1917] transition hover:bg-[#047857]"
                 >
                   <Plus className="h-4 w-4" strokeWidth={1.75} />
                   Siarkan
@@ -854,7 +854,7 @@ export default function SuperAdminDashboardPage() {
             <DashboardCard className="!p-0 overflow-hidden">
               <div className="border-b border-stone-100 px-5 py-4 dark:border-white/[0.06]">
                 <div className="flex items-center gap-2">
-                  <ScrollText className="h-4 w-4 text-[#FFB300]" />
+                  <ScrollText className="h-4 w-4 text-[#059669]" />
                   <h2 className="font-bold text-stone-900 dark:text-white">
                     Log Aktivitas (audit trail)
                   </h2>
@@ -911,7 +911,7 @@ export default function SuperAdminDashboardPage() {
             <form onSubmit={onCommission} className="lg:col-span-3">
               <DashboardCard>
                 <div className="flex items-center gap-2">
-                  <Percent className="h-4 w-4 text-[#FFB300]" />
+                  <Percent className="h-4 w-4 text-[#059669]" />
                   <h2 className="font-bold text-stone-900 dark:text-white">
                     Pengaturan platform
                   </h2>
@@ -998,7 +998,7 @@ export default function SuperAdminDashboardPage() {
                 <div className="mt-6 flex flex-wrap gap-3">
                   <button
                     type="submit"
-                    className="rounded-full bg-[#FFB300] px-6 py-2.5 text-sm font-bold text-[#1c1917] transition hover:bg-[#F0A500]"
+                    className="rounded-full bg-[#059669] px-6 py-2.5 text-sm font-bold text-[#1c1917] transition hover:bg-[#047857]"
                   >
                     Simpan Pengaturan
                   </button>
@@ -1020,7 +1020,7 @@ export default function SuperAdminDashboardPage() {
                   </div>
                   <div className="flex justify-between gap-3">
                     <dt className="text-stone-500">Terkumpul</dt>
-                    <dd className="font-bold text-[#F0A500] dark:text-[#FFC107]">
+                    <dd className="font-bold text-[#047857] dark:text-[#10b981]">
                       {formatRupiah(stats.commission)}
                     </dd>
                   </div>
@@ -1061,7 +1061,7 @@ export default function SuperAdminDashboardPage() {
             {/* ——— Kategori Menu ——— */}
             <DashboardCard>
               <div className="flex items-center gap-2">
-                <Tag className="h-4 w-4 text-[#FFB300]" />
+                <Tag className="h-4 w-4 text-[#059669]" />
                 <h2 className="font-bold text-stone-900 dark:text-white">
                   Kategori Menu
                 </h2>
@@ -1115,7 +1115,7 @@ export default function SuperAdminDashboardPage() {
                       setCatInput("");
                     }
                   }}
-                  className="shrink-0 cursor-pointer rounded-full bg-[#FFB300] px-4 py-2 text-sm font-bold text-[#1c1917] transition hover:bg-[#F0A500]"
+                  className="shrink-0 cursor-pointer rounded-full bg-[#059669] px-4 py-2 text-sm font-bold text-[#1c1917] transition hover:bg-[#047857]"
                 >
                   Tambah
                 </button>
@@ -1123,7 +1123,7 @@ export default function SuperAdminDashboardPage() {
               <button
                 type="button"
                 onClick={() => updateMenuCategories(catDrafts)}
-                className="mt-4 cursor-pointer rounded-full bg-[#FFB300] px-6 py-2.5 text-sm font-bold text-[#1c1917] transition hover:bg-[#F0A500]"
+                className="mt-4 cursor-pointer rounded-full bg-[#059669] px-6 py-2.5 text-sm font-bold text-[#1c1917] transition hover:bg-[#047857]"
               >
                 Simpan Kategori
               </button>
@@ -1132,7 +1132,7 @@ export default function SuperAdminDashboardPage() {
             {/* ——— Jam Operasional ——— */}
             <DashboardCard>
               <div className="flex items-center gap-2">
-                <Clock className="h-4 w-4 text-[#FFB300]" />
+                <Clock className="h-4 w-4 text-[#059669]" />
                 <h2 className="font-bold text-stone-900 dark:text-white">
                   Jam Operasional
                 </h2>
@@ -1157,7 +1157,7 @@ export default function SuperAdminDashboardPage() {
                   className={cn(
                     "relative inline-flex h-6 w-11 shrink-0 cursor-pointer items-center rounded-full transition-colors",
                     ohEnabled
-                      ? "bg-[#FFB300]"
+                      ? "bg-[#059669]"
                       : "bg-stone-300 dark:bg-stone-600"
                   )}
                 >
@@ -1202,7 +1202,7 @@ export default function SuperAdminDashboardPage() {
                     closeTime: ohClose,
                   })
                 }
-                className="mt-4 cursor-pointer rounded-full bg-[#FFB300] px-6 py-2.5 text-sm font-bold text-[#1c1917] transition hover:bg-[#F0A500]"
+                className="mt-4 cursor-pointer rounded-full bg-[#059669] px-6 py-2.5 text-sm font-bold text-[#1c1917] transition hover:bg-[#047857]"
               >
                 Simpan Jam Operasional
               </button>
@@ -1211,7 +1211,7 @@ export default function SuperAdminDashboardPage() {
             {/* ——— Metode Pembayaran ——— */}
             <DashboardCard>
               <div className="flex items-center gap-2">
-                <CreditCard className="h-4 w-4 text-[#FFB300]" />
+                <CreditCard className="h-4 w-4 text-[#059669]" />
                 <h2 className="font-bold text-stone-900 dark:text-white">
                   Metode Pembayaran
                 </h2>
@@ -1281,7 +1281,7 @@ export default function SuperAdminDashboardPage() {
                   if (pmCanteen) methods.push("canteen");
                   updatePaymentMethods(methods);
                 }}
-                className="mt-4 cursor-pointer rounded-full bg-[#FFB300] px-6 py-2.5 text-sm font-bold text-[#1c1917] transition hover:bg-[#F0A500]"
+                className="mt-4 cursor-pointer rounded-full bg-[#059669] px-6 py-2.5 text-sm font-bold text-[#1c1917] transition hover:bg-[#047857]"
               >
                 Simpan Metode Pembayaran
               </button>

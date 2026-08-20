@@ -37,7 +37,7 @@ export function RequireRole({ allow, children, fallback }: Props) {
   if (!ready || !session || !allow.includes(session.role)) {
     return (
       <div className="flex min-h-[50vh] items-center justify-center bg-stone-100 dark:bg-[#0a0a0b]">
-        <div className="h-8 w-8 animate-spin rounded-full border-2 border-amber-200 border-t-[#FFB300] dark:border-amber-950 dark:border-t-amber-400" />
+        <div className="h-8 w-8 animate-spin rounded-full border-2 border-amber-200 border-t-[#059669] dark:border-amber-950 dark:border-t-amber-400" />
       </div>
     );
   }

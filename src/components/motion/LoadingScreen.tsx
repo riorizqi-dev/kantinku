@@ -39,10 +39,10 @@ export function LoadingScreen() {
             transition={{ duration: 0.35, ease: [0.22, 1, 0.36, 1] }}
             className="flex flex-col items-center gap-5"
           >
-            <LogoMark className="h-12 w-12 text-[#FFB300] dark:text-[#FFC107]" />
+            <LogoMark className="h-12 w-12 text-[#059669] dark:text-[#10b981]" />
             <div className="h-px w-16 overflow-hidden bg-stone-200 dark:bg-white/10">
               <motion.div
-                className="h-full bg-[#FFB300]/80 dark:bg-[#FFC107]/80"
+                className="h-full bg-[#059669]/80 dark:bg-[#10b981]/80"
                 initial={{ x: "-100%" }}
                 animate={{ x: "100%" }}
                 transition={{

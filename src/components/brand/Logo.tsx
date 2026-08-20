@@ -19,7 +19,7 @@ export function Logo({ className, color }: { className?: string; color?: string 
       <span
         className="flex h-8 w-8 shrink-0 items-center justify-center rounded-[9px] text-[#1c1917]"
         style={{
-          backgroundColor: color || "#FFB300",
+          backgroundColor: color || "#059669",
           boxShadow: "inset 0 1px 0 rgba(255,255,255,0.18)",
         }}
       >

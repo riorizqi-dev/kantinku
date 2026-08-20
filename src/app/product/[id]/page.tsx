@@ -110,7 +110,7 @@ export default function ProductDetailPage() {
           </p>
           <Link
             href="/#menu"
-            className="mt-6 inline-flex items-center gap-2 rounded-full bg-[#FFB300] px-5 py-2.5 text-sm font-semibold text-white transition hover:bg-[#F0A500]"
+            className="mt-6 inline-flex items-center gap-2 rounded-full bg-[#059669] px-5 py-2.5 text-sm font-semibold text-white transition hover:bg-[#047857]"
           >
             <ArrowLeft className="h-4 w-4" strokeWidth={1.75} />
             Kembali ke Menu
@@ -225,7 +225,7 @@ export default function ProductDetailPage() {
                         Habis
                       </span>
                     ) : (
-                      <span className="rounded-full bg-[#FFB300] px-3 py-1.5 text-xs font-semibold text-white">
+                      <span className="rounded-full bg-[#059669] px-3 py-1.5 text-xs font-semibold text-white">
                         Stok {selected?.stock ?? 0}
                       </span>
                     )}
@@ -247,10 +247,10 @@ export default function ProductDetailPage() {
                     )}
 
                     <p
-                      className="mt-3 flex min-w-0 flex-wrap items-baseline gap-x-1.5 gap-y-0.5 tabular-nums text-[#FFB300]"
+                      className="mt-3 flex min-w-0 flex-wrap items-baseline gap-x-1.5 gap-y-0.5 tabular-nums text-[#059669]"
                       aria-label={formatRupiah(displayPrice)}
                     >
-                      <span className="shrink-0 text-sm font-medium tracking-[0.02em] text-[#FFB300]/75 sm:text-base">
+                      <span className="shrink-0 text-sm font-medium tracking-[0.02em] text-[#059669]/75 sm:text-base">
                         Rp
                       </span>
                       <span className="break-all text-2xl font-semibold leading-tight tracking-[-0.03em] sm:text-[28px]">
@@ -285,7 +285,7 @@ export default function ProductDetailPage() {
                               className={cn(
                                 "inline-flex max-w-full items-center gap-2.5 rounded-2xl border py-2 pl-2 pr-3.5 text-left transition-colors duration-200",
                                 active
-                                  ? "border-[#FFB300]/50 bg-[#FFB300]/10 ring-1 ring-[#FFB300]/30"
+                                  ? "border-[#059669]/50 bg-[#059669]/10 ring-1 ring-[#059669]/30"
                                   : "border-stone-200 bg-stone-50 hover:border-stone-300 dark:border-white/[0.08] dark:bg-white/[0.03] dark:hover:border-white/15",
                                 vOut && "cursor-not-allowed opacity-45"
                               )}
@@ -302,13 +302,13 @@ export default function ProductDetailPage() {
                                 <span className="flex items-center gap-1.5 text-sm font-semibold text-stone-900 dark:text-white">
                                   {active && (
                                     <Check
-                                      className="h-3.5 w-3.5 shrink-0 text-[#FFB300]"
+                                      className="h-3.5 w-3.5 shrink-0 text-[#059669]"
                                       strokeWidth={2.5}
                                     />
                                   )}
                                   <span className="line-clamp-1">{v.name}</span>
                                 </span>
-                                <span className="mt-0.5 block break-words text-xs font-medium text-[#996A00]">
+                                <span className="mt-0.5 block break-words text-xs font-medium text-[#047857]">
                                   <span className="whitespace-nowrap">
                                     {formatRupiah(v.price)}
                                   </span>
@@ -430,7 +430,7 @@ export default function ProductDetailPage() {
                           "inline-flex flex-1 items-center justify-center gap-2 rounded-full py-3.5 text-sm font-semibold transition-all duration-200 active:scale-[0.98]",
                           out
                             ? "cursor-not-allowed bg-stone-100 text-stone-400 dark:bg-white/[0.06] dark:text-white/30"
-                            : "bg-[#FFB300] text-white hover:bg-[#F0A500]"
+                            : "bg-[#059669] text-white hover:bg-[#047857]"
                         )}
                         style={
                           out
@@ -486,7 +486,7 @@ export default function ProductDetailPage() {
                   </div>
                   <Link
                     href="/#menu"
-                    className="text-sm font-medium text-[#FFB300] hover:underline"
+                    className="text-sm font-medium text-[#059669] hover:underline"
                   >
                     Lihat semua
                   </Link>
@@ -518,10 +518,10 @@ export default function ProductDetailPage() {
                           </p>
                         )}
                         <p
-                          className="mt-0.5 flex min-w-0 flex-wrap items-baseline gap-x-1 tabular-nums text-[#FFB300]"
+                          className="mt-0.5 flex min-w-0 flex-wrap items-baseline gap-x-1 tabular-nums text-[#059669]"
                           aria-label={formatRupiah(getProductMinPrice(p))}
                         >
-                          <span className="shrink-0 text-[10px] font-medium tracking-[0.02em] text-[#FFB300]/75">
+                          <span className="shrink-0 text-[10px] font-medium tracking-[0.02em] text-[#059669]/75">
                             Rp
                           </span>
                           <span className="break-all text-[13px] font-semibold leading-tight tracking-[-0.02em] sm:text-sm">

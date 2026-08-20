@@ -77,7 +77,7 @@ export function PricingCalculator({
       <div className="max-h-[92vh] w-full max-w-md overflow-y-auto rounded-t-2xl bg-white shadow-2xl dark:bg-[#121214] sm:rounded-2xl">
         <div className="sticky top-0 z-10 flex items-center justify-between border-b border-stone-100 bg-white px-5 py-3.5 dark:border-white/[0.06] dark:bg-[#121214]">
           <div className="flex items-center gap-2">
-            <span className="inline-flex h-7 w-7 items-center justify-center rounded-lg bg-[#FFB300] text-white">
+            <span className="inline-flex h-7 w-7 items-center justify-center rounded-lg bg-[#059669] text-white">
               <Calculator className="h-4 w-4" strokeWidth={1.75} />
             </span>
             <div>
@@ -113,7 +113,7 @@ export function PricingCalculator({
                 value={cost}
                 onChange={(e) => setCost(e.target.value)}
                 placeholder="cth. 5000"
-                className="w-full rounded-lg border border-stone-200 bg-stone-50 py-2.5 pl-10 pr-3 text-sm font-medium focus:border-[#FFB300] focus:ring-2 focus:ring-[#FFB300]/20 dark:border-white/10 dark:bg-white/5"
+                className="w-full rounded-lg border border-stone-200 bg-stone-50 py-2.5 pl-10 pr-3 text-sm font-medium focus:border-[#059669] focus:ring-2 focus:ring-[#059669]/20 dark:border-white/10 dark:bg-white/5"
               />
             </div>
           </div>
@@ -123,7 +123,7 @@ export function PricingCalculator({
               <label className="text-xs font-medium text-stone-500 dark:text-white/45">
                 Target margin laba
               </label>
-              <span className="rounded bg-[#FFB300]/10 px-1.5 py-0.5 text-xs font-bold text-[#FFB300]">
+              <span className="rounded bg-[#059669]/10 px-1.5 py-0.5 text-xs font-bold text-[#059669]">
                 {marginN}%
               </span>
             </div>
@@ -134,7 +134,7 @@ export function PricingCalculator({
               step={5}
               value={margin}
               onChange={(e) => setMargin(e.target.value)}
-              className="w-full accent-[#FFB300]"
+              className="w-full accent-[#059669]"
             />
             <div className="mt-1 flex justify-between text-[10px] text-stone-400 dark:text-white/30">
               <span>0%</span>
@@ -144,11 +144,11 @@ export function PricingCalculator({
           </div>
 
           {suggested > 0 && (
-            <div className="rounded-xl border border-[#FFB300]/30 bg-gradient-to-br from-[#FFB300]/10 to-transparent p-4 text-center">
+            <div className="rounded-xl border border-[#059669]/30 bg-gradient-to-br from-[#059669]/10 to-transparent p-4 text-center">
               <p className="text-[11px] font-medium uppercase tracking-wide text-stone-500 dark:text-white/40">
                 Harga jual disarankan
               </p>
-              <p className="mt-1 text-3xl font-extrabold tabular-nums text-[#FFB300]">
+              <p className="mt-1 text-3xl font-extrabold tabular-nums text-[#059669]">
                 {fmtMoney(suggested)}
               </p>
               <p className="mt-1 text-xs text-stone-500 dark:text-white/40">
@@ -177,7 +177,7 @@ export function PricingCalculator({
 
           <div className="rounded-lg border border-stone-200 bg-stone-50 p-3 text-[11px] leading-relaxed text-stone-500 dark:border-white/[0.07] dark:bg-white/[0.04] dark:text-white/45">
             <p className="mb-1 flex items-center gap-1 font-semibold">
-              <Sparkles className="h-3 w-3 text-[#FFB300]" strokeWidth={1.75} />
+              <Sparkles className="h-3 w-3 text-[#059669]" strokeWidth={1.75} />
               Cara baca
             </p>
             Harga dihitung dari <strong>modal / (1 − margin)</strong> lalu
@@ -191,7 +191,7 @@ export function PricingCalculator({
               type="button"
               onClick={() => costN > 0 && onApply(suggested)}
               disabled={suggested <= 0}
-              className="inline-flex flex-1 cursor-pointer items-center justify-center gap-1.5 rounded-lg bg-[#FFB300] py-2.5 text-sm font-semibold text-white transition hover:bg-[#F0A500] disabled:cursor-not-allowed disabled:opacity-40"
+              className="inline-flex flex-1 cursor-pointer items-center justify-center gap-1.5 rounded-lg bg-[#059669] py-2.5 text-sm font-semibold text-white transition hover:bg-[#047857] disabled:cursor-not-allowed disabled:opacity-40"
             >
               <Check className="h-4 w-4" strokeWidth={2} />
               Terapkan harga {suggested > 0 ? fmtMoney(suggested) : ""}

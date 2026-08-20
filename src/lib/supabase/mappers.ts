@@ -17,6 +17,9 @@ import type {
   WithdrawalMethod,
   WithdrawalStatus,
   WithdrawalFeeType,
+  SalesReport,
+  SalesReportItem,
+  SalesReportStatus,
 } from "@/lib/types";
 
 /* ---------- DB row shapes (snake_case) ---------- */
@@ -152,6 +155,22 @@ export type DbWithdrawal = {
   processed_by: string | null;
   created_at: string;
   processed_at: string | null;
+};
+
+export type DbSalesReport = {
+  id: string;
+  seller_id: string;
+  seller_name: string;
+  booth: string | null;
+  report_date: string;
+  items: unknown;
+  total_revenue: number;
+  notes: string | null;
+  status: SalesReportStatus;
+  verified_by: string | null;
+  verified_at: string | null;
+  created_at: string;
+  updated_at: string | null;
 };
 
 function ts(ms?: number | null): string | null {
@@ -476,7 +495,52 @@ export function withdrawalFromDb(r: DbWithdrawal): WithdrawalRequest {
   };
 }
 
+export function salesReportToDb(r: SalesReport): DbSalesReport {
+  return {
+    id: r.id,
+    seller_id: r.sellerId,
+    seller_name: r.sellerName,
+    booth: r.booth || null,
+    report_date: r.date,
+    items: (r.items || []) as unknown,
+    total_revenue: Math.round(r.totalRevenue || 0),
+    notes: r.notes || null,
+    status: r.status || "submitted",
+    verified_by: r.verifiedBy || null,
+    verified_at: ts(r.verifiedAt),
+    created_at: ts(r.createdAt) || new Date().toISOString(),
+    updated_at: ts(r.updatedAt),
+  };
+}
+
+export function salesReportFromDb(r: DbSalesReport): SalesReport {
+  return {
+    id: r.id,
+    sellerId: r.seller_id,
+    sellerName: r.seller_name,
+    booth: r.booth || undefined,
+    date: r.report_date,
+    items: Array.isArray(r.items)
+      ? (r.items as SalesReportItem[])
+      : [],
+    totalRevenue: r.total_revenue,
+    notes: r.notes || undefined,
+    status: r.status || "submitted",
+    verifiedBy: r.verified_by || undefined,
+    verifiedAt: r.verified_at ? ms(r.verified_at) : undefined,
+    createdAt: ms(r.created_at),
+    updatedAt: r.updated_at ? ms(r.updated_at) : undefined,
+  };
+}
+
 export type RemoteBundle = Pick<
   AppState,
-  "users" | "sellers" | "products" | "orders" | "settings" | "orderSeq" | "withdrawals"
+  | "users"
+  | "sellers"
+  | "products"
+  | "orders"
+  | "settings"
+  | "orderSeq"
+  | "withdrawals"
+  | "salesReports"
 >;

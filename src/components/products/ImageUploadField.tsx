@@ -69,7 +69,7 @@ export function ImageUploadField({ value, onChange, error }: Props) {
         )}
         {busy && (
           <div className="absolute inset-0 flex items-center justify-center bg-black/50">
-            <Loader2 className="h-7 w-7 animate-spin text-[#FFB300]" />
+            <Loader2 className="h-7 w-7 animate-spin text-[#059669]" />
           </div>
         )}
       </div>

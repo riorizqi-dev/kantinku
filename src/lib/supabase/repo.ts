@@ -15,6 +15,8 @@ import {
   variantToDb,
   withdrawalFromDb,
   withdrawalToDb,
+  salesReportFromDb,
+  salesReportToDb,
   type DbOrder,
   type DbOrderItem,
   type DbProduct,
@@ -23,6 +25,7 @@ import {
   type DbUser,
   type DbVariant,
   type DbWithdrawal,
+  type DbSalesReport,
   type RemoteBundle,
 } from "./mappers";
 import {
@@ -56,6 +59,7 @@ export async function loadRemoteBundle(): Promise<RemoteBundle | null> {
     ordersRes,
     itemsRes,
     withdrawalsRes,
+    salesReportsRes,
   ] = await Promise.all([
     sb.from("sellers").select("*"),
     sb.from("users").select("*"),
@@ -65,6 +69,7 @@ export async function loadRemoteBundle(): Promise<RemoteBundle | null> {
     sb.from("orders").select("*").order("created_at", { ascending: false }),
     sb.from("order_items").select("*"),
     sb.from("withdrawal_requests").select("*").order("created_at", { ascending: false }),
+    sb.from("sales_reports").select("*").order("report_date", { ascending: false }),
   ]);
 
   if (sellersRes.error) throw new Error(sellersRes.error.message);
@@ -108,8 +113,18 @@ export async function loadRemoteBundle(): Promise<RemoteBundle | null> {
   }
 
   const withdrawals = ((withdrawalsRes.data || []) as DbWithdrawal[]).map(withdrawalFromDb);
+  const salesReports = ((salesReportsRes.data || []) as DbSalesReport[]).map(salesReportFromDb);
 
-  return { sellers, users, products, orders, settings, orderSeq, withdrawals };
+  return {
+    sellers,
+    users,
+    products,
+    orders,
+    settings,
+    orderSeq,
+    withdrawals,
+    salesReports,
+  };
 }
 
 export async function countCoreRows(): Promise<number> {
@@ -177,7 +192,14 @@ export async function seedIfEmpty(force = false): Promise<{
 export async function syncBundleToSupabase(
   state: Pick<
     AppState,
-    "sellers" | "users" | "products" | "orders" | "settings" | "orderSeq" | "withdrawals"
+    | "sellers"
+    | "users"
+    | "products"
+    | "orders"
+    | "settings"
+    | "orderSeq"
+    | "withdrawals"
+    | "salesReports"
   >
 ): Promise<void> {
   const sb = getClient();
@@ -273,6 +295,16 @@ export async function syncBundleToSupabase(
     }
   } catch (e) {
     console.warn("[supabase sync withdrawals]", e);
+  }
+
+  try {
+    const rows = (state.salesReports || []).map(salesReportToDb);
+    if (rows.length) {
+      const { error } = await sb.from("sales_reports").upsert(rows);
+      if (error) throw error;
+    }
+  } catch (e) {
+    console.warn("[supabase sync sales_reports]", e);
   }
 }
 

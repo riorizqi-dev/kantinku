@@ -109,6 +109,15 @@ export const DEFAULT_USERS: User[] = [
     phone: "",
     createdAt: Date.now(),
   },
+  {
+    id: "user_bendahara",
+    username: "bendahara",
+    password: "bendahara123",
+    name: "Bendahara Sekolah",
+    role: "bendahara",
+    phone: "",
+    createdAt: Date.now(),
+  },
   ...PEDAGANG.map((p) => ({
     id: p.userId,
     username: p.username,
@@ -575,5 +584,6 @@ export function createInitialState(): AppState {
     reviews: [],
     withdrawals: [],
     autoPayouts: {},
+    salesReports: [],
   };
 }

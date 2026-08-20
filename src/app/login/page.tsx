@@ -40,6 +40,10 @@ export default function LoginPage() {
       router.push("/dashboard/customer");
       return;
     }
+    if (role === "bendahara") {
+      router.push("/dashboard/bendahara");
+      return;
+    }
     router.push("/");
   }
 
@@ -48,7 +52,7 @@ export default function LoginPage() {
       <div className="flex min-h-[100dvh] items-center justify-center px-4 py-12">
         <div className="w-full max-w-md">
           <div className="mb-8 text-center">
-            <div className="mx-auto mb-4 flex h-14 w-14 items-center justify-center rounded-2xl bg-[#FFB300] text-white shadow-soft">
+            <div className="mx-auto mb-4 flex h-14 w-14 items-center justify-center rounded-2xl bg-[#059669] text-white shadow-soft">
               <LogoMark className="h-7 w-7 text-white" />
             </div>
             <h1 className="text-2xl font-semibold tracking-tight text-stone-900 dark:text-white">
@@ -99,7 +103,7 @@ export default function LoginPage() {
                 data-lpignore="true"
                 data-1p-ignore
                 data-form-type="other"
-                className="w-full rounded-xl border border-stone-200 bg-stone-50 px-3.5 py-3 text-sm font-medium transition focus:border-[#FFB300] focus:ring-2 focus:ring-[#FFB300]/20 dark:border-stone-700 dark:bg-stone-900"
+                className="w-full rounded-xl border border-stone-200 bg-stone-50 px-3.5 py-3 text-sm font-medium transition focus:border-[#059669] focus:ring-2 focus:ring-[#059669]/20 dark:border-stone-700 dark:bg-stone-900"
                 placeholder="username"
               />
             </div>
@@ -120,7 +124,7 @@ export default function LoginPage() {
                   data-lpignore="true"
                   data-1p-ignore
                   data-form-type="other"
-                  className="w-full rounded-xl border border-stone-200 bg-stone-50 px-3.5 py-3 pr-12 text-sm font-medium transition focus:border-[#FFB300] focus:ring-2 focus:ring-[#FFB300]/20 dark:border-stone-700 dark:bg-stone-900"
+                  className="w-full rounded-xl border border-stone-200 bg-stone-50 px-3.5 py-3 pr-12 text-sm font-medium transition focus:border-[#059669] focus:ring-2 focus:ring-[#059669]/20 dark:border-stone-700 dark:bg-stone-900"
                   placeholder="Masukkan password"
                 />
                 <button
@@ -144,7 +148,7 @@ export default function LoginPage() {
             <button
               type="submit"
               disabled={loading}
-              className="flex w-full items-center justify-center gap-2 rounded-full bg-[#FFB300] py-3.5 text-sm font-bold text-white shadow-soft transition-all duration-300 hover:bg-[#F0A500] hover:scale-[1.01] active:scale-[0.99] disabled:opacity-60"
+              className="flex w-full items-center justify-center gap-2 rounded-full bg-[#059669] py-3.5 text-sm font-bold text-white shadow-soft transition-all duration-300 hover:bg-[#047857] hover:scale-[1.01] active:scale-[0.99] disabled:opacity-60"
             >
               <LogIn className="h-4 w-4" /> Masuk
             </button>
@@ -155,7 +159,7 @@ export default function LoginPage() {
               Customer belum punya akun?{" "}
               <Link
                 href="/register"
-                className="font-bold text-[#FFB300] hover:underline dark:text-[#FFC107]"
+                className="font-bold text-[#059669] hover:underline dark:text-[#10b981]"
               >
                 Daftar
               </Link>
@@ -166,7 +170,7 @@ export default function LoginPage() {
                 toast("Anda dapat memesan tanpa akun", "info");
                 router.push("/");
               }}
-              className="font-semibold text-stone-600 transition hover:text-[#F0A500] dark:text-stone-300"
+              className="font-semibold text-stone-600 transition hover:text-[#047857] dark:text-stone-300"
             >
               Lanjut sebagai tamu
             </button>

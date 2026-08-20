@@ -42,7 +42,7 @@ function CustomerDashboardInner() {
     <PageTransition>
       <div className="min-h-[100dvh] w-full bg-stone-100 px-4 py-8 dark:bg-[#0a0a0b] sm:px-6 sm:py-10 lg:px-8">
         <div className="mx-auto w-full max-w-5xl">
-          <p className="text-[11px] font-semibold uppercase tracking-[0.16em] text-[#FFB300] dark:text-[#FFB300]/80">
+          <p className="text-[11px] font-semibold uppercase tracking-[0.16em] text-[#059669] dark:text-[#059669]/80">
             Area Customer
           </p>
           <div className="mt-3 flex items-center gap-3">
@@ -70,7 +70,7 @@ function CustomerDashboardInner() {
           </div>
           <Link
             href="/dashboard/customer/profile"
-            className="mt-3 inline-block text-xs font-semibold text-[#FFB300] hover:underline dark:text-[#FFC107]"
+            className="mt-3 inline-block text-xs font-semibold text-[#059669] hover:underline dark:text-[#10b981]"
           >
             Kelola akun & foto profil
           </Link>
@@ -79,9 +79,9 @@ function CustomerDashboardInner() {
           <div className="mt-8 grid gap-3 sm:grid-cols-2">
             <Link
               href="/"
-              className={`group flex items-center gap-4 p-5 transition hover:border-[#FFB300]/40 dark:hover:border-[#FFB300]/30 dark:hover:bg-white/[0.05] ${card}`}
+              className={`group flex items-center gap-4 p-5 transition hover:border-[#059669]/40 dark:hover:border-[#059669]/30 dark:hover:bg-white/[0.05] ${card}`}
             >
-              <span className="flex h-11 w-11 items-center justify-center rounded-xl bg-[#FFB300]/15 text-[#FFB300] dark:bg-[#FFB300]/15 dark:text-[#FFC107]">
+              <span className="flex h-11 w-11 items-center justify-center rounded-xl bg-[#059669]/15 text-[#059669] dark:bg-[#059669]/15 dark:text-[#10b981]">
                 <Store className="h-5 w-5" strokeWidth={1.5} />
               </span>
               <div className="flex-1">
@@ -92,11 +92,11 @@ function CustomerDashboardInner() {
                   Pilih lapak & pesan
                 </p>
               </div>
-              <ArrowRight className="h-4 w-4 text-stone-300 transition group-hover:translate-x-0.5 group-hover:text-[#FFB300] dark:text-white/30 dark:group-hover:text-[#FFC107]" />
+              <ArrowRight className="h-4 w-4 text-stone-300 transition group-hover:translate-x-0.5 group-hover:text-[#059669] dark:text-white/30 dark:group-hover:text-[#10b981]" />
             </Link>
             <Link
               href="/cart"
-              className={`group flex items-center gap-4 p-5 transition hover:border-[#FFB300]/40 dark:hover:border-[#FFB300]/30 dark:hover:bg-white/[0.05] ${card}`}
+              className={`group flex items-center gap-4 p-5 transition hover:border-[#059669]/40 dark:hover:border-[#059669]/30 dark:hover:bg-white/[0.05] ${card}`}
             >
               <span className="flex h-11 w-11 items-center justify-center rounded-xl bg-stone-100 text-stone-600 dark:bg-white/[0.06] dark:text-white/70">
                 <ShoppingBag className="h-5 w-5" strokeWidth={1.5} />
@@ -138,14 +138,14 @@ function CustomerDashboardInner() {
             <div className="mb-4 flex items-center justify-between">
               <h2 className="flex items-center gap-2 text-sm font-semibold text-stone-900 dark:text-white">
                 <Receipt
-                  className="h-4 w-4 text-[#FFB300] dark:text-[#FFB300]"
+                  className="h-4 w-4 text-[#059669] dark:text-[#059669]"
                   strokeWidth={1.5}
                 />
                 Pesanan terbaru
               </h2>
               <Link
                 href="/orders"
-                className="text-xs font-medium text-[#FFB300] hover:underline dark:text-[#FFC107]"
+                className="text-xs font-medium text-[#059669] hover:underline dark:text-[#10b981]"
               >
                 Lihat semua
               </Link>
@@ -159,7 +159,7 @@ function CustomerDashboardInner() {
                 </p>
                 <Link
                   href="/"
-                  className="mt-4 inline-flex rounded-full bg-[#FFB300] px-5 py-2 text-xs font-semibold text-[#1c1917]"
+                  className="mt-4 inline-flex rounded-full bg-[#059669] px-5 py-2 text-xs font-semibold text-[#1c1917]"
                 >
                   Mulai pesan
                 </Link>
@@ -178,7 +178,7 @@ function CustomerDashboardInner() {
                         </p>
                       </div>
                       <div className="text-right">
-                        <p className="text-sm font-semibold text-[#FFB300] dark:text-[#FFC107]">
+                        <p className="text-sm font-semibold text-[#059669] dark:text-[#10b981]">
                           {formatRupiah(o.total)}
                         </p>
                         <p className="text-[11px] text-stone-500 dark:text-white/45">

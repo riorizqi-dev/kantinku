@@ -19,6 +19,8 @@ import {
   Sparkles,
   Zap,
   Printer,
+  ClipboardList,
+  CalendarDays,
 } from "lucide-react";
 import { RequireRole } from "@/components/auth/RequireRole";
 import { ImageUploadField } from "@/components/products/ImageUploadField";
@@ -58,7 +60,13 @@ import { SellerReport } from "@/components/reports/SellerReport";
 import { PricingCalculator } from "@/components/reports/PricingCalculator";
 import Link from "next/link";
 
-type Tab = "orders" | "products" | "pencairan" | "laporan" | "settings";
+type Tab =
+  | "orders"
+  | "products"
+  | "pencairan"
+  | "laporan"
+  | "setor"
+  | "settings";
 
 type VariantDraft = {
   key: string;
@@ -77,6 +85,17 @@ function emptyVariant(): VariantDraft {
     stock: "10",
     image: "",
   };
+}
+
+function dateToKey(ts: number): string {
+  const d = new Date(ts);
+  const m = String(d.getMonth() + 1).padStart(2, "0");
+  const day = String(d.getDate()).padStart(2, "0");
+  return `${d.getFullYear()}-${m}-${day}`;
+}
+
+function todayLocalKey(): string {
+  return dateToKey(Date.now());
 }
 
 function productToDrafts(p: Product): VariantDraft[] {
@@ -150,6 +169,7 @@ function SellerDashboardInner() {
     getSellerBalance,
     requestWithdrawal,
     setAutoPayout,
+    submitSalesReport,
     toast,
   } = useApp();
 
@@ -175,6 +195,15 @@ function SellerDashboardInner() {
   const [wdAccount, setWdAccount] = useState("");
   const [wdName, setWdName] = useState("");
   const [wdError, setWdError] = useState("");
+
+  // Setor laporan state
+  const [srDate, setSrDate] = useState<string>(dateToKey(Date.now()));
+  const [srItems, setSrItems] = useState<Array<{ id: string; name: string; qty: string }>>([
+    { id: uid("si"), name: "", qty: "" },
+  ]);
+  const [srNotes, setSrNotes] = useState("");
+  const [srRevenue, setSrRevenue] = useState("");
+  const [srError, setSrError] = useState("");
 
   // Auto-payout state
   const existingAuto = state.autoPayouts?.[sellerId];
@@ -258,6 +287,23 @@ function SellerDashboardInner() {
         .filter((w) => w.sellerId === sellerId)
         .sort((a, b) => b.createdAt - a.createdAt),
     [state.withdrawals, sellerId]
+  );
+
+  const myReports = useMemo(
+    () =>
+      state.salesReports
+        .filter((r) => r.sellerId === sellerId)
+        .sort((a, b) => (a.date < b.date ? 1 : -1)),
+    [state.salesReports, sellerId]
+  );
+
+  const srTotal = useMemo(
+    () =>
+      srItems.reduce(
+        (n, i) => n + (Math.round(Number(i.qty) || 0) || 0),
+        0
+      ),
+    [srItems]
   );
 
   function sendWaToCustomer(
@@ -462,6 +508,41 @@ function SellerDashboardInner() {
     setAutoPayout(sellerId, config);
   }
 
+  function onSubmitReport(e: FormEvent<HTMLFormElement>) {
+    e.preventDefault();
+    const date = String(srDate || "").trim();
+    if (!/^\d{4}-\d{2}-\d{2}$/.test(date)) {
+      setSrError("Pilih tanggal laporan");
+      return;
+    }
+    const items = srItems
+      .filter((i) => i.name.trim())
+      .map((i) => ({
+        id: uid("si"),
+        name: i.name.trim(),
+        qty: Math.max(1, Math.round(Number(i.qty) || 0) || 1),
+      }));
+    if (!items.length) {
+      setSrError("Isi minimal 1 item terjual");
+      return;
+    }
+    const totalRevenue = Math.round(Number(srRevenue) || 0);
+    if (totalRevenue <= 0) {
+      setSrError("Isi total pendapatan hari itu");
+      return;
+    }
+    setSrError("");
+    submitSalesReport({
+      date,
+      items,
+      totalRevenue,
+      notes: srNotes,
+    });
+    setSrItems([{ id: uid("si"), name: "", qty: "" }]);
+    setSrNotes("");
+    setSrRevenue("");
+  }
+
   function onRequestWithdrawal(e: FormEvent<HTMLFormElement>) {
     e.preventDefault();
     const amount = Number(wdAmount) || 0;
@@ -504,7 +585,7 @@ function SellerDashboardInner() {
         <div className="mx-auto w-full max-w-[1400px]">
           <div className="flex flex-col justify-between gap-4 sm:flex-row sm:items-end">
             <div>
-              <p className="flex items-center gap-2 text-[11px] font-semibold uppercase tracking-[0.16em] text-[#FFB300]/90">
+              <p className="flex items-center gap-2 text-[11px] font-semibold uppercase tracking-[0.16em] text-[#059669]/90">
                 <LayoutDashboard className="h-3.5 w-3.5" strokeWidth={1.5} />
                 Dashboard Penjual
               </p>
@@ -517,7 +598,7 @@ function SellerDashboardInner() {
               </p>
             </div>
             {unread > 0 && (
-              <div className="inline-flex items-center gap-2 rounded-full bg-[#FFB300] px-4 py-2 text-sm font-semibold text-[#1c1917]">
+              <div className="inline-flex items-center gap-2 rounded-full bg-[#059669] px-4 py-2 text-sm font-semibold text-[#1c1917]">
                 <Bell className="h-4 w-4" strokeWidth={1.5} />
                 {unread} pesanan baru
               </div>
@@ -527,7 +608,7 @@ function SellerDashboardInner() {
           {/* Profil penjual — menonjol, mudah ditemukan orang tua / penjual */}
           <Link
             href="/dashboard/seller/profile"
-            className="group mt-6 flex flex-col gap-4 rounded-2xl border border-[#FFB300]/35 bg-gradient-to-br from-amber-50 via-white to-white dark:from-[#FFB300]/15 dark:via-[#121214] dark:to-[#121214] p-4 shadow-[0_0_0_1px_rgba(249,115,22,0.12)] transition hover:border-[#FFB300]/55 hover:from-[#FFB300]/22 sm:flex-row sm:items-center sm:justify-between sm:p-5"
+            className="group mt-6 flex flex-col gap-4 rounded-2xl border border-[#059669]/35 bg-gradient-to-br from-amber-50 via-white to-white dark:from-[#059669]/15 dark:via-[#121214] dark:to-[#121214] p-4 shadow-[0_0_0_1px_rgba(249,115,22,0.12)] transition hover:border-[#059669]/55 hover:from-[#059669]/22 sm:flex-row sm:items-center sm:justify-between sm:p-5"
           >
             <div className="flex min-w-0 items-center gap-4">
               <span className="relative shrink-0">
@@ -535,17 +616,17 @@ function SellerDashboardInner() {
                   name={session.name}
                   avatar={session.avatar}
                   size="xl"
-                  className="!h-[4.5rem] !w-[4.5rem] !text-lg ring-2 ring-[#FFB300]/50 transition group-hover:ring-[#FFB300]"
+                  className="!h-[4.5rem] !w-[4.5rem] !text-lg ring-2 ring-[#059669]/50 transition group-hover:ring-[#059669]"
                 />
                 <span
-                  className="absolute -bottom-0.5 -right-0.5 flex h-8 w-8 items-center justify-center rounded-full border-2 border-white dark:border-[#0a0a0b] bg-[#FFB300] text-[#1c1917] shadow-md"
+                  className="absolute -bottom-0.5 -right-0.5 flex h-8 w-8 items-center justify-center rounded-full border-2 border-white dark:border-[#0a0a0b] bg-[#059669] text-[#1c1917] shadow-md"
                   aria-hidden
                 >
                   <Camera className="h-4 w-4" strokeWidth={2} />
                 </span>
               </span>
               <div className="min-w-0">
-                <p className="text-[11px] font-semibold uppercase tracking-[0.12em] text-[#FFC107]">
+                <p className="text-[11px] font-semibold uppercase tracking-[0.12em] text-[#10b981]">
                   Profil Anda
                 </p>
                 <p className="mt-0.5 truncate text-lg font-semibold text-stone-900 dark:text-white">
@@ -563,7 +644,7 @@ function SellerDashboardInner() {
                 </p>
               </div>
             </div>
-            <span className="inline-flex w-full shrink-0 items-center justify-center gap-2 rounded-full bg-[#FFB300] px-5 py-3.5 text-sm font-bold text-[#1c1917] transition group-hover:bg-[#F0A500] sm:w-auto sm:min-w-[11rem]">
+            <span className="inline-flex w-full shrink-0 items-center justify-center gap-2 rounded-full bg-[#059669] px-5 py-3.5 text-sm font-bold text-[#1c1917] transition group-hover:bg-[#047857] sm:w-auto sm:min-w-[11rem]">
               <UserRound className="h-4 w-4" strokeWidth={2} />
               Ubah Foto &amp; Nama
               <ChevronRight className="h-4 w-4 opacity-80" strokeWidth={2} />
@@ -595,7 +676,7 @@ function SellerDashboardInner() {
                   <p className="text-[11px] font-medium uppercase tracking-wide text-stone-500 dark:text-white/35">
                     {s.label}
                   </p>
-                  <s.icon className="h-4 w-4 text-[#FFB300]" strokeWidth={1.5} />
+                  <s.icon className="h-4 w-4 text-[#059669]" strokeWidth={1.5} />
                 </div>
                 <p className="mt-2 text-xl font-semibold text-stone-900 dark:text-white">{s.value}</p>
                 {"hint" in s && s.hint && (
@@ -612,6 +693,7 @@ function SellerDashboardInner() {
                 ["products", "Produk & stok"],
                 ["pencairan", "Pencairan"],
                 ["laporan", "Laporan"],
+                ["setor", "Setor laporan"],
                 ["settings", "Pengaturan"],
               ] as const
             ).map(([id, label]) => (
@@ -622,7 +704,7 @@ function SellerDashboardInner() {
                 className={cn(
                   "cursor-pointer rounded-full px-4 py-2 text-sm font-medium transition-colors",
                   tab === id
-                    ? "bg-[#FFB300]/15 text-[#FFC107]"
+                    ? "bg-[#059669]/15 text-[#10b981]"
                     : "text-stone-600 hover:bg-stone-200/80 hover:text-stone-900 dark:text-white/50 dark:hover:bg-white/[0.04] dark:hover:text-white/80"
                 )}
               >
@@ -677,7 +759,7 @@ function SellerDashboardInner() {
                       className={cn(
                         "rounded-2xl border bg-white dark:bg-[#121214] p-5",
                         !o.seenBySeller
-                          ? "border-[#FFB300]/35"
+                          ? "border-[#059669]/35"
                           : "border-stone-200 dark:border-white/[0.07]"
                       )}
                     >
@@ -688,7 +770,7 @@ function SellerDashboardInner() {
                               {o.orderNumber}
                             </p>
                             {!o.seenBySeller && (
-                              <span className="rounded-full bg-[#FFB300] px-2 py-0.5 text-[10px] font-bold text-[#1c1917]">
+                              <span className="rounded-full bg-[#059669] px-2 py-0.5 text-[10px] font-bold text-[#1c1917]">
                                 BARU
                               </span>
                             )}
@@ -718,7 +800,7 @@ function SellerDashboardInner() {
                           </div>
                         </div>
                         <div className="text-right">
-                          <p className="text-sm font-semibold text-[#FFC107]">
+                          <p className="text-sm font-semibold text-[#10b981]">
                             {formatRupiah(o.total)}
                           </p>
                           <p className="text-[11px] text-stone-500 dark:text-white/35">
@@ -824,7 +906,7 @@ function SellerDashboardInner() {
                 <button
                   type="button"
                   onClick={openCreate}
-                  className="inline-flex cursor-pointer items-center gap-2 rounded-full bg-[#FFB300] px-4 py-2.5 text-sm font-semibold text-[#1c1917]"
+                  className="inline-flex cursor-pointer items-center gap-2 rounded-full bg-[#059669] px-4 py-2.5 text-sm font-semibold text-[#1c1917]"
                 >
                   <Plus className="h-4 w-4" strokeWidth={1.5} /> Tambah Produk
                 </button>
@@ -929,7 +1011,7 @@ function SellerDashboardInner() {
                           <button
                             type="button"
                             onClick={() => setShowCalculator(true)}
-                            className="inline-flex cursor-pointer items-center gap-1.5 rounded-full bg-[#FFB300]/10 px-3 py-1.5 text-xs font-semibold text-[#FFB300] transition hover:bg-[#FFB300]/20"
+                            className="inline-flex cursor-pointer items-center gap-1.5 rounded-full bg-[#059669]/10 px-3 py-1.5 text-xs font-semibold text-[#059669] transition hover:bg-[#059669]/20"
                           >
                             <Sparkles className="h-3.5 w-3.5" strokeWidth={1.75} />
                             Kalkulator Harga AI
@@ -1074,7 +1156,7 @@ function SellerDashboardInner() {
                     </button>
                     <button
                       type="submit"
-                      className="cursor-pointer rounded-full bg-[#FFB300] px-4 py-2 text-sm font-semibold text-[#1c1917]"
+                      className="cursor-pointer rounded-full bg-[#059669] px-4 py-2 text-sm font-semibold text-[#1c1917]"
                     >
                       Simpan
                     </button>
@@ -1183,7 +1265,7 @@ function SellerDashboardInner() {
                                   ? "font-semibold text-red-400"
                                   : totalStock <= 5
                                     ? "font-semibold text-amber-400"
-                                    : "font-semibold text-[#FFC107]"
+                                    : "font-semibold text-[#10b981]"
                               }
                             >
                               {totalStock}
@@ -1230,7 +1312,7 @@ function SellerDashboardInner() {
                               <button
                                 type="button"
                                 onClick={() => openEdit(p)}
-                                className="cursor-pointer rounded-lg p-2 text-[#FFC107] hover:bg-stone-100 dark:bg-white/[0.04]"
+                                className="cursor-pointer rounded-lg p-2 text-[#10b981] hover:bg-stone-100 dark:bg-white/[0.04]"
                                 title="Edit produk & varian"
                               >
                                 <Pencil
@@ -1272,8 +1354,8 @@ function SellerDashboardInner() {
             <div className="mt-6 space-y-6">
               {/* Saldo & Form Request */}
               <div className="grid gap-4 lg:grid-cols-5">
-                <div className="rounded-2xl border border-[#FFB300]/30 bg-gradient-to-br from-amber-50 via-white to-white dark:from-[#FFB300]/15 dark:via-[#121214] dark:to-[#121214] p-5 lg:col-span-2">
-                  <p className="text-[11px] font-semibold uppercase tracking-wide text-[#FFB300]">
+                <div className="rounded-2xl border border-[#059669]/30 bg-gradient-to-br from-amber-50 via-white to-white dark:from-[#059669]/15 dark:via-[#121214] dark:to-[#121214] p-5 lg:col-span-2">
+                  <p className="text-[11px] font-semibold uppercase tracking-wide text-[#059669]">
                     Saldo Tersedia
                   </p>
                   <p className="mt-2 text-3xl font-bold text-stone-900 dark:text-white">
@@ -1335,7 +1417,7 @@ function SellerDashboardInner() {
                           onChange={(e) =>
                             setWdMethod(e.target.value as WithdrawalMethod)
                           }
-                          className="w-full appearance-none rounded-xl border border-stone-200 bg-white px-3.5 py-2.5 pr-10 text-sm font-medium text-stone-900 transition focus:border-[#FFB300] focus:ring-2 focus:ring-[#FFB300]/20 dark:border-white/10 dark:bg-[#1a1a1c] dark:text-white dark:focus:border-[#FFB300] dark:focus:ring-[#FFB300]/20"
+                          className="w-full appearance-none rounded-xl border border-stone-200 bg-white px-3.5 py-2.5 pr-10 text-sm font-medium text-stone-900 transition focus:border-[#059669] focus:ring-2 focus:ring-[#059669]/20 dark:border-white/10 dark:bg-[#1a1a1c] dark:text-white dark:focus:border-[#059669] dark:focus:ring-[#059669]/20"
                         >
                           <option value="bank" className="bg-white text-stone-900 dark:bg-[#1a1a1c] dark:text-white">
                             Rekening Bank
@@ -1397,7 +1479,7 @@ function SellerDashboardInner() {
                   <button
                     type="submit"
                     disabled={balance < 30000}
-                    className="cursor-pointer rounded-full bg-[#FFB300] px-6 py-2.5 text-sm font-semibold text-[#1c1917] transition hover:bg-[#F0A500] disabled:cursor-not-allowed disabled:opacity-40"
+                    className="cursor-pointer rounded-full bg-[#059669] px-6 py-2.5 text-sm font-semibold text-[#1c1917] transition hover:bg-[#047857] disabled:cursor-not-allowed disabled:opacity-40"
                   >
                     Kirim Request
                   </button>
@@ -1407,11 +1489,11 @@ function SellerDashboardInner() {
               {/* Auto-payout */}
               <form
                 onSubmit={onSaveAutoPayout}
-                className="rounded-2xl border border-[#FFB300]/30 bg-white dark:bg-[#121214] p-5"
+                className="rounded-2xl border border-[#059669]/30 bg-white dark:bg-[#121214] p-5"
               >
                 <div className="flex flex-wrap items-center justify-between gap-3">
                   <div className="flex items-center gap-3">
-                    <span className="inline-flex h-9 w-9 items-center justify-center rounded-lg bg-[#FFB300]/15 text-[#FFB300]">
+                    <span className="inline-flex h-9 w-9 items-center justify-center rounded-lg bg-[#059669]/15 text-[#059669]">
                       <Zap className="h-4 w-4" strokeWidth={1.75} />
                     </span>
                     <div>
@@ -1434,7 +1516,7 @@ function SellerDashboardInner() {
                       }}
                       className="peer sr-only"
                     />
-                    <span className="h-6 w-11 rounded-full bg-stone-300 transition peer-checked:bg-[#FFB300] after:absolute after:left-0.5 after:top-0.5 after:h-5 after:w-5 after:rounded-full after:bg-white after:shadow after:transition peer-checked:after:translate-x-5" />
+                    <span className="h-6 w-11 rounded-full bg-stone-300 transition peer-checked:bg-[#059669] after:absolute after:left-0.5 after:top-0.5 after:h-5 after:w-5 after:rounded-full after:bg-white after:shadow after:transition peer-checked:after:translate-x-5" />
                   </label>
                 </div>
 
@@ -1513,7 +1595,7 @@ function SellerDashboardInner() {
                     <div className="flex flex-wrap items-center gap-3">
                       <button
                         type="submit"
-                        className="cursor-pointer rounded-full bg-[#FFB300] px-5 py-2 text-sm font-semibold text-[#1c1917] transition hover:bg-[#F0A500]"
+                        className="cursor-pointer rounded-full bg-[#059669] px-5 py-2 text-sm font-semibold text-[#1c1917] transition hover:bg-[#047857]"
                       >
                         {apEnabled ? "Aktifkan Pencairan Otomatis" : "Simpan"}
                       </button>
@@ -1582,7 +1664,7 @@ function SellerDashboardInner() {
                           <p className="text-stone-500 dark:text-white/40">
                             Fee: {formatRupiah(w.fee)}
                           </p>
-                          <p className="font-semibold text-[#FFC107]">
+                          <p className="font-semibold text-[#10b981]">
                             Diterima: {formatRupiah(w.netAmount)}
                           </p>
                         </div>
@@ -1600,7 +1682,7 @@ function SellerDashboardInner() {
               <div className="mb-5 flex flex-wrap items-center justify-between gap-3">
                 <div>
                   <h2 className="flex items-center gap-2 text-base font-semibold text-stone-900 dark:text-white">
-                    <BarChart3 className="h-4 w-4 text-[#FFB300]" strokeWidth={1.75} />
+                    <BarChart3 className="h-4 w-4 text-[#059669]" strokeWidth={1.75} />
                     Laporan Penjualan
                   </h2>
                   <p className="mt-0.5 text-xs text-stone-500 dark:text-white/40">
@@ -1613,6 +1695,209 @@ function SellerDashboardInner() {
                 orders={state.orders.filter((o) => o.sellerId === sellerId)}
                 sellerName={seller?.name || session.name}
               />
+            </div>
+          )}
+
+          {/* ——— SETOR LAPORAN ——— */}
+          {tab === "setor" && (
+            <div className="mt-6">
+              <div className="mb-5 flex flex-wrap items-center justify-between gap-3">
+                <div>
+                  <h2 className="flex items-center gap-2 text-base font-semibold text-stone-900 dark:text-white">
+                    <ClipboardList className="h-4 w-4 text-[#059669]" strokeWidth={1.75} />
+                    Setor Laporan Penjualan
+                  </h2>
+                  <p className="mt-0.5 text-xs text-stone-500 dark:text-white/40">
+                    Kirim laporan harian ke bendahara sekolah (1 laporan per tanggal).
+                  </p>
+                </div>
+                <ContactAdmin variant="pill" />
+              </div>
+
+              <div className="grid gap-4 lg:grid-cols-[minmax(0,1fr)_minmax(0,1.05fr)]">
+                {/* Form setor */}
+                <form
+                  onSubmit={onSubmitReport}
+                  className="h-fit space-y-5 rounded-2xl border border-stone-200 dark:border-white/[0.07] bg-white dark:bg-[#121214] p-5 sm:p-6"
+                >
+                  <div className="grid gap-4 sm:grid-cols-2">
+                    <div>
+                      <label className="mb-1.5 block text-xs font-semibold text-stone-500 dark:text-white/40">
+                        Tanggal laporan
+                      </label>
+                      <input
+                        type="date"
+                        value={srDate}
+                        max={todayLocalKey()}
+                        onChange={(e) => setSrDate(e.target.value)}
+                        className="w-full rounded-xl border border-stone-200 bg-stone-50 px-3.5 py-2.5 text-sm text-stone-900 dark:border-white/10 dark:bg-black/30 dark:text-white"
+                      />
+                    </div>
+                    <div>
+                      <label className="mb-1.5 block text-xs font-semibold text-stone-500 dark:text-white/40">
+                        Total pendapatan (Rp)
+                      </label>
+                      <input
+                        type="number"
+                        min={0}
+                        value={srRevenue}
+                        onChange={(e) => setSrRevenue(e.target.value)}
+                        placeholder="mis. 250000"
+                        className="w-full rounded-xl border border-stone-200 bg-stone-50 px-3.5 py-2.5 text-sm text-stone-900 dark:border-white/10 dark:bg-black/30 dark:text-white"
+                      />
+                    </div>
+                  </div>
+
+                  <div>
+                    <div className="mb-2 flex items-center justify-between">
+                      <label className="text-xs font-semibold text-stone-500 dark:text-white/40">
+                        Item terjual
+                      </label>
+                      <span className="text-[11px] text-stone-400 dark:text-white/30">
+                        {srTotal} unit
+                      </span>
+                    </div>
+                    <div className="space-y-2">
+                      {srItems.map((item, idx) => (
+                        <div key={item.id} className="flex items-center gap-2">
+                          <input
+                            value={item.name}
+                            onChange={(e) => {
+                              const next = [...srItems];
+                              next[idx] = { ...item, name: e.target.value };
+                              setSrItems(next);
+                            }}
+                            placeholder="Nama menu (mis. Nasi Goreng)"
+                            className="w-full rounded-xl border border-stone-200 bg-stone-50 px-3.5 py-2.5 text-sm text-stone-900 dark:border-white/10 dark:bg-black/30 dark:text-white"
+                          />
+                          <input
+                            type="number"
+                            min={1}
+                            value={item.qty}
+                            onChange={(e) => {
+                              const next = [...srItems];
+                              next[idx] = { ...item, qty: e.target.value };
+                              setSrItems(next);
+                            }}
+                            placeholder="Qty"
+                            className="w-20 shrink-0 rounded-xl border border-stone-200 bg-stone-50 px-3 py-2.5 text-sm text-stone-900 dark:border-white/10 dark:bg-black/30 dark:text-white"
+                          />
+                          <button
+                            type="button"
+                            onClick={() => {
+                              if (srItems.length === 1) return;
+                              setSrItems(srItems.filter((_, i) => i !== idx));
+                            }}
+                            disabled={srItems.length === 1}
+                            aria-label="Hapus item"
+                            className="cursor-pointer rounded-xl p-2 text-stone-400 transition hover:bg-red-50 hover:text-red-500 disabled:pointer-events-none disabled:opacity-30 dark:hover:bg-red-900/20"
+                          >
+                            <Trash2 className="h-4 w-4" strokeWidth={1.75} />
+                          </button>
+                        </div>
+                      ))}
+                    </div>
+                    <button
+                      type="button"
+                      onClick={() =>
+                        setSrItems((list) => [
+                          ...list,
+                          { id: uid("si"), name: "", qty: "" },
+                        ])
+                      }
+                      className="mt-2 inline-flex cursor-pointer items-center gap-1.5 text-xs font-semibold text-[#059669] transition hover:text-[#047857]"
+                    >
+                      <Plus className="h-3.5 w-3.5" />
+                      Tambah item
+                    </button>
+                  </div>
+
+                  <div>
+                    <label className="mb-1.5 block text-xs font-semibold text-stone-500 dark:text-white/40">
+                      Catatan (opsional)
+                    </label>
+                    <textarea
+                      value={srNotes}
+                      onChange={(e) => setSrNotes(e.target.value)}
+                      rows={2}
+                      placeholder="mis. banyak yang pesan es teh siang ini"
+                      className="w-full rounded-xl border border-stone-200 bg-stone-50 px-3.5 py-2.5 text-sm text-stone-900 dark:border-white/10 dark:bg-black/30 dark:text-white"
+                    />
+                  </div>
+
+                  {srError && (
+                    <p className="rounded-lg bg-red-50 px-3 py-2 text-xs font-medium text-red-600 dark:bg-red-900/20 dark:text-red-400">
+                      {srError}
+                    </p>
+                  )}
+
+                  <button
+                    type="submit"
+                    className="cursor-pointer rounded-full bg-[#059669] px-6 py-2.5 text-sm font-semibold text-white transition hover:bg-[#047857]"
+                  >
+                    Setor Laporan
+                  </button>
+                </form>
+
+                {/* Riwayat laporan */}
+                <div>
+                  <h3 className="mb-3 flex items-center gap-2 text-sm font-semibold text-stone-900 dark:text-white">
+                    <CalendarDays className="h-4 w-4 text-[#059669]" strokeWidth={1.75} />
+                    Riwayat laporan ({myReports.length})
+                  </h3>
+                  {myReports.length === 0 ? (
+                    <div className="rounded-2xl border border-dashed border-stone-300 py-12 text-center dark:border-white/10">
+                      <ClipboardList className="mx-auto h-8 w-8 text-stone-300 dark:text-white/20" strokeWidth={1.25} />
+                      <p className="mt-3 text-sm text-stone-500 dark:text-white/40">
+                        Belum ada laporan disetor.
+                      </p>
+                      <p className="mt-1 text-xs text-stone-400 dark:text-white/25">
+                        Setor laporan harianmu agar bendahara bisa memverifikasi.
+                      </p>
+                    </div>
+                  ) : (
+                    <div className="space-y-3">
+                      {myReports.map((r) => (
+                        <div
+                          key={r.id}
+                          className="rounded-2xl border border-stone-200 dark:border-white/[0.07] bg-white dark:bg-[#121214] p-4"
+                        >
+                          <div className="flex flex-wrap items-center justify-between gap-2">
+                            <div className="flex flex-wrap items-center gap-2">
+                              <span className="rounded-full bg-stone-100 px-2 py-0.5 text-[10px] font-bold uppercase tracking-wide text-stone-500 dark:bg-white/10 dark:text-white/50">
+                                {r.date}
+                              </span>
+                              <span
+                                className={cn(
+                                  "rounded-full px-2 py-0.5 text-[10px] font-bold uppercase tracking-wide",
+                                  r.status === "verified"
+                                    ? "bg-emerald-100 text-emerald-700 dark:bg-emerald-900/40 dark:text-emerald-300"
+                                    : "bg-amber-100 text-amber-700 dark:bg-amber-900/40 dark:text-amber-300"
+                                )}
+                              >
+                                {r.status === "verified"
+                                  ? "Diverifikasi"
+                                  : "Menunggu verifikasi"}
+                              </span>
+                            </div>
+                            <p className="font-bold tabular-nums text-[#059669]">
+                              {formatRupiah(r.totalRevenue)}
+                            </p>
+                          </div>
+                          <p className="mt-2 text-xs text-stone-500 dark:text-white/45">
+                            {r.items.map((i) => `${i.name} x${i.qty}`).join(", ")}
+                          </p>
+                          {r.status === "verified" && r.verifiedBy && (
+                            <p className="mt-1 text-[11px] text-emerald-600 dark:text-emerald-400">
+                              Diverifikasi {r.verifiedBy} · {formatDate(r.verifiedAt || 0)}
+                            </p>
+                          )}
+                        </div>
+                      ))}
+                    </div>
+                  )}
+                </div>
+              </div>
             </div>
           )}
 
@@ -1723,7 +2008,7 @@ function SellerDashboardInner() {
 
               <button
                 type="submit"
-                className="cursor-pointer rounded-full bg-[#FFB300] px-6 py-2.5 text-sm font-semibold text-[#1c1917]"
+                className="cursor-pointer rounded-full bg-[#059669] px-6 py-2.5 text-sm font-semibold text-[#1c1917]"
               >
                 Simpan
               </button>

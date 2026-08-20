@@ -26,9 +26,9 @@ function SellerProfileInner() {
           </Link>
 
           {/* Banner petunjuk sederhana */}
-          <div className="mb-5 rounded-2xl border border-[#FFB300]/30 bg-[#FFB300]/10 px-4 py-4 sm:px-5">
+          <div className="mb-5 rounded-2xl border border-[#059669]/30 bg-[#059669]/10 px-4 py-4 sm:px-5">
             <div className="flex items-start gap-3">
-              <span className="flex h-10 w-10 shrink-0 items-center justify-center rounded-full bg-[#FFB300] text-[#1c1917]">
+              <span className="flex h-10 w-10 shrink-0 items-center justify-center rounded-full bg-[#059669] text-[#1c1917]">
                 <UserRound className="h-5 w-5" strokeWidth={2} />
               </span>
               <div>
@@ -37,7 +37,7 @@ function SellerProfileInner() {
                 </p>
                 <p className="mt-1 text-sm leading-relaxed text-stone-600 dark:text-white/55">
                   1) Ketuk area foto untuk pilih gambar · 2) Ketik nama · 3)
-                  Tekan tombol <span className="text-[#FFC107]">Simpan</span> di
+                  Tekan tombol <span className="text-[#10b981]">Simpan</span> di
                   bawah.
                 </p>
               </div>
@@ -45,7 +45,7 @@ function SellerProfileInner() {
           </div>
 
           <div className="rounded-2xl border border-stone-200 dark:border-white/[0.07] bg-white dark:bg-[#121214] p-6 sm:p-8">
-            <div className="mb-6 flex items-center gap-2 text-[#FFB300]">
+            <div className="mb-6 flex items-center gap-2 text-[#059669]">
               <Camera className="h-5 w-5" strokeWidth={1.75} />
               <p className="text-sm font-semibold uppercase tracking-[0.1em]">
                 Profil penjual
@@ -82,7 +82,7 @@ function SellerProfileInner() {
                     Mau ganti nama lapak atau nomor WhatsApp? Buka{" "}
                     <Link
                       href="/dashboard/seller"
-                      className="font-semibold text-[#FFC107] underline-offset-2 hover:underline"
+                      className="font-semibold text-[#10b981] underline-offset-2 hover:underline"
                     >
                       Dashboard → tab Pengaturan
                     </Link>

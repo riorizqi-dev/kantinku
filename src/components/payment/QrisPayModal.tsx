@@ -143,7 +143,7 @@ export function QrisPayModal({ open, payload, onClose, onPaid }: Props) {
                 <p className="text-xs font-semibold uppercase tracking-wide text-stone-400 dark:text-white/35">
                   Total bayar
                 </p>
-                <p className="mt-1 text-2xl font-bold tabular-nums text-[#FFB300] dark:text-[#FFC107]">
+                <p className="mt-1 text-2xl font-bold tabular-nums text-[#059669] dark:text-[#10b981]">
                   {formatRupiah(amount)}
                 </p>
                 {payload?.finalAmount && payload.finalAmount > (payload.amount || 0) && (
@@ -165,7 +165,7 @@ export function QrisPayModal({ open, payload, onClose, onPaid }: Props) {
                   />
                 ) : (
                   <div className="flex h-[260px] w-[260px] flex-col items-center justify-center gap-3 rounded-lg bg-stone-50 px-4 text-center dark:bg-white/[0.03] sm:h-[280px] sm:w-[280px]">
-                    <Loader2 className="h-8 w-8 animate-spin text-[#FFB300]" />
+                    <Loader2 className="h-8 w-8 animate-spin text-[#059669]" />
                     <p className="text-xs text-stone-500">
                       QR tidak tersedia di respons. Buka halaman pembayaran.
                     </p>
@@ -174,7 +174,7 @@ export function QrisPayModal({ open, payload, onClose, onPaid }: Props) {
                         href={payload.paymentUrl}
                         target="_blank"
                         rel="noreferrer"
-                        className="inline-flex items-center gap-1.5 text-xs font-semibold text-[#F0A500] dark:text-[#FFC107]"
+                        className="inline-flex items-center gap-1.5 text-xs font-semibold text-[#047857] dark:text-[#10b981]"
                       >
                         Buka halaman bayar <ExternalLink className="h-3.5 w-3.5" />
                       </a>
