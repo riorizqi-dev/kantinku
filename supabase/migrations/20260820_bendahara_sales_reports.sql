@@ -30,12 +30,6 @@ create policy "demo_all_sales_reports"
   using (true) with check (true);
 
 -- ---------- akun seed bendahara ----------
-insert into public.users (
-  id, username, password, name, role, phone, seller_id, avatar, kelas, is_active, created_at
-)
-select
-  'user_bendahara', 'bendahara', 'bendahara123', 'Bendahara Sekolah', 'bendahara',
-  '', null, null, null, true, now()
-where not exists (
-  select 1 from public.users where id = 'user_bendahara'
-);
+-- DIPISAH ke 20260820_bendahara_seed.sql: nilai enum 'bendahara' yang baru
+-- ditambahkan di atas tidak boleh langsung dipakai dalam transaksi yang sama
+-- (Postgres error 55P04). Jalankan file ini DULU, lalu file seed-nya.
