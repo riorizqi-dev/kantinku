@@ -225,7 +225,7 @@ export default function SuperAdminDashboardPage() {
   return (
     <PageTransition>
       <DashboardShell>
-        <p className="text-xs font-semibold uppercase tracking-[0.18em] text-amber-600">
+        <p className="text-xs font-semibold uppercase tracking-[0.18em] text-[#059669]">
           Super Admin
         </p>
         <h1 className="mt-1 text-3xl font-semibold tracking-tight text-stone-900 dark:text-white">
@@ -385,7 +385,7 @@ export default function SuperAdminDashboardPage() {
                       <p className="font-bold text-[#047857] dark:text-[#10b981]">
                         {formatRupiah(o.total)}
                       </p>
-                      <p className="text-xs text-amber-600">
+                      <p className="text-xs text-[#047857] dark:text-[#10b981]">
                         Komisi: {formatRupiah(o.commissionAmount)} (
                         {o.commissionRate}%)
                       </p>

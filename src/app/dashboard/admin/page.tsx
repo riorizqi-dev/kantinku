@@ -412,7 +412,7 @@ export default function AdminDashboardPage() {
                       <td className="px-4 py-3 font-semibold">{r.name}</td>
                       <td className="px-4 py-3">{r.orderCount}</td>
                       <td className="px-4 py-3">{formatRupiah(r.gmv)}</td>
-                      <td className="px-4 py-3 text-amber-700 dark:text-amber-400">
+                      <td className="px-4 py-3 font-semibold text-[#047857] dark:text-[#10b981]">
                         {formatRupiah(r.commission)}
                       </td>
                       <td className="px-4 py-3 font-bold text-[#047857] dark:text-[#10b981]">

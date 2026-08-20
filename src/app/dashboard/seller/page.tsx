@@ -608,7 +608,7 @@ function SellerDashboardInner() {
           {/* Profil penjual — menonjol, mudah ditemukan orang tua / penjual */}
           <Link
             href="/dashboard/seller/profile"
-            className="group mt-6 flex flex-col gap-4 rounded-2xl border border-[#059669]/35 bg-gradient-to-br from-amber-50 via-white to-white dark:from-[#059669]/15 dark:via-[#121214] dark:to-[#121214] p-4 shadow-[0_0_0_1px_rgba(249,115,22,0.12)] transition hover:border-[#059669]/55 hover:from-[#059669]/22 sm:flex-row sm:items-center sm:justify-between sm:p-5"
+            className="group mt-6 flex flex-col gap-4 rounded-2xl border border-[#059669]/35 bg-gradient-to-br from-emerald-50 via-white to-white dark:from-[#059669]/15 dark:via-[#121214] dark:to-[#121214] p-4 shadow-[0_0_0_1px_rgba(5,150,105,0.12)] transition hover:border-[#059669]/55 hover:from-[#059669]/22 sm:flex-row sm:items-center sm:justify-between sm:p-5"
           >
             <div className="flex min-w-0 items-center gap-4">
               <span className="relative shrink-0">
@@ -1354,7 +1354,7 @@ function SellerDashboardInner() {
             <div className="mt-6 space-y-6">
               {/* Saldo & Form Request */}
               <div className="grid gap-4 lg:grid-cols-5">
-                <div className="rounded-2xl border border-[#059669]/30 bg-gradient-to-br from-amber-50 via-white to-white dark:from-[#059669]/15 dark:via-[#121214] dark:to-[#121214] p-5 lg:col-span-2">
+                <div className="rounded-2xl border border-[#059669]/30 bg-gradient-to-br from-emerald-50 via-white to-white dark:from-[#059669]/15 dark:via-[#121214] dark:to-[#121214] p-5 lg:col-span-2">
                   <p className="text-[11px] font-semibold uppercase tracking-wide text-[#059669]">
                     Saldo Tersedia
                   </p>
