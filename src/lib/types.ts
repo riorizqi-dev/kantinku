@@ -43,6 +43,8 @@ export interface User {
   sellerId?: string;
   /** data URL base64 foto profil */
   avatar?: string;
+  /** Nomor Induk Siswa — identitas unik siswa (anti-spam akun) */
+  nis?: string;
   /** false = akun disuspend oleh Super Admin (tidak bisa login) */
   isActive?: boolean;
   createdAt: number;

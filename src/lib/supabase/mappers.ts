@@ -45,6 +45,7 @@ export type DbUser = {
   password: string;
   name: string;
   role: UserRole;
+  nis: string | null;
   kelas: string | null;
   phone: string | null;
   seller_id: string | null;
@@ -225,6 +226,7 @@ export function userToDb(u: User): DbUser {
     password: u.password,
     name: u.name,
     role: u.role,
+    nis: u.nis || null,
     kelas: u.kelas || null,
     phone: u.phone || null,
     seller_id: u.sellerId || null,
@@ -241,6 +243,7 @@ export function userFromDb(r: DbUser): User {
     password: r.password,
     name: r.name,
     role: r.role,
+    nis: r.nis || undefined,
     kelas: r.kelas || undefined,
     phone: r.phone || undefined,
     sellerId: r.seller_id || undefined,

@@ -46,6 +46,8 @@ import {
   syncBundleToSupabase,
 } from "@/lib/supabase/repo";
 import { calcCommission, formatRupiah, uid } from "@/lib/utils";
+import { hashPassword, verifyPassword } from "@/lib/password";
+import { nisError } from "@/lib/nis";
 import {
   deductVariantStock,
   findVariant,
@@ -68,14 +70,17 @@ interface AppContextValue {
   toast: (message: string, type?: ToastItem["type"]) => void;
   dismissToast: (id: string) => void;
   // Auth
-  login: (username: string, password: string) => UserRole | null;
+  login: (username: string, password: string) => Promise<UserRole | null>;
   register: (data: {
     name: string;
     username: string;
     password: string;
     kelas: string;
     phone?: string;
-  }) => string | null;
+    nis?: string;
+    /** user id dari /api/register (backend) — dipakai agar id lokal konsisten */
+    serverUserId?: string;
+  }) => Promise<string | null>;
   logout: () => void;
   // Cart — line = productId + variantId
   addToCart: (productId: string, variantId: string, qty?: number) => void;
@@ -152,13 +157,13 @@ interface AppContextValue {
     password: string;
     sellerName: string;
     phone?: string;
-  }) => string | null;
+  }) => Promise<string | null>;
   addAdminUser: (data: {
     name: string;
     username: string;
     password: string;
     phone?: string;
-  }) => string | null;
+  }) => Promise<string | null>;
   /** Suspend/aktifkan akun (Super Admin) */
   setUserActive: (userId: string, active: boolean) => void;
   /** Hapus akun non-seed (Super Admin) */
@@ -401,13 +406,16 @@ export function AppProvider({ children }: { children: React.ReactNode }) {
   );
 
   const login = useCallback(
-    (username: string, password: string): UserRole | null => {
+    async (username: string, password: string): Promise<UserRole | null> => {
       const user = state.users.find(
-        (u) =>
-          u.username.toLowerCase() === username.trim().toLowerCase() &&
-          u.password === password.trim()
+        (u) => u.username.toLowerCase() === username.trim().toLowerCase()
       );
       if (!user) {
+        toast("Username atau password salah", "error");
+        return null;
+      }
+      const ok = await verifyPassword(password.trim(), user.password);
+      if (!ok) {
         toast("Username atau password salah", "error");
         return null;
       }
@@ -438,30 +446,40 @@ export function AppProvider({ children }: { children: React.ReactNode }) {
   );
 
   const register = useCallback(
-    (data: {
+    async (data: {
       name: string;
       username: string;
       password: string;
       kelas: string;
       phone?: string;
-    }) => {
+      nis?: string;
+      serverUserId?: string;
+    }): Promise<string | null> => {
       const username = data.username.trim().toLowerCase();
-      if (state.users.some((u) => u.username.toLowerCase() === username)) {
+      const nis = (data.nis || "").trim();
+
+      if (!data.serverUserId && state.users.some((u) => u.username.toLowerCase() === username)) {
         return "Username sudah digunakan";
       }
       if (!/^[a-z0-9_]{3,24}$/.test(username)) {
         return "Username: 3-24 karakter (huruf, angka, underscore)";
       }
       if (data.password.length < 6) return "Password minimal 6 karakter";
+      const nisErr = nisError(nis);
+      if (nisErr) return nisErr;
+      if (!data.serverUserId && state.users.some((u) => u.nis === nis)) {
+        return "NIS ini sudah terdaftar";
+      }
 
       const user: User = {
-        id: uid("user"),
+        id: data.serverUserId || uid("user"),
         username,
-        password: data.password,
+        password: await hashPassword(data.password),
         name: data.name.trim(),
         role: "buyer",
         kelas: data.kelas.trim(),
         phone: data.phone?.trim() || "",
+        nis,
         createdAt: Date.now(),
       };
 
@@ -1451,7 +1469,7 @@ export function AppProvider({ children }: { children: React.ReactNode }) {
   );
 
   const addSellerUser = useCallback(
-    (data: {
+    async (data: {
       name: string;
       username: string;
       password: string;
@@ -1478,7 +1496,7 @@ export function AppProvider({ children }: { children: React.ReactNode }) {
       const user: User = {
         id: userId,
         username,
-        password: data.password,
+        password: await hashPassword(data.password),
         name: data.name.trim(),
         role: "seller",
         sellerId,
@@ -1498,7 +1516,7 @@ export function AppProvider({ children }: { children: React.ReactNode }) {
   );
 
   const addAdminUser = useCallback(
-    (data: {
+    async (data: {
       name: string;
       username: string;
       password: string;
@@ -1515,7 +1533,7 @@ export function AppProvider({ children }: { children: React.ReactNode }) {
       const user: User = {
         id: uid("user"),
         username,
-        password: data.password,
+        password: await hashPassword(data.password),
         name: data.name.trim(),
         role: "admin",
         phone: data.phone?.trim() || "",

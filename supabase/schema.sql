@@ -70,21 +70,30 @@ create table if not exists public.sellers (
 );
 
 -- ---------- users (akun login app) ----------
--- Catatan: password plain untuk demo migrasi; production sebaiknya auth Supabase + hash
+-- Catatan: password hashed (PBKDF2 via src/lib/password.ts) utk akun baru;
+-- password seed lama masih plain utk kompatibilitas demo.
 create table if not exists public.users (
   id text primary key,
   username text not null unique,
   password text not null,
   name text not null,
   role user_role not null default 'buyer',
+  nis text check (nis is null or nis = '' or nis ~ '^[0-9]{6,10}$'),
   kelas text,
   phone text,
   seller_id text references public.sellers(id) on delete set null,
   avatar text,
+  is_active boolean not null default true,
   created_at timestamptz not null default now()
 );
 
 create index if not exists users_seller_id_idx on public.users (seller_id);
+
+-- UNIQUE parsial NIS: satu NIS = satu akun (anti-spam)
+create unique index if not exists users_nis_uidx
+  on public.users (nis)
+  where nis is not null and nis <> '';
+create index if not exists users_nis_idx on public.users (nis);
 
 -- ---------- products + variants ----------
 create table if not exists public.products (

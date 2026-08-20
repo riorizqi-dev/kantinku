@@ -6,33 +6,78 @@ import { useRouter } from "next/navigation";
 import { Eye, EyeOff, UserPlus } from "lucide-react";
 import { useApp } from "@/context/AppContext";
 import { PageTransition } from "@/components/motion/Reveal";
+import { nisError } from "@/lib/nis";
 
 export default function RegisterPage() {
   const { register, toast } = useApp();
   const router = useRouter();
   const [loading, setLoading] = useState(false);
   const [showPassword, setShowPassword] = useState(false);
+  const [nisFieldError, setNisFieldError] = useState("");
   const [form, setForm] = useState({
     name: "",
     kelas: "",
     username: "",
     password: "",
     phone: "",
+    nis: "",
   });
 
   function setField(key: keyof typeof form, value: string) {
     setForm((prev) => ({ ...prev, [key]: value }));
   }
 
-  function onSubmit(e: FormEvent<HTMLFormElement>) {
+  async function onSubmit(e: FormEvent<HTMLFormElement>) {
     e.preventDefault();
     setLoading(true);
-    const err = register({
+
+    const localNisErr = nisError(form.nis);
+    setNisFieldError(localNisErr || "");
+    if (localNisErr) {
+      setLoading(false);
+      return;
+    }
+
+    let serverUserId: string | undefined;
+    // 1) Validasi otoritatif di backend (rate limit + NIS unik di DB).
+    try {
+      const res = await fetch("/api/register", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({
+          name: form.name.trim(),
+          kelas: form.kelas.trim(),
+          username: form.username.trim(),
+          password: form.password,
+          phone: form.phone.trim(),
+          nis: form.nis.trim(),
+        }),
+      });
+      const json = (await res.json().catch(() => null)) as
+        | { ok?: boolean; user?: { id?: string }; error?: string }
+        | null;
+      if (res.status === 503) {
+        // Supabase belum dikonfigurasi → mode offline/local
+      } else if (!res.ok || !json?.ok) {
+        setLoading(false);
+        toast(json?.error || "Registrasi ditolak", "error");
+        return;
+      } else {
+        serverUserId = json.user?.id;
+      }
+    } catch {
+      // Offline → lanjut registrasi lokal
+    }
+
+    // 2) Buat akun lokal (hash password + cek duplikat NIS/username).
+    const err = await register({
       name: form.name,
       username: form.username,
       password: form.password,
       kelas: form.kelas,
       phone: form.phone,
+      nis: form.nis,
+      serverUserId,
     });
     setLoading(false);
     if (err) {
@@ -95,6 +140,37 @@ export default function RegisterPage() {
                 className="w-full rounded-xl border border-stone-200 bg-stone-50 px-3.5 py-3 text-sm font-medium transition focus:border-[#059669] focus:ring-2 focus:ring-[#059669]/20 dark:border-stone-700 dark:bg-stone-900"
                 placeholder="Nama lengkap"
               />
+            </div>
+
+            <div>
+              <label className="mb-1.5 block text-xs font-bold text-stone-600 dark:text-stone-400">
+                NIS (Nomor Induk Siswa)
+              </label>
+              <input
+                name="reg_nis"
+                type="text"
+                inputMode="numeric"
+                autoComplete="off"
+                maxLength={10}
+                required
+                value={form.nis}
+                onChange={(e) => {
+                  setField("nis", e.target.value.replace(/\D/g, ""));
+                  setNisFieldError("");
+                }}
+                data-lpignore="true"
+                data-1p-ignore
+                className="w-full rounded-xl border border-stone-200 bg-stone-50 px-3.5 py-3 text-sm font-medium transition focus:border-[#059669] focus:ring-2 focus:ring-[#059669]/20 dark:border-stone-700 dark:bg-stone-900"
+                placeholder="6–10 digit angka"
+              />
+              <p className="mt-1.5 text-[11px] text-stone-400 dark:text-white/30">
+                Identitas unikmu — satu NIS hanya bisa daftar 1 akun.
+              </p>
+              {nisFieldError && (
+                <p className="mt-1 text-[11px] font-semibold text-red-600 dark:text-red-400">
+                  {nisFieldError}
+                </p>
+              )}
             </div>
 
             <div>

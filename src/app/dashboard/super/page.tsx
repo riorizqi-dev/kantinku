@@ -185,10 +185,10 @@ export default function SuperAdminDashboardPage() {
     });
   }
 
-  function onAddSeller(e: FormEvent<HTMLFormElement>) {
+  async function onAddSeller(e: FormEvent<HTMLFormElement>) {
     e.preventDefault();
     const fd = new FormData(e.currentTarget);
-    const err = addSellerUser({
+    const err = await addSellerUser({
       name: String(fd.get("name") || ""),
       username: String(fd.get("username") || ""),
       password: String(fd.get("password") || ""),
@@ -199,10 +199,10 @@ export default function SuperAdminDashboardPage() {
     else e.currentTarget.reset();
   }
 
-  function onAddAdmin(e: FormEvent<HTMLFormElement>) {
+  async function onAddAdmin(e: FormEvent<HTMLFormElement>) {
     e.preventDefault();
     const fd = new FormData(e.currentTarget);
-    const err = addAdminUser({
+    const err = await addAdminUser({
       name: String(fd.get("name") || ""),
       username: String(fd.get("username") || ""),
       password: String(fd.get("password") || ""),

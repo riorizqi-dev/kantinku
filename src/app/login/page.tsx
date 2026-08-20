@@ -16,10 +16,29 @@ export default function LoginPage() {
   const [password, setPassword] = useState("");
   const [showPassword, setShowPassword] = useState(false);
 
-  function onSubmit(e: FormEvent<HTMLFormElement>) {
+  async function onSubmit(e: FormEvent<HTMLFormElement>) {
     e.preventDefault();
     setLoading(true);
-    const role = login(username, password);
+    // Pengaman brute force: cek rate limit server dulu. 429 = blokir.
+    // Error lain (401/503/offline) → fallback ke login lokal supaya demo tetap jalan.
+    try {
+      const res = await fetch("/api/login", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({ username: username.trim(), password: password.trim() }),
+      });
+      const json = (await res.json().catch(() => null)) as
+        | { code?: string; error?: string }
+        | null;
+      if (res.status === 429) {
+        setLoading(false);
+        toast(json?.error || "Terlalu banyak percobaan. Coba lagi nanti.", "error");
+        return;
+      }
+    } catch {
+      /* offline / server tidak tersedia → lanjut login lokal */
+    }
+    const role = await login(username, password);
     setLoading(false);
     if (!role) return;
 
