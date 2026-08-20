@@ -31,7 +31,7 @@ export function calcCommission(subtotal: number, rate: number) {
 
 export function orderStatusLabel(status: OrderStatus): string {
   const map: Record<OrderStatus, string> = {
-    waiting: "Menunggu",
+    waiting: "Menunggu Diproses",
     processing: "Diproses",
     ready: "Siap Diambil",
     completed: "Selesai",

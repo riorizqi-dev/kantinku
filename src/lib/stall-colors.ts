@@ -141,7 +141,7 @@ export const DEFAULT_STALL_COLOR: StallColor = {
   primaryDark: "rgba(5, 150, 105, 0.25)",
   ring: "rgba(5, 150, 105, 0.4)",
   text: "#047857",
-  textLight: "#CC8E00",
+  textLight: "#10b981",
   bg: "rgba(5, 150, 105, 0.08)",
   bgDark: "rgba(5, 150, 105, 0.15)",
   border: "rgba(5, 150, 105, 0.3)",
@@ -153,7 +153,7 @@ export const DEFAULT_STALL_COLOR: StallColor = {
     --stall-primary-light: rgba(5, 150, 105, 0.15);
     --stall-primary-dark: rgba(5, 150, 105, 0.25);
     --stall-text: #047857;
-    --stall-text-light: #CC8E00;
+    --stall-text-light: #10b981;
   `,
 };
 
