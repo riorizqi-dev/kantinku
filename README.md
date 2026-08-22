@@ -1,5 +1,7 @@
 # KantinKu
 
+**Live:** [https://www.kantin.web.id](https://www.kantin.web.id) — [https://kantinku.vercel.app](https://kantinku.vercel.app)
+
 Sistem pemesanan kantin sekolah digital — multi-role, stok real-time, komisi platform, pembayaran Midtrans Snap (QRIS / e-wallet / VA), dan notifikasi WhatsApp.
 
 ## Stack
